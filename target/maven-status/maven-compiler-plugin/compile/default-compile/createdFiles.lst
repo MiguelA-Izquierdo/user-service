@@ -1,0 +1,11 @@
+com\app\shopbackend\ShopBackEnd.class
+com\app\shopbackend\user\domain\valueObjects\UserEmail.class
+com\app\shopbackend\user\domain\valueObjects\UserLastName.class
+com\app\shopbackend\user\domain\valueObjects\UserName.class
+com\app\shopbackend\user\domain\model\User.class
+com\app\shopbackend\user\domain\repositories\UserRepository.class
+com\app\shopbackend\user\domain\valueObjects\UserId.class
+com\app\shopbackend\user\domain\valueObjects\Phone.class
+com\app\shopbackend\user\domain\valueObjects\IdentityDocument.class
+com\app\shopbackend\user\domain\valueObjects\Address.class
+com\app\shopbackend\user\infraestructure\entities\UserEntity.class

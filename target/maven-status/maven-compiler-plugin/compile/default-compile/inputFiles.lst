@@ -1,0 +1,11 @@
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\ShopBackEnd.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\model\User.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\infraestructure\entities\UserEntity.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\valueObjects\IdentityDocument.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\valueObjects\UserEmail.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\valueObjects\Address.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\valueObjects\Phone.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\valueObjects\UserLastName.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\valueObjects\UserName.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\repositories\UserRepository.java
+C:\Users\SrIzquierdo\Desktop\proyectos\ShopBackend\src\main\java\com\app\shopbackend\user\domain\valueObjects\UserId.java
