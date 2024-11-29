@@ -16,6 +16,7 @@ public class ShopBackEnd {
     System.setProperty("DB_URL", Objects.requireNonNull(dotenv.get("DB_URL")));
     System.setProperty("DB_USER", Objects.requireNonNull(dotenv.get("DB_USER")));
     System.setProperty("DB_PASSWORD", Objects.requireNonNull(dotenv.get("DB_PASSWORD")));
+    System.setProperty("DB_PASSWORD", Objects.requireNonNull(dotenv.get("DB_PASSWORD")));
 
     SpringApplication.run(ShopBackEnd.class, args);
   }

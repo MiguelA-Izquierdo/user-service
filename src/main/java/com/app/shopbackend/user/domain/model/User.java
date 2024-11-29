@@ -2,6 +2,8 @@ package com.app.shopbackend.user.domain.model;
 
 import com.app.shopbackend.user.domain.valueObjects.*;
 
+import java.util.List;
+
 public class User {
   private final UserId id;
   private final UserName name;
@@ -10,6 +12,8 @@ public class User {
   private final IdentityDocument identityDocument;
   private final Phone phone;
   private final Address address;
+  private String password;
+  private final List<Role> roles;
 
   public User(UserId userId,
               UserName userName,
@@ -17,7 +21,9 @@ public class User {
               UserEmail userEmail,
               IdentityDocument identityDocument,
               Phone phone,
-              Address address) {
+              Address address,
+              String password,
+              List<Role> roles) {
     this.id = userId;
     this.name = userName;
     this.lastName = userLastName;
@@ -25,6 +31,8 @@ public class User {
     this.identityDocument = identityDocument;
     this.phone = phone;
     this.address = address;
+    this.password = password;
+    this.roles = roles;
   }
 
   public UserId getId() {
@@ -53,5 +61,17 @@ public class User {
 
   public Address getAddress() {
     return address;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public List<Role> getRoles() {
+    return roles;
+  }
+
+  public void updatePassword(String newPassword){
+    this.password = newPassword;
   }
 }

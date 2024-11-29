@@ -1,15 +1,18 @@
 package com.app.shopbackend.user.domain.repositories;
 
 import com.app.shopbackend.user.domain.model.User;
-import com.app.shopbackend.user.domain.valueObjects.UserId;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserRepository {
   void save(User user);
-  Optional<User> findById(UserId id);
-  List<User> findAll();
-  void update(User client);
-  void deleteById(UserId id);
+  List<User> findAll(int page, int size);
+  Optional<User> findByEmail(String email);
+  Optional<User> findByIdOrEmail(@Param("userId") UUID userId, @Param("email") String email);
+
+  Optional<User> findById(UUID id);
+
 }

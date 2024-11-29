@@ -1,9 +1,8 @@
 package com.app.shopbackend.user.infraestructure.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 @Entity
 @Table(name = "users")
@@ -37,12 +36,18 @@ public class UserEntity {
   private String postalCode;
   @Column(name = "country", nullable = false, length = 100)
   private String country;
+  @Column(name = "password")
+  private String password;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<UserRoleEntity> roles;
 
   public UserEntity(){}
   public UserEntity(UUID id,
                       String name,
                       String lastName,
                       String email,
+                      String password,
                       String countryCode,
                       String phoneNumber,
                       String documentType,
@@ -57,6 +62,7 @@ public class UserEntity {
     this.name = name;
     this.lastName = lastName;
     this.email = email;
+    this.password = password;
     this.countryCode = countryCode;
     this.phoneNumber = phoneNumber;
     this.documentType = documentType;
@@ -124,6 +130,14 @@ public class UserEntity {
 
   public String getCountry() {
     return country;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public List<UserRoleEntity> getRoles() {
+    return roles;
   }
 }
 
