@@ -4,7 +4,6 @@ import com.app.shopbackend._shared.bus.command.CommandHandler;
 import com.app.shopbackend.user.application.bus.command.CreateUserCommand;
 import com.app.shopbackend.user.application.useCases.CreateUserUseCase;
 import com.app.shopbackend.user.application.validation.CreateUserCommandValidator;
-import com.app.shopbackend.user.domain.model.User;
 import org.springframework.stereotype.Service;
 
 
@@ -21,8 +20,8 @@ public class CreateUserCommandHandler implements CommandHandler<CreateUserComman
 
   @Override
   public void handle(CreateUserCommand command) {
-    User user = this.createUserCommandValidator.validate(command);
-    createUserUseCase.execute(user);
+    this.createUserCommandValidator.validate(command);
+    createUserUseCase.execute(command);
   }
 
   @Override

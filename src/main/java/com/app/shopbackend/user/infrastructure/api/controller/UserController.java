@@ -1,4 +1,4 @@
-package com.app.shopbackend.user.infraestructure.api.controller;
+package com.app.shopbackend.user.infrastructure.api.controller;
 
 import com.app.shopbackend.user.application.bus.command.CreateUserCommand;
 import com.app.shopbackend.user.application.bus.command.GrantSuperAdminCommand;
@@ -7,7 +7,7 @@ import com.app.shopbackend.user.application.bus.command.UserCommandBus;
 import com.app.shopbackend.user.application.bus.query.GetAllUsersQuery;
 import com.app.shopbackend.user.application.bus.query.GetUserByIdQuery;
 import com.app.shopbackend.user.application.bus.query.UserQueryBus;
-import com.app.shopbackend.user.infraestructure.api.dto.UserResponseDTO;
+import com.app.shopbackend.user.infrastructure.api.dto.UserResponseDTO;
 import com.app.shopbackend.user.domain.model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

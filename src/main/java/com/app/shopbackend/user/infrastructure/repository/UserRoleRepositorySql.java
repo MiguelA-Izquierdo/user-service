@@ -1,10 +1,10 @@
-package com.app.shopbackend.user.infraestructure.repository;
+package com.app.shopbackend.user.infrastructure.repository;
 
 import com.app.shopbackend.user.domain.model.Role;
 import com.app.shopbackend.user.domain.model.User;
 import com.app.shopbackend.user.domain.repositories.UserRoleRepository;
-import com.app.shopbackend.user.infraestructure.entities.UserEntity;
-import com.app.shopbackend.user.infraestructure.entities.UserRoleEntity;
+import com.app.shopbackend.user.infrastructure.entities.UserEntity;
+import com.app.shopbackend.user.infrastructure.entities.UserRoleEntity;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;

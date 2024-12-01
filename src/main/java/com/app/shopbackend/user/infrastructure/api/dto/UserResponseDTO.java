@@ -1,4 +1,4 @@
-package com.app.shopbackend.user.infraestructure.api.dto;
+package com.app.shopbackend.user.infrastructure.api.dto;
 
 import com.app.shopbackend.user.domain.model.User;
 

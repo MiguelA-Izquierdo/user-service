@@ -1,4 +1,4 @@
-package com.app.shopbackend.user.infraestructure.entities;
+package com.app.shopbackend.user.infrastructure.entities;
 
 import com.app.shopbackend.user.domain.model.Role;
 

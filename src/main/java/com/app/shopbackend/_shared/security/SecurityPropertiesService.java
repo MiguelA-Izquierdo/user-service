@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class SecurityPropertiesService {
 
   private static final String[] PUBLIC_POST_ROUTES = {
-    "/",
+    "/users",
     "/users/password",
     "/auth"
   };

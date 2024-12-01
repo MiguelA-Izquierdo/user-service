@@ -1,4 +1,4 @@
-package com.app.shopbackend.user.infraestructure.security;
+package com.app.shopbackend.user.infrastructure.security;
 
 
 import com.app.shopbackend.user.domain.service.PasswordEncryptionService;

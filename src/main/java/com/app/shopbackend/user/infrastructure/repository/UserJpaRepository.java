@@ -1,6 +1,6 @@
-package com.app.shopbackend.user.infraestructure.repository;
+package com.app.shopbackend.user.infrastructure.repository;
 
-import com.app.shopbackend.user.infraestructure.entities.UserEntity;
+import com.app.shopbackend.user.infrastructure.entities.UserEntity;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;

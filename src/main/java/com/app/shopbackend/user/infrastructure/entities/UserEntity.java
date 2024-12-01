@@ -1,7 +1,8 @@
-package com.app.shopbackend.user.infraestructure.entities;
+package com.app.shopbackend.user.infrastructure.entities;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 @Entity
@@ -38,6 +39,8 @@ public class UserEntity {
   private String country;
   @Column(name = "password")
   private String password;
+  @Column(name = "created_at")
+  private LocalDateTime createdAt;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<UserRoleEntity> roles;
@@ -57,7 +60,8 @@ public class UserEntity {
                       String city,
                       String state,
                       String postalCode,
-                      String country) {
+                      String country,
+                    LocalDateTime createdAt) {
     this.id = id;
     this.name = name;
     this.lastName = lastName;
@@ -73,6 +77,7 @@ public class UserEntity {
     this.state = state;
     this.postalCode = postalCode;
     this.country = country;
+    this.createdAt = createdAt;
   }
 
 
@@ -138,6 +143,10 @@ public class UserEntity {
 
   public List<UserRoleEntity> getRoles() {
     return roles;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
   }
 }
 

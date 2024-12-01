@@ -2,6 +2,7 @@ package com.app.shopbackend.user.domain.model;
 
 import com.app.shopbackend.user.domain.valueObjects.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class User {
@@ -13,6 +14,7 @@ public class User {
   private final Phone phone;
   private final Address address;
   private String password;
+  private final LocalDateTime createdAt;
   private final List<Role> roles;
 
   public User(UserId userId,
@@ -23,6 +25,7 @@ public class User {
               Phone phone,
               Address address,
               String password,
+              LocalDateTime createdAt,
               List<Role> roles) {
     this.id = userId;
     this.name = userName;
@@ -31,6 +34,7 @@ public class User {
     this.identityDocument = identityDocument;
     this.phone = phone;
     this.address = address;
+    this.createdAt = createdAt;
     this.password = password;
     this.roles = roles;
   }
@@ -65,6 +69,10 @@ public class User {
 
   public String getPassword() {
     return password;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
   }
 
   public List<Role> getRoles() {

@@ -1,9 +1,9 @@
-package com.app.shopbackend.user.infraestructure.mapper;
+package com.app.shopbackend.user.infrastructure.mapper;
 
 import com.app.shopbackend.user.domain.model.Role;
 import com.app.shopbackend.user.domain.model.User;
 import com.app.shopbackend.user.domain.valueObjects.*;
-import com.app.shopbackend.user.infraestructure.entities.UserEntity;
+import com.app.shopbackend.user.infrastructure.entities.UserEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +27,8 @@ public class UserMapper {
       userDomain.getAddress().getCity(),
       userDomain.getAddress().getState(),
       userDomain.getAddress().getPostalCode(),
-      userDomain.getAddress().getCountry()
+      userDomain.getAddress().getCountry(),
+      userDomain.getCreatedAt()
     );
     return userEntity;
   }
@@ -55,6 +56,7 @@ public class UserMapper {
       Phone.of(userEntity.getCountryCode(), userEntity.getPhoneNumber()),
       userAddress,
       userEntity.getPassword(),
+      userEntity.getCreatedAt(),
       roles
     );
 

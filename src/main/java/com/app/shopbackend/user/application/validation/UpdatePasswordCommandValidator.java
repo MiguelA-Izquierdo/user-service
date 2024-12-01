@@ -19,30 +19,22 @@ public class UpdatePasswordCommandValidator {
       validationError.addError("UserId", e.getMessage());
     }
 
-    if (!isValidPassword(command.newPassword())) {
-      validationError.addError(
-        "Password",
-        "Password must be at least 9 characters long, include one uppercase letter, and one special character."
-      );
+    try {
+      Password.of(command.newPassword());
+    } catch (Exception e) {
+      validationError.addError("NewPassword", e.getMessage());
     }
 
-    if (command.currentPassword() == null || command.currentPassword().isEmpty()) {
-      validationError.addError("CurrentPassword", "Current password cannot be null or empty.");
+    try {
+      Password.of(command.currentPassword());
+    } catch (Exception e) {
+      validationError.addError("CurrentPassword", e.getMessage());
     }
 
     if (validationError.hasErrors()) {
       throw validationError;
     }
 
-  }
-
-  private boolean isValidPassword(String password) {
-    if (password == null || password.isEmpty()) {
-      return false;
-    }
-
-    String passwordRegex = "^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{9,}$";
-    return password.matches(passwordRegex);
   }
 
 }
