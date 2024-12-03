@@ -10,7 +10,7 @@
   </appender>
 
   <logger name="org.springframework" level="INFO" />
-  <logger name="com.app.shopbackend" level="DEBUG" />
+  <logger name="com.app.userServiceCore" level="DEBUG" />
 
   <root level="INFO">
     <appender-ref ref="console" />
