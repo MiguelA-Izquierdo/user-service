@@ -1,11 +1,7 @@
 package com.app.userService.user.application.useCases;
 
 import com.app.userService.user.application.bus.command.DeleteUserCommand;
-import com.app.userService.user.application.bus.command.handle.DeleteUserCommandHandler;
-import com.app.userService.user.application.bus.event.UserDeletedEvent;
 import com.app.userService.user.application.service.UserServiceCore;
-import com.app.userService.user.domain.event.UserEvent;
-import com.app.userService.user.domain.exceptions.UserAlreadyExistsException;
 import com.app.userService.user.domain.model.User;
 import com.app.userService.user.domain.model.UserWrapper;
 import com.app.userService.user.domain.service.EventPublisher;
@@ -15,8 +11,6 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class DeleteUserUseCase {
@@ -41,8 +35,8 @@ public class DeleteUserUseCase {
 
 
     userServiceCore.anonymizeUser(user);
-    UserEvent userEvent = UserDeletedEvent.of(user);
-    userPublisher.publish(userEvent);
+//    UserEvent userEvent = UserDeletedEvent.of(user);
+//    userPublisher.publish(userEvent);
   }
 
 

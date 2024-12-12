@@ -15,12 +15,26 @@ import org.springframework.context.annotation.Configuration;
 @EnableRabbit
 public class RabbitConfig {
 
-  @Value("${messaging.queue.user}")
-  private String userQueue;
   @Value("${messaging.exchange.user}")
   private String userExchange;
-  @Value("${messaging.routing.key.user}")
-  private String userRoutingKey;
+
+  @Value("${messaging.queue.user.created}")
+  private String userCreatedQueue;
+
+  @Value("${messaging.queue.user.updated}")
+  private String userUpdatedQueue;
+
+  @Value("${messaging.queue.user.deleted}")
+  private String userDeletedQueue;
+
+  @Value("${messaging.routing.key.user.created}")
+  private String userCreatedRoutingKey;
+
+  @Value("${messaging.routing.key.user.updated}")
+  private String userUpdatedRoutingKey;
+
+  @Value("${messaging.routing.key.user.deleted}")
+  private String userDeletedRoutingKey;
 
   @Bean
   public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
@@ -34,9 +48,20 @@ public class RabbitConfig {
     return rabbitTemplate;
   }
   @Bean
-  public Queue userQueue() {
-    return new Queue(userQueue, true);
+  public Queue userCreatedQueue() {
+    return new Queue(userCreatedQueue, true);
   }
+
+  @Bean
+  public Queue userUpdatedQueue() {
+    return new Queue(userUpdatedQueue, true);
+  }
+
+  @Bean
+  public Queue userDeletedQueue() {
+    return new Queue(userDeletedQueue, true);
+  }
+
 
   @Bean
   public TopicExchange userExchange() {
@@ -44,7 +69,20 @@ public class RabbitConfig {
   }
 
   @Bean
-  public Binding userBinding(Queue userQueue, TopicExchange userExchange) {
-    return new Binding(userQueue.getName(), Binding.DestinationType.QUEUE, userExchange.getName(), userRoutingKey, null);
+  public Binding userCreatedBinding() {
+    return new Binding(userCreatedQueue, Binding.DestinationType.QUEUE,
+      userExchange, userCreatedRoutingKey, null);
+  }
+
+  @Bean
+  public Binding userUpdatedBinding() {
+    return new Binding(userUpdatedQueue, Binding.DestinationType.QUEUE,
+      userExchange, userUpdatedRoutingKey, null);
+  }
+
+  @Bean
+  public Binding userDeletedBinding() {
+    return new Binding(userDeletedQueue, Binding.DestinationType.QUEUE,
+      userExchange, userDeletedRoutingKey, null);
   }
 }

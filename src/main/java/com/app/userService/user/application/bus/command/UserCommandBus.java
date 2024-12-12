@@ -3,6 +3,7 @@ package com.app.userService.user.application.bus.command;
 import com.app.userService._shared.bus.command.Command;
 import com.app.userService._shared.bus.command.CommandBus;
 import com.app.userService._shared.bus.command.CommandHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
