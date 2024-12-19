@@ -1,6 +1,7 @@
 package com.app.userService.user.application.service;
 
 import com.app.userService.user.domain.event.UserCreatedEvent;
+import com.app.userService.user.domain.event.UserDeletedEvent;
 import com.app.userService.user.domain.model.OutboxEvent;
 import com.app.userService.user.domain.model.OutboxEventStatus;
 import com.app.userService.user.domain.model.User;
@@ -17,17 +18,41 @@ public class UserEventService {
 
   private final OutboxEventRepository outboxEventRepository;
   private final ObjectMapper objectMapper;
+  private final UserEventFactory userEventFactory;
 
-  public UserEventService(OutboxEventRepository outboxEventRepository, ObjectMapper objectMapper) {
+  public UserEventService(OutboxEventRepository outboxEventRepository,
+                          ObjectMapper objectMapper,
+                          UserEventFactory userEventFactory) {
     this.outboxEventRepository = outboxEventRepository;
     this.objectMapper = objectMapper;
+    this.userEventFactory = userEventFactory;
   }
   public void handleUserCreatedEvent(User user) {
-    UserCreatedEvent event = UserCreatedEvent.of(
-      user.getId().getValue(),
-      user.getName().getValue(),
-      user.getLastName().getValue(),
-      user.getEmail().getEmail());
+    UserCreatedEvent event = userEventFactory.createUserCreatedEvent(user);
+
+    try {
+      String payload = objectMapper.writeValueAsString(event.getPayload());
+
+      OutboxEvent outboxEvent = OutboxEvent.of(
+        UUID.randomUUID(),
+        event.getType(),
+        payload,
+        OutboxEventStatus.PENDING,
+        LocalDateTime.now(),
+        event.getQueue(),
+        event.getRoutingKey(),
+        event.getExchange()
+      );
+
+      outboxEventRepository.save(outboxEvent);
+
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Error serializing event payload", e);
+    }
+  }
+
+  public void handleUserDeletedEvent(User user) {
+    UserDeletedEvent event = userEventFactory.createUserDeletedEvent(user);
 
     try {
       String payload = objectMapper.writeValueAsString(event.getPayload());

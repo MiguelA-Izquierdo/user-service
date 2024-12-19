@@ -1,4 +1,4 @@
-package com.app.userService.auth.application.useCase;
+package com.app.userService.auth.application.useCases;
 
 import com.app.userService._shared.exceptions.InvalidPasswordException;
 import com.app.userService.auth.application.bus.query.LoginQuery;

@@ -5,7 +5,7 @@ import com.app.userService.user.domain.event.Event;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class OutboxEvent implements Event {
+public class OutboxEvent implements Event<String> {
 
   private final UUID id;
   private final String type;
@@ -45,13 +45,7 @@ public class OutboxEvent implements Event {
     return new OutboxEvent(id, eventType, payload, status, createdAt, queue, routingKey, exchange);
   }
 
-  public void markAsProcessed() {
-    this.status = OutboxEventStatus.PROCESSED;
-  }
 
-  public void markAsFailed() {
-    this.status = OutboxEventStatus.FAILED;
-  }
   public UUID getId() {
     return id;
   }
@@ -63,19 +57,10 @@ public class OutboxEvent implements Event {
   public String getPayload() {
     return payload;
   }
-
-  public OutboxEventStatus getStatus() {
-    return status;
-  }
-
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
   @Override
   public String getQueue() {
     return queue;
   }
-
   @Override
   public String getExchange() {
     return exchange;
@@ -83,6 +68,19 @@ public class OutboxEvent implements Event {
   @Override
   public String getRoutingKey() {
     return routingKey;
+  }
+  public OutboxEventStatus getStatus() {
+    return status;
+  }
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+  public void markAsProcessed() {
+    this.status = OutboxEventStatus.PROCESSED;
+  }
+
+  public void markAsFailed() {
+    this.status = OutboxEventStatus.FAILED;
   }
 }
 

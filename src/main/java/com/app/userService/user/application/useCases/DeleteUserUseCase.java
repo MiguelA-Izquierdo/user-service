@@ -1,10 +1,10 @@
 package com.app.userService.user.application.useCases;
 
 import com.app.userService.user.application.bus.command.DeleteUserCommand;
+import com.app.userService.user.application.service.UserEventService;
 import com.app.userService.user.application.service.UserServiceCore;
 import com.app.userService.user.domain.model.User;
 import com.app.userService.user.domain.model.UserWrapper;
-import com.app.userService.user.domain.service.EventPublisher;
 import com.app.userService.user.domain.valueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -17,10 +17,10 @@ public class DeleteUserUseCase {
   private static final Logger logger = LoggerFactory.getLogger(DeleteUserUseCase.class);
 
   private final UserServiceCore userServiceCore;
-  private final EventPublisher userPublisher;
-  public DeleteUserUseCase(UserServiceCore userServiceCore, EventPublisher userPublisher){
+  private final UserEventService userEventService;
+  public DeleteUserUseCase(UserServiceCore userServiceCore, UserEventService userEventService){
     this.userServiceCore = userServiceCore;
-    this.userPublisher = userPublisher;
+    this.userEventService = userEventService;
   }
   @Transactional
   public void execute(DeleteUserCommand command) {
@@ -33,10 +33,8 @@ public class DeleteUserUseCase {
     User user = existingUser.getUser()
       .orElseThrow(() -> new EntityNotFoundException("User with ID " + command.id() + " not found"));
 
-
     userServiceCore.anonymizeUser(user);
-//    UserEvent userEvent = UserDeletedEvent.of(user);
-//    userPublisher.publish(userEvent);
+    userEventService.handleUserDeletedEvent(user);
   }
 
 

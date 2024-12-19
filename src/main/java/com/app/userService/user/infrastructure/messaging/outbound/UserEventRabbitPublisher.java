@@ -4,7 +4,6 @@ import com.app.userService.user.domain.event.Event;
 import com.app.userService.user.domain.service.EventPublisher;
 import com.app.userService.user.infrastructure.serialization.JsonSerializationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -29,7 +28,7 @@ public class UserEventRabbitPublisher implements EventPublisher {
 
 
   @Override
-  public void publish(Event event) {
+  public <T> void publish(Event<T> event) {
     try {
       String jsonEvent = jsonSerializationService.serialize(event);
       rabbitTemplate.convertAndSend(userExchange, event.getRoutingKey(), jsonEvent);

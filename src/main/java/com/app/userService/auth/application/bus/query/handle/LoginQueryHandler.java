@@ -4,7 +4,7 @@ import com.app.userService._shared.bus.query.QueryHandler;
 
 import com.app.userService.auth.application.bus.query.LoginQuery;
 import com.app.userService.auth.application.dto.UserLoggedDTO;
-import com.app.userService.auth.application.useCase.LoginUseCase;
+import com.app.userService.auth.application.useCases.LoginUseCase;
 import com.app.userService.auth.application.validation.LoginQueryValidator;
 
 

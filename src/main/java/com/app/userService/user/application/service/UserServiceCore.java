@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -71,27 +70,7 @@ public class UserServiceCore {
     this.userRepository.save(user);
   }
   public void anonymizeUser(User user){
-    AnonymousUser anonymousUser = new AnonymousUser(
-      user.getId(),
-      user.getName().getValue(),
-      user.getLastName().getValue(),
-      user.getEmail().getEmail(),
-      user.getIdentityDocument().getDocumentType(),
-      user.getIdentityDocument().getDocumentNumber(),
-      user.getPhone().getCountryCode(),
-      user.getPhone().getNumber(),
-      user.getAddress().getStreet(),
-      user.getAddress().getNumber(),
-      user.getAddress().getCity(),
-      user.getAddress().getState(),
-      user.getAddress().getPostalCode(),
-      user.getAddress().getCountry(),
-      user.getPassword(),
-      user.getCreatedAt(),
-      UserStatus.DELETED,
-      new ArrayList<>()
-    );
-
+    AnonymousUser anonymousUser = AnonymousUser.of(user);
     userRepository.anonymize(anonymousUser);
     userRoleRepository.deleteByUser(user);
   }

@@ -2,24 +2,26 @@ package com.app.userService.user.domain.event;
 
 import java.util.UUID;
 
-public class UserCreatedEvent implements Event<UserCreatedEvent.UserPayload> {
+public class UserDeletedEvent implements Event<UserDeletedEvent.UserPayload> {
 
   private final String userExchange;
-  private final String userCreatedQueue;
-  private final String userCreatedRoutingKey;
+  private final String userDeletedQueue;
+  private final String userDeletedRoutingKey;
   private final UserPayload payload;
 
-  public UserCreatedEvent(String userExchange, String userCreatedQueue, String userCreatedRoutingKey,
+  public UserDeletedEvent(String userExchange,
+                          String userDeletedQueue,
+                          String userDeletedRoutingKey,
                           UUID userId, String name, String lastName, String email) {
     this.userExchange = userExchange;
-    this.userCreatedQueue = userCreatedQueue;
-    this.userCreatedRoutingKey = userCreatedRoutingKey;
-    this.payload = new UserPayload(userId, name, lastName, email);
+    this.userDeletedQueue = userDeletedQueue;
+    this.userDeletedRoutingKey = userDeletedRoutingKey;
+    this.payload = new UserDeletedEvent.UserPayload(userId, name, lastName, email);
   }
 
   @Override
   public String getQueue() {
-    return userCreatedQueue;
+    return userDeletedQueue;
   }
 
   @Override
@@ -29,12 +31,12 @@ public class UserCreatedEvent implements Event<UserCreatedEvent.UserPayload> {
 
   @Override
   public String getRoutingKey() {
-    return userCreatedRoutingKey;
+    return userDeletedRoutingKey;
   }
 
   @Override
   public String getType() {
-    return "user.created";
+    return "user.deleted";
   }
 
   @Override

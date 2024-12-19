@@ -4,6 +4,7 @@ package com.app.userService.user.domain.model;
 import com.app.userService.user.domain.valueObjects.UserId;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,10 +28,9 @@ public class AnonymousUser {
   private final LocalDateTime createdAt;
   private final List<Role> roles;
 
-  public AnonymousUser(UserId userId,
+  private AnonymousUser(UserId userId,
                        String userName,
                        String userLastName,
-                       String userEmail,
                        String documentType,
                        String documentNumber,
                        String countryCode,
@@ -65,6 +65,27 @@ public class AnonymousUser {
     this.roles = roles;
   }
 
+  public static AnonymousUser of(User user){
+    return new AnonymousUser(
+      user.getId(),
+      user.getName().getValue(),
+      user.getLastName().getValue(),
+      user.getIdentityDocument().getDocumentType(),
+      user.getIdentityDocument().getDocumentNumber(),
+      user.getPhone().getCountryCode(),
+      user.getPhone().getNumber(),
+      user.getAddress().getStreet(),
+      user.getAddress().getNumber(),
+      user.getAddress().getCity(),
+      user.getAddress().getState(),
+      user.getAddress().getPostalCode(),
+      user.getAddress().getCountry(),
+      user.getPassword(),
+      user.getCreatedAt(),
+      UserStatus.DELETED,
+      new ArrayList<>()
+    );
+  }
   public UserId getId() {
     return id;
   }

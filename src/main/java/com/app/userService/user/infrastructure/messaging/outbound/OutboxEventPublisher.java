@@ -29,7 +29,6 @@ public class OutboxEventPublisher {
       try {
 
         eventPublisher.publish(event);
-
         event.markAsProcessed();
         outboxEventRepository.save(event);
 
