@@ -1,52 +1,38 @@
-package com.app.userService.user.infrastructure.messaging;
+package com.app.userService.user.infrastructure.messaging.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableRabbit
-public class RabbitConfig {
+public class UserRabbitMqConfig {
 
   @Value("${messaging.exchange.user}")
   private String userExchange;
 
-  @Value("${messaging.queue.user.created}")
+  @Value("${messaging.queue.userCreated}")
   private String userCreatedQueue;
 
-  @Value("${messaging.queue.user.updated}")
+  @Value("${messaging.queue.userUpdated}")
   private String userUpdatedQueue;
 
-  @Value("${messaging.queue.user.deleted}")
+  @Value("${messaging.queue.userDeleted}")
   private String userDeletedQueue;
 
-  @Value("${messaging.routing.key.user.created}")
+  @Value("${messaging.routing.key.userCreated}")
   private String userCreatedRoutingKey;
 
-  @Value("${messaging.routing.key.user.updated}")
+  @Value("${messaging.routing.key.userUpdated}")
   private String userUpdatedRoutingKey;
 
-  @Value("${messaging.routing.key.user.deleted}")
+  @Value("${messaging.routing.key.userDeleted}")
   private String userDeletedRoutingKey;
 
-  @Bean
-  public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-    return new Jackson2JsonMessageConverter();
-  }
-
-  @Bean
-  public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-    RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-    rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter());
-    return rabbitTemplate;
-  }
   @Bean
   public Queue userCreatedQueue() {
     return new Queue(userCreatedQueue, true);

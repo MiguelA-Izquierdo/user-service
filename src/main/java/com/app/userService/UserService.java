@@ -19,10 +19,10 @@ public class UserService {
     System.setProperty("DB_USER", Objects.requireNonNull(dotenv.get("DB_USER")));
     System.setProperty("DB_PASSWORD", Objects.requireNonNull(dotenv.get("DB_PASSWORD")));
     System.setProperty("JWT_SECRET", Objects.requireNonNull(dotenv.get("JWT_SECRET")));
-    System.setProperty("RABBITMQ_HOST", Objects.requireNonNull(dotenv.get("RABBITMQ_HOST")));
-    System.setProperty("RABBITMQ_PORT", Objects.requireNonNull(dotenv.get("RABBITMQ_PORT")));
-    System.setProperty("RABBITMQ_USER_NAME", Objects.requireNonNull(dotenv.get("RABBITMQ_USER_NAME")));
-    System.setProperty("RABBITMQ_PASSWORD", Objects.requireNonNull(dotenv.get("RABBITMQ_PASSWORD")));
+    System.setProperty("RABBITMQ_USER_SERVICE_HOST", Objects.requireNonNull(dotenv.get("RABBITMQ_USER_SERVICE_HOST")));
+    System.setProperty("RABBITMQ_USER_SERVICE_PORT", Objects.requireNonNull(dotenv.get("RABBITMQ_USER_SERVICE_PORT")));
+    System.setProperty("RABBITMQ_USER_SERVICE_USER_NAME", Objects.requireNonNull(dotenv.get("RABBITMQ_USER_SERVICE_USER_NAME")));
+    System.setProperty("RABBITMQ_USER_SERVICE_PASSWORD", Objects.requireNonNull(dotenv.get("RABBITMQ_USER_SERVICE_PASSWORD")));
 
     SpringApplication.run(UserService.class, args);
   }

@@ -12,16 +12,16 @@ public class UserEventFactory {
   @Value("${messaging.exchange.user}")
   private String userExchange;
 
-  @Value("${messaging.queue.user.created}")
+  @Value("${messaging.queue.userCreated}")
   private String userCreatedQueue;
 
-  @Value("${messaging.queue.user.deleted}")
+  @Value("${messaging.queue.userDeleted}")
   private String userDeletedQueue;
 
-  @Value("${messaging.routing.key.user.created}")
+  @Value("${messaging.routing.key.userCreated}")
   private String userCreatedRoutingKey;
 
-  @Value("${messaging.routing.key.user.deleted}")
+  @Value("${messaging.routing.key.userDeleted}")
   private String userDeletedRoutingKey;
 
   public UserCreatedEvent createUserCreatedEvent(User user) {

@@ -6,10 +6,13 @@ import com.app.userService.user.infrastructure.serialization.JsonSerializationSe
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.UUID;
 
 @Service
 public class UserEventRabbitPublisher implements EventPublisher {
@@ -31,12 +34,17 @@ public class UserEventRabbitPublisher implements EventPublisher {
   public <T> void publish(Event<T> event) {
     try {
       String jsonEvent = jsonSerializationService.serialize(event);
-      rabbitTemplate.convertAndSend(userExchange, event.getRoutingKey(), jsonEvent);
+
+      CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+
+      rabbitTemplate.convertAndSend(userExchange, event.getRoutingKey(), jsonEvent, correlationData);
+
     } catch (JsonProcessingException e) {
       logger.error("Error al serializar el evento: {}", e.getMessage());
       throw new RuntimeException("No se pudo serializar el evento", e);
     }
   }
+
 
 }
 

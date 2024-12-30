@@ -40,8 +40,9 @@ public class OutboxEvent implements Event<String> {
                                OutboxEventStatus status,
                                LocalDateTime createdAt,
                                String queue,
-                               String routingKey,
-                               String exchange) {
+                               String exchange,
+                               String routingKey
+                              ) {
     return new OutboxEvent(id, eventType, payload, status, createdAt, queue, routingKey, exchange);
   }
 

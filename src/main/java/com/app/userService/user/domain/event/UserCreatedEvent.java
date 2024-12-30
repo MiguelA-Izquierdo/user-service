@@ -1,16 +1,27 @@
 package com.app.userService.user.domain.event;
 
+import com.app.userService.user.infrastructure.messaging.outbound.UserEventRabbitPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.UUID;
 
 public class UserCreatedEvent implements Event<UserCreatedEvent.UserPayload> {
+
+  private static final Logger logger = LoggerFactory.getLogger(UserCreatedEvent.class);
 
   private final String userExchange;
   private final String userCreatedQueue;
   private final String userCreatedRoutingKey;
   private final UserPayload payload;
 
-  public UserCreatedEvent(String userExchange, String userCreatedQueue, String userCreatedRoutingKey,
-                          UUID userId, String name, String lastName, String email) {
+  public UserCreatedEvent(String userExchange,
+                          String userCreatedQueue,
+                          String userCreatedRoutingKey,
+                          UUID userId,
+                          String name,
+                          String lastName,
+                          String email) {
     this.userExchange = userExchange;
     this.userCreatedQueue = userCreatedQueue;
     this.userCreatedRoutingKey = userCreatedRoutingKey;
