@@ -1,6 +1,5 @@
 package com.app.userService.user.domain.model;
 
-
 import com.app.userService.user.domain.valueObjects.UserId;
 
 import java.time.LocalDateTime;
@@ -28,64 +27,170 @@ public class AnonymousUser {
   private final LocalDateTime createdAt;
   private final List<Role> roles;
 
-  private AnonymousUser(UserId userId,
-                       String userName,
-                       String userLastName,
-                       String documentType,
-                       String documentNumber,
-                       String countryCode,
-                       String number,
-                       String street,
-                       String streetNumber,
-                       String city,
-                       String state,
-                       String postalCode,
-                       String country,
-                       String password,
-                       LocalDateTime createdAt,
-                       UserStatus status,
-                       List<Role> roles) {
-    this.id = userId;
-    this.name = anonymizeString(userName);
-    this.lastName = anonymizeString(userLastName);
-    this.email = anonymizeEmail(userId.getValue());
-    this.documentType = anonymizeString(documentType);
-    this.documentNumber = anonymizeString(documentNumber);
-    this.countryCode = anonymizeString(countryCode);
-    this.number = anonymizeString(number);
-    this.street = anonymizeString(street);
-    this.streetNumber = anonymizeString(streetNumber);
-    this.city = anonymizeString(city);
-    this.state = anonymizeString(state);
-    this.postalCode = anonymizeString(postalCode);
-    this.country = anonymizeString(country);
-    this.createdAt = createdAt;
-    this.password = anonymizeString(password);
-    this.status = status;
-    this.roles = roles;
+  public static AnonymousUser of(User user) {
+    return new Builder()
+      .withId(user.getId())
+      .withName(user.getName().getValue())
+      .withLastName(user.getLastName().getValue())
+      .withEmail(user.getId())
+      .withDocumentType(user.getIdentityDocument().getDocumentType())
+      .withDocumentNumber(user.getIdentityDocument().getDocumentNumber())
+      .withCountryCode(user.getPhone().getCountryCode())
+      .withNumber(user.getPhone().getNumber())
+      .withStreet(user.getAddress().getStreet())
+      .withStreetNumber(user.getAddress().getNumber())
+      .withCity(user.getAddress().getCity())
+      .withState(user.getAddress().getState())
+      .withPostalCode(user.getAddress().getPostalCode())
+      .withCountry(user.getAddress().getCountry())
+      .withPassword(user.getPassword())
+      .withCreatedAt(user.getCreatedAt())
+      .withRoles(new ArrayList<>())
+      .build();
   }
 
-  public static AnonymousUser of(User user){
-    return new AnonymousUser(
-      user.getId(),
-      user.getName().getValue(),
-      user.getLastName().getValue(),
-      user.getIdentityDocument().getDocumentType(),
-      user.getIdentityDocument().getDocumentNumber(),
-      user.getPhone().getCountryCode(),
-      user.getPhone().getNumber(),
-      user.getAddress().getStreet(),
-      user.getAddress().getNumber(),
-      user.getAddress().getCity(),
-      user.getAddress().getState(),
-      user.getAddress().getPostalCode(),
-      user.getAddress().getCountry(),
-      user.getPassword(),
-      user.getCreatedAt(),
-      UserStatus.DELETED,
-      new ArrayList<>()
-    );
+  private AnonymousUser(Builder builder) {
+    this.id = builder.id;
+    this.name = builder.name;
+    this.lastName = builder.lastName;
+    this.email = builder.email;
+    this.documentType = builder.documentType;
+    this.documentNumber = builder.documentNumber;
+    this.countryCode = builder.countryCode;
+    this.number = builder.number;
+    this.street = builder.street;
+    this.streetNumber = builder.streetNumber;
+    this.city = builder.city;
+    this.state = builder.state;
+    this.postalCode = builder.postalCode;
+    this.country = builder.country;
+    this.password = builder.password;
+    this.status = builder.status;
+    this.createdAt = builder.createdAt;
+    this.roles = builder.roles;
   }
+
+  public static class Builder {
+    private UserId id;
+    private String name;
+    private String lastName;
+    private String email;
+    private String documentType;
+    private String documentNumber;
+    private String countryCode;
+    private String number;
+    private String street;
+    private String streetNumber;
+    private String city;
+    private String state;
+    private String postalCode;
+    private String country;
+    private String password;
+    private UserStatus status = UserStatus.DELETED;
+    private LocalDateTime createdAt;
+    private List<Role> roles = new ArrayList<>();
+
+    public Builder withId(UserId id) {
+      this.id = id;
+      return this;
+    }
+
+    public Builder withName(String name) {
+      this.name = anonymizeString(name);
+      return this;
+    }
+
+    public Builder withLastName(String lastName) {
+      this.lastName = anonymizeString(lastName);
+      return this;
+    }
+
+    public Builder withEmail(UserId id) {
+      this.email = anonymizeEmail(id.getValue());
+      return this;
+    }
+
+    public Builder withDocumentType(String documentType) {
+      this.documentType = anonymizeString(documentType);
+      return this;
+    }
+
+    public Builder withDocumentNumber(String documentNumber) {
+      this.documentNumber = anonymizeString(documentNumber);
+      return this;
+    }
+
+    public Builder withCountryCode(String countryCode) {
+      this.countryCode = anonymizeString(countryCode);
+      return this;
+    }
+
+    public Builder withNumber(String number) {
+      this.number = anonymizeString(number);
+      return this;
+    }
+
+    public Builder withStreet(String street) {
+      this.street = anonymizeString(street);
+      return this;
+    }
+
+    public Builder withStreetNumber(String streetNumber) {
+      this.streetNumber = anonymizeString(streetNumber);
+      return this;
+    }
+
+    public Builder withCity(String city) {
+      this.city = anonymizeString(city);
+      return this;
+    }
+
+    public Builder withState(String state) {
+      this.state = anonymizeString(state);
+      return this;
+    }
+
+    public Builder withPostalCode(String postalCode) {
+      this.postalCode = anonymizeString(postalCode);
+      return this;
+    }
+
+    public Builder withCountry(String country) {
+      this.country = anonymizeString(country);
+      return this;
+    }
+
+    public Builder withPassword(String password) {
+      this.password = anonymizeString(password);
+      return this;
+    }
+
+    public Builder withCreatedAt(LocalDateTime createdAt) {
+      this.createdAt = createdAt;
+      return this;
+    }
+
+    public Builder withRoles(List<Role> roles) {
+      this.roles = roles;
+      return this;
+    }
+
+    public AnonymousUser build() {
+      return new AnonymousUser(this);
+    }
+
+    private String anonymizeString(String value) {
+      if (value == null || value.isEmpty()) {
+        return "***";
+      }
+      return "*".repeat(value.length());
+    }
+
+    private String anonymizeEmail(UUID userId) {
+      return "anon-" + userId.toString() + "@anon.com";
+    }
+  }
+
   public UserId getId() {
     return id;
   }
@@ -156,13 +261,5 @@ public class AnonymousUser {
 
   public List<Role> getRoles() {
     return roles;
-  }
-
-  private String anonymizeString(String value) {
-    return "*".repeat(value.length());
-  }
-
-  public String anonymizeEmail(UUID userId) {
-    return "anon-" + userId.toString() + "@anon.com";
   }
 }

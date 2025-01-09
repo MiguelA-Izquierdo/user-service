@@ -73,7 +73,7 @@ public class UserMapper {
       .map(userRoleEntity -> Role.valueOf(userRoleEntity.getRole().name()))
       .collect(Collectors.toList());
 
-    User userDomain = new User(
+    User userDomain = User.of(
       UserId.of(userEntity.getId()),
       UserName.of(userEntity.getName()),
       UserLastName.of(userEntity.getLastName()),

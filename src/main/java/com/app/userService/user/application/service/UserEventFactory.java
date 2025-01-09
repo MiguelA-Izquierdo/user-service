@@ -1,7 +1,7 @@
 package com.app.userService.user.application.service;
 
-import com.app.userService.user.domain.event.UserCreatedEvent;
-import com.app.userService.user.domain.event.UserDeletedEvent;
+import com.app.userService.user.domain.event.UserCreatedDomainEvent;
+import com.app.userService.user.domain.event.UserDeletedDomainEvent;
 import com.app.userService.user.domain.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,8 @@ public class UserEventFactory {
   @Value("${messaging.routing.key.userDeleted}")
   private String userDeletedRoutingKey;
 
-  public UserCreatedEvent createUserCreatedEvent(User user) {
-    return new UserCreatedEvent(
+  public UserCreatedDomainEvent createUserCreatedEvent(User user) {
+    return new UserCreatedDomainEvent(
       userExchange,
       userCreatedQueue,
       userCreatedRoutingKey,
@@ -36,8 +36,8 @@ public class UserEventFactory {
     );
   }
 
-  public UserDeletedEvent createUserDeletedEvent(User user) {
-    return new UserDeletedEvent(
+  public UserDeletedDomainEvent createUserDeletedEvent(User user) {
+    return new UserDeletedDomainEvent(
       userExchange,
       userDeletedQueue,
       userDeletedRoutingKey,

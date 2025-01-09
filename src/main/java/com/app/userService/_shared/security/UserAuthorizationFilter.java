@@ -30,6 +30,7 @@ public class UserAuthorizationFilter {
 
   public AuthorizationDecision hasAccessAdmin(Authentication authentication) {
 
+    logger.info("vamos a comprobar si tiene acceso a admin");
     boolean hasAdminRole = authentication.getAuthorities().stream()
       .anyMatch(grantedAuthority ->
         grantedAuthority.getAuthority().equals("ROLE_ADMIN") ||

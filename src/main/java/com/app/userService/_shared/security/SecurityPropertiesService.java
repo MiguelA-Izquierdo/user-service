@@ -2,7 +2,10 @@ package com.app.userService._shared.security;
 
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
+
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class SecurityPropertiesService {
@@ -13,86 +16,43 @@ public class SecurityPropertiesService {
   };
 
   private static final String[] PUBLIC_GET_ROUTES = {
+    "/swagger-ui/**",
+    "/v3/api-docs/**",
+    "/swagger-resources/**",
+    "/favicon.ico"
   };
 
   private static final String[] PUBLIC_PUT_ROUTES = {
+  };
 
+  private static final String[] PUBLIC_PATCH_ROUTES = {
+    "/users/password"
   };
 
   private static final String[] PUBLIC_DELETE_ROUTES = {
   };
 
-  private static final String[] PUBLIC_PATCH_ROUTES = {
-    "/users/password",
-  };
+  private final List<AntPathRequestMatcher> publicMatchers = new ArrayList<>();
 
-  public String[] getPublicPostRoutes() {
-    return PUBLIC_POST_ROUTES;
+  public SecurityPropertiesService() {
+    initializeMatchers();
   }
 
-  public String[] getPublicGetRoutes() {
-    return PUBLIC_GET_ROUTES;
+  private void initializeMatchers() {
+    addMatchers(PUBLIC_POST_ROUTES, "POST");
+    addMatchers(PUBLIC_GET_ROUTES, "GET");
+    addMatchers(PUBLIC_PUT_ROUTES, "PUT");
+    addMatchers(PUBLIC_PATCH_ROUTES, "PATCH");
+    addMatchers(PUBLIC_DELETE_ROUTES, "DELETE");
   }
 
-  public String[] getPublicPutRoutes() {
-    return PUBLIC_PUT_ROUTES;
+  private void addMatchers(String[] routes, String method) {
+    for (String route : routes) {
+      publicMatchers.add(new AntPathRequestMatcher(route, method));
+    }
   }
 
-  public String[] getPublicPatchRoutes() {
-    return PUBLIC_PATCH_ROUTES;
-  }
-  public String[] getPublicDeleteRoutes() {
-    return PUBLIC_DELETE_ROUTES;
-  }
   public boolean isPublicRoute(HttpServletRequest request) {
-    String requestUri = request.getRequestURI();
-    String method = request.getMethod();
-
-    if ("POST".equalsIgnoreCase(method)) {
-      for (String route : PUBLIC_POST_ROUTES) {
-        AntPathRequestMatcher matcher = new AntPathRequestMatcher(route);
-        if (matcher.matches(request)) {
-          return true;
-        }
-      }
-    }
-
-    if ("GET".equalsIgnoreCase(method)) {
-      for (String route : PUBLIC_GET_ROUTES) {
-        AntPathRequestMatcher matcher = new AntPathRequestMatcher(route);
-        if (matcher.matches(request)) {
-          return true;
-        }
-      }
-    }
-
-    if ("PUT".equalsIgnoreCase(method)) {
-      for (String route : PUBLIC_PUT_ROUTES) {
-        AntPathRequestMatcher matcher = new AntPathRequestMatcher(route);
-        if (matcher.matches(request)) {
-          return true;
-        }
-      }
-    }
-
-    if ("PATCH".equalsIgnoreCase(method)) {
-      for (String route : PUBLIC_PATCH_ROUTES) {
-        AntPathRequestMatcher matcher = new AntPathRequestMatcher(route);
-        if (matcher.matches(request)) {
-          return true;
-        }
-      }
-    }
-
-    if ("DELETE".equalsIgnoreCase(method)) {
-      for (String route : PUBLIC_DELETE_ROUTES) {
-        AntPathRequestMatcher matcher = new AntPathRequestMatcher(route);
-        if (matcher.matches(request)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    return publicMatchers.stream().anyMatch(matcher -> matcher.matches(request));
   }
 }

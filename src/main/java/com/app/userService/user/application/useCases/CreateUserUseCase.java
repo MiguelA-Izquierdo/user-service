@@ -49,7 +49,7 @@ public class CreateUserUseCase {
     String passwordHashed = userServiceCore.encryptPassword(command.password());
 
     List<Role> emptyRolesList = new ArrayList<>();
-    return new User(userId, userName, userLastName, userEmail, identityDocument, phone, address, passwordHashed, LocalDateTime.now(), UserStatus.ACTIVE,emptyRolesList);
+    return User.of(userId, userName, userLastName, userEmail, identityDocument, phone, address, passwordHashed, LocalDateTime.now(), UserStatus.ACTIVE,emptyRolesList);
   }
 
 }

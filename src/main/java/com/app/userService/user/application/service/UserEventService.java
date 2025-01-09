@@ -1,7 +1,7 @@
 package com.app.userService.user.application.service;
 
-import com.app.userService.user.domain.event.UserCreatedEvent;
-import com.app.userService.user.domain.event.UserDeletedEvent;
+import com.app.userService.user.domain.event.UserCreatedDomainEvent;
+import com.app.userService.user.domain.event.UserDeletedDomainEvent;
 import com.app.userService.user.domain.model.OutboxEvent;
 import com.app.userService.user.domain.model.OutboxEventStatus;
 import com.app.userService.user.domain.model.User;
@@ -28,7 +28,7 @@ public class UserEventService {
     this.userEventFactory = userEventFactory;
   }
   public void handleUserCreatedEvent(User user) {
-    UserCreatedEvent event = userEventFactory.createUserCreatedEvent(user);
+    UserCreatedDomainEvent event = userEventFactory.createUserCreatedEvent(user);
 
     try {
       String payload = objectMapper.writeValueAsString(event.getPayload());
@@ -52,7 +52,7 @@ public class UserEventService {
   }
 
   public void handleUserDeletedEvent(User user) {
-    UserDeletedEvent event = userEventFactory.createUserDeletedEvent(user);
+    UserDeletedDomainEvent event = userEventFactory.createUserDeletedEvent(user);
 
     try {
       String payload = objectMapper.writeValueAsString(event.getPayload());

@@ -30,7 +30,7 @@ public class UserWrapper {
   }
 
   public boolean isActive() {
-    return active;
+    return exists && active;
   }
 
   public Optional<User> getUser() {
