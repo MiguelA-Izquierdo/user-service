@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 public class UserAuthDTO {
   private final UUID id;
   private final String userEmail;
+  private final String userName;
+  private final String userLastName;
   private final String password;
   private final List<String> roles;
 
@@ -19,6 +21,8 @@ public class UserAuthDTO {
 
     this.id = user.getId().getValue();
     this.userEmail = user.getEmail().getEmail();
+    this.userName = user.getName().getValue();
+    this.userLastName = user.getLastName().getValue();
     this.password = user.getPassword();
     this.roles = user.getRoles().stream()
       .map(Enum::name)
@@ -38,6 +42,14 @@ public class UserAuthDTO {
 
   public String getPassword() {
     return password;
+  }
+
+  public String getUserName() {
+    return userName;
+  }
+
+  public String getUserLastName() {
+    return userLastName;
   }
 
   public List<String> getRoles() {

@@ -1,38 +1,36 @@
 package com.app.userService.auth.application.dto;
 
-import com.app.userService.auth.domain.valueObjects.AuthToken;
-
 import com.app.userService.user.application.dto.UserAuthDTO;
 
 import java.util.Date;
 import java.util.List;
 
 public class UserLoggedDTO {
-  private final String userEmail;
-  private final String token;
-  private final Date expirationDate;
-  private UserLoggedDTO(String userEmail,
-                        String token,
-                        Date expirationDate){
-    this.userEmail = userEmail;
+
+  public record UserDTO(String email, String name, String lastName, List<String> roles) {}
+
+  public record TokenDTO(String token, Date expirationDate) {}
+
+  private final UserDTO user;
+  private final TokenDTO token;
+
+  public UserLoggedDTO(UserAuthDTO user, TokenDTO token) {
+    this.user = new UserDTO(user.getUserEmail(), user.getUserName(), user.getUserLastName(), user.getRoles());
     this.token = token;
-    this.expirationDate = expirationDate;
   }
 
-  public static UserLoggedDTO Of(UserAuthDTO userAuthDTO, AuthToken authToken){
-    return new UserLoggedDTO(userAuthDTO.getUserEmail(), authToken.token(), authToken.expirationDate());
+  public static UserLoggedDTO Of(UserAuthDTO userAuthDTO, String token, Date expirationDate) {
+    return new UserLoggedDTO(
+      userAuthDTO,
+      new TokenDTO(token, expirationDate)
+    );
   }
-  public String getEmail() {
-    return userEmail;
+
+  public UserDTO getUser() {
+    return user;
   }
 
-
-
-  public String getToken() {
+  public TokenDTO getToken() {
     return token;
-  }
-
-  public Date getExpirationDate() {
-    return expirationDate;
   }
 }

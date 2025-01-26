@@ -1,5 +1,6 @@
 package com.app.userService.auth.infrastructure.api.controller;
 
+import com.app.userService._shared.infraestructure.dto.SuccessResponseDTO;
 import com.app.userService.auth.application.bus.query.AuthQueryBus;
 import com.app.userService.auth.application.bus.query.LoginQuery;
 import com.app.userService.auth.application.dto.UserLoggedDTO;
@@ -21,13 +22,12 @@ public class AuthController {
   @PostMapping
   public ResponseEntity<Object> login(@RequestBody LoginQuery query) {
     UserLoggedDTO userLoggedDTO = queryBus.send(query);
-    UserLoggedResponseDTO user = new UserLoggedResponseDTO(userLoggedDTO);
-    Map<String, Object> response = new HashMap<>();
-    response.put("success", true);
-    response.put("status", HttpStatus.OK.value());
-    response.put("message", "User logged successfully");
-    response.put("user", user);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    SuccessResponseDTO responseDTO = SuccessResponseDTO.Of(
+      HttpStatus.OK.value(),
+      "User logged successfully",
+      userLoggedDTO
+    );
+    return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
   }
 
 

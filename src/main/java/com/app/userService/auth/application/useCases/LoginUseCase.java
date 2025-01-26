@@ -32,7 +32,7 @@ public class LoginUseCase {
 
     if(isCredentialsValid){
       AuthToken authToken = this.authService.generateToken(user.getId().toString(), user.getRoles());
-      return UserLoggedDTO.Of(user, authToken);
+      return UserLoggedDTO.Of(user, authToken.token(), authToken.expirationDate());
     }else{
       throw new InvalidPasswordException("The current password provided is incorrect.");
     }

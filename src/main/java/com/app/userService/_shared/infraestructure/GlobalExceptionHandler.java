@@ -79,11 +79,11 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(InvalidPasswordException.class)
   public ResponseEntity<ErrorResponseDTO> handleInvalidPasswordException(InvalidPasswordException ex) {
     ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
-      HttpStatus.FORBIDDEN.value(),
+      HttpStatus.UNAUTHORIZED.value(),
       ex.getMessage()
     );
 
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }
 
   @ExceptionHandler(JwtValidationError.class)
