@@ -2,6 +2,7 @@ package com.app.userService.auth.infrastructure.service;
 
 import com.app.userService.auth.domain.service.AuthService;
 import com.app.userService.auth.domain.valueObjects.AuthToken;
+import com.app.userService.user.domain.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
@@ -30,6 +31,22 @@ public class AuthServiceImpl implements AuthService {
       .setIssuedAt(new Date())
       .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
       .claim("roles", roles)
+      .signWith(getSecretKey())
+      .compact();
+
+    return new AuthToken(token, expirationDate);
+  }
+
+  @Override
+  public AuthToken generateToken(User user) {
+    long expirationMillis = System.currentTimeMillis() + EXPIRATION_TIME;
+    Date expirationDate = new Date(expirationMillis);
+
+    String token = Jwts.builder()
+      .setSubject(user.getId().toString())
+      .setIssuedAt(new Date())
+      .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+      .claim("roles", user.getRoles().stream().map(Enum::name).toList())
       .signWith(getSecretKey())
       .compact();
 

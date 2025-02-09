@@ -15,11 +15,11 @@ public class LoginQueryValidator {
     try {
       UserEmail.of(query.email());
     } catch (Exception e) {
-      validationError.addError("Email", e.getMessage());
+      validationError.addError("User email","Email", e.getMessage());
     }
 
     if (!isValidPassword(query.password())) {
-      validationError.addError(
+      validationError.addError("Password",
         "Password",
         "Password must be at least 9 characters long, include one uppercase letter, and one special character."
       );

@@ -1,5 +1,9 @@
 package com.app.userService.user.domain.valueObjects;
 
+import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 
@@ -18,7 +22,19 @@ public class Password {
   public static Password of(String password) {
     return new Password(password);
   }
+  public static <T> Map<String, String> getValidationErrors(Map<String, T> args) {
+    HashMap<String, String> errors = new HashMap<>();
 
+    String password = (String) args.get("password");
+
+    try {
+      Password.of(password);
+    } catch (ValueObjectValidationException e) {
+      errors.put(e.getField(), e.getMessage());
+    }
+
+    return errors;
+  }
   private static boolean isValid(String password) {
     if (password == null || password.isEmpty()) {
       return false;
@@ -26,7 +42,7 @@ public class Password {
     return PASSWORD_PATTERN.matcher(password).matches();
   }
 
-  public String getEmail() {
+  public String getPassword() {
     return password;
   }
 

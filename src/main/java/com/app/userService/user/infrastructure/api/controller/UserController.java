@@ -341,6 +341,18 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
+  @PatchMapping
+  @PreAuthorize("@userAuthorizationFilter.hasAccessToUser(authentication, #userId).granted")
+  public ResponseEntity<Object> update(@RequestBody UpdateUserCommand command) {
+    commandBus.dispatch(command);
+
+    SuccessResponseDTO response = SuccessResponseDTO.Of(
+      HttpStatus.NO_CONTENT.value(),
+      "User updated successfully"
+    );
+
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
   @PatchMapping("/password")
   public ResponseEntity<Object> updatePassword(@RequestBody UpdatePasswordCommand command) {
     commandBus.dispatch(command);

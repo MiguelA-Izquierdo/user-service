@@ -1,28 +1,39 @@
 package com.app.userService.auth.application.dto;
 
 import com.app.userService.user.application.dto.UserAuthDTO;
+import com.app.userService.user.domain.model.User;
 
-import java.util.Date;
 import java.util.List;
 
 public class UserLoggedDTO {
 
   public record UserDTO(String email, String name, String lastName, List<String> roles) {}
 
-  public record TokenDTO(String token, Date expirationDate) {}
 
   private final UserDTO user;
-  private final TokenDTO token;
+  private final String token;
 
-  public UserLoggedDTO(UserAuthDTO user, TokenDTO token) {
+  public UserLoggedDTO(UserAuthDTO user, String token) {
     this.user = new UserDTO(user.getUserEmail(), user.getUserName(), user.getUserLastName(), user.getRoles());
     this.token = token;
   }
 
-  public static UserLoggedDTO Of(UserAuthDTO userAuthDTO, String token, Date expirationDate) {
+  public UserLoggedDTO(User user, String token) {
+    this.user = new UserDTO(user.getEmail().toString(), user.getName().getValue(), user.getLastName().getValue(), user.getRoles().stream().map(Enum::name).toList());
+    this.token = token;
+  }
+
+  public static UserLoggedDTO Of(UserAuthDTO userAuthDTO, String token) {
     return new UserLoggedDTO(
       userAuthDTO,
-      new TokenDTO(token, expirationDate)
+      token
+    );
+  }
+
+  public static UserLoggedDTO Of(User user, String token) {
+    return new UserLoggedDTO(
+      user,
+      token
     );
   }
 
@@ -30,7 +41,7 @@ public class UserLoggedDTO {
     return user;
   }
 
-  public TokenDTO getToken() {
+  public String getToken() {
     return token;
   }
 }

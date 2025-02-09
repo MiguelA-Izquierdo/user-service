@@ -96,7 +96,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if (rolesObj instanceof List<?> rolesList) {
       return rolesList.stream()
         .filter(role -> role instanceof String)
-        .map(role -> new SimpleGrantedAuthority((String) role)) // Se asume que los roles ya tienen el prefijo "ROLE_"
+        .map(role -> new SimpleGrantedAuthority((String) role))
         .collect(Collectors.toList());
     }
     return Collections.emptyList();

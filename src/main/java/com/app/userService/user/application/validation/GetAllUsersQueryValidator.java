@@ -14,17 +14,17 @@ public class GetAllUsersQueryValidator {
     ValidationError validationError = new ValidationError();
 
     if (query.page() == null) {
-      validationError.addError("page", "Page number cannot be null.");
+      validationError.addError("Pagination","page", "Page number cannot be null.");
     } else if (query.page() < 0) {
-      validationError.addError("page", "Page number cannot be negative.");
+      validationError.addError("Pagination","page", "Page number cannot be negative.");
     }
 
     if (query.size() == null) {
-      validationError.addError("size", "Size cannot be null.");
+      validationError.addError("Pagination","size", "Size cannot be null.");
     } else if (query.size() <= 0) {
-      validationError.addError("size", "Size must be greater than 0.");
+      validationError.addError("Pagination","size", "Size must be greater than 0.");
     } else if (query.size() > MAX_PAGE_SIZE) {
-      validationError.addError("size", "Size cannot exceed " + MAX_PAGE_SIZE + " items.");
+      validationError.addError("Pagination","size", "Size cannot exceed " + MAX_PAGE_SIZE + " items.");
     }
 
     if (validationError.hasErrors()) {

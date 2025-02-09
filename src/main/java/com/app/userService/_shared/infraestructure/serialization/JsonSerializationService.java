@@ -1,4 +1,4 @@
-package com.app.userService.user.infrastructure.serialization;
+package com.app.userService._shared.infraestructure.serialization;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

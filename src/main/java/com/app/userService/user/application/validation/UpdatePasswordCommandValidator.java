@@ -13,23 +13,9 @@ public class UpdatePasswordCommandValidator {
   public void validate(UpdatePasswordCommand command) {
     ValidationError validationError = new ValidationError();
 
-    try {
-      UserId.of(command.id());
-    } catch (Exception e) {
-      validationError.addError("UserId", e.getMessage());
-    }
-
-    try {
-      Password.of(command.newPassword());
-    } catch (Exception e) {
-      validationError.addError("NewPassword", e.getMessage());
-    }
-
-    try {
-      Password.of(command.currentPassword());
-    } catch (Exception e) {
-      validationError.addError("CurrentPassword", e.getMessage());
-    }
+    validationError.validateField("User Id", command.getUserIdMap(), UserId::getValidationErrors, true);
+    validationError.validateField("Current password", command.getCurrentPasswordMap(), Password::getValidationErrors, true);
+    validationError.validateField("New password", command.getNewPasswordMap(), Password::getValidationErrors, true);
 
     if (validationError.hasErrors()) {
       throw validationError;

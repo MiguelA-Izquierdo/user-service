@@ -20,7 +20,7 @@ public class CreateUserCommandHandler implements CommandHandler<CreateUserComman
 
   @Override
   public void handle(CreateUserCommand command) {
-    this.createUserCommandValidator.validate(command);
+    createUserCommandValidator.validate(command);
     createUserUseCase.execute(command);
   }
 

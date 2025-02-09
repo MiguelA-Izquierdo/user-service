@@ -37,9 +37,17 @@ public class UserRepositorySql implements UserRepository {
   }
 
   @Override
-  public Optional<User> findByEmail(String email) {
+  public UserWrapper findByEmail(String email) {
     return jpaRepository.findByEmail(email)
-      .map(UserMapper::toDomain);
+      .map(userEntity -> {
+        if (userEntity.getStatus() == activeStatus) {
+          User user = UserMapper.toDomain(userEntity);
+          return UserWrapper.active(user);
+        } else {
+          return UserWrapper.inactive();
+        }
+      })
+      .orElse(UserWrapper.notFound());
   }
 
   @Override

@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface UserRepository {
   void save(User user);
   PaginatedResult<User> findAll(int page, int size);
-  Optional<User> findByEmail(String email);
+  UserWrapper findByEmail(String email);
   UserWrapper findByIdOrEmail(@Param("userId") UUID userId, @Param("email") String email);
   UserWrapper findById(UUID id);
   void anonymize(AnonymousUser anonymousUser);

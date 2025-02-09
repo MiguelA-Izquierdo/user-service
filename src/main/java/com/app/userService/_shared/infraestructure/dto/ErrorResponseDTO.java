@@ -17,9 +17,9 @@ public class ErrorResponseDTO {
 
   @Schema(description = "Optional list of errors providing more details about the failure", example = "[\"Invalid email format\", \"Password is too short\"]")
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private final Map<String, String> errors;
+  private final Map<String, Map<String, String>> errors;
 
-  private ErrorResponseDTO(int status, String message, Map<String, String>  errors) {
+  private ErrorResponseDTO(int status, String message, Map<String, Map<String, String>> errors) {
     this.success = false;
     this.status = status;
     this.message = message;
@@ -30,7 +30,7 @@ public class ErrorResponseDTO {
     return new ErrorResponseDTO(status, message, null);
   }
 
-  public static ErrorResponseDTO Of(int status, String message, Map<String, String>  errors) {
+  public static ErrorResponseDTO Of(int status, String message, Map<String, Map<String, String>>  errors) {
     return new ErrorResponseDTO(status, message, errors);
   }
 
@@ -46,7 +46,7 @@ public class ErrorResponseDTO {
     return message;
   }
 
-  public Map<String, String>  getErrors() {
+  public Map<String, Map<String, String>>  getErrors() {
     return errors;
   }
 }

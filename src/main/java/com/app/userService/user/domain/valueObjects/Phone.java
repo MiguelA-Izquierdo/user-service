@@ -2,6 +2,8 @@ package com.app.userService.user.domain.valueObjects;
 
 import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -24,6 +26,26 @@ public class Phone extends ValueObjectAbstract{
     return new Phone(countryCode, number);
   }
 
+  public static <T> Map<String, String> getValidationErrors(Map<String, T> args) {
+    HashMap<String, String> errors = new HashMap<>();
+
+    String countryCode = (String) args.get("countryCode");
+    String number = (String) args.get("number");
+
+    try {
+      validateCountryCode(countryCode);
+    } catch (ValueObjectValidationException e) {
+      errors.put(e.getField(), e.getMessage());
+    }
+
+    try {
+      validatePhoneNumber(number);
+    } catch (ValueObjectValidationException e) {
+      errors.put(e.getField(), e.getMessage());
+    }
+
+    return errors;
+  }
   private static void validateCountryCode(String countryCode) {
     validateNotNullOrEmpty(countryCode, "Country code");
     if (!COUNTRY_CODE_PATTERN.matcher(countryCode).matches()) {
@@ -33,11 +55,12 @@ public class Phone extends ValueObjectAbstract{
 
 
   private static void validatePhoneNumber(String number) {
-    validateNotNullOrEmpty(number, "Phone number");
+    validateNotNullOrEmpty(number,  "Phone number");
     if (!PHONE_NUMBER_PATTERN.matcher(number).matches()) {
       throw new ValueObjectValidationException("Phone","Invalid phone number. It should contain 7 to 10 digits.");
     }
   }
+
 
   public String getCountryCode() {
     return countryCode;

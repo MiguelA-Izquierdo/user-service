@@ -2,7 +2,10 @@ package com.app.userService.user.domain.valueObjects;
 
 import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class Address extends ValueObjectAbstract{
   private final String street;
@@ -31,46 +34,72 @@ public class Address extends ValueObjectAbstract{
 
     return new Address(street, number, city, state, postalCode, country);
   }
+  public static <T> Map<String, String> getValidationErrors(Map<String, T> args) {
+    HashMap<String, String> errors = new HashMap<>();
+
+    Map<String, Consumer<Map<String, T>>> validations = Map.of(
+      "street", (map) -> validateStreet(getStringValue(map.get("street"))),
+      "streetNumber", (map) -> validateNumber(getStringValue(map.get("streetNumber"))),
+      "city", (map) -> validateCity(getStringValue(map.get("city"))),
+      "state", (map) -> validateState(getStringValue(map.get("state"))),
+      "postalCode", (map) -> validatePostalCode(getStringValue(map.get("postalCode"))),
+      "country", (map) -> validateCountry(getStringValue(map.get("country")))
+    );
+
+    validations.forEach((field, validator) -> {
+      try {
+        validator.accept(args);
+      } catch (ValueObjectValidationException e) {
+        errors.put(e.getField(), e.getMessage());
+      }
+    });
+
+    return errors;
+  }
+
+  private static String getStringValue(Object value) {
+    return value != null ? value.toString().trim() : "";
+  }
 
   private static void validateStreet(String street) {
     validateNotNullOrEmpty(street, "Street");
     if (street.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Address","Street cannot be empty");
+      throw new ValueObjectValidationException("Street","Street cannot be empty");
     }
   }
 
   private static void validateNumber(String number) {
-    validateNotNullOrEmpty(number, "Number cannot be null");
+    validateNotNullOrEmpty(number, "Number");
     if (number.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Address","Number cannot be empty");
+      throw new ValueObjectValidationException("Number","Number cannot be empty");
     }
   }
 
   private static void validateCity(String city) {
-    validateNotNullOrEmpty(city, "City cannot be null");
+    validateNotNullOrEmpty(city, "City");
     if (city.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Address","City cannot be empty");
+      throw new ValueObjectValidationException("City","City cannot be empty");
     }
   }
 
   private static void validateState(String state) {
-    validateNotNullOrEmpty(state, "State cannot be null");
+    validateNotNullOrEmpty(state,"State");
     if (state.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Address","State cannot be empty");
+      throw new ValueObjectValidationException("State","State cannot be empty");
     }
   }
 
   private static void validatePostalCode(String postalCode) {
-    validateNotNullOrEmpty(postalCode, "Postal code cannot be null");
+    validateNotNullOrEmpty(postalCode, "Postal code");
     if (postalCode.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Address","Postal code cannot be empty");
+      throw new ValueObjectValidationException("Postal code","Postal code cannot be empty");
     }
   }
 
   private static void validateCountry(String country) {
-    validateNotNullOrEmpty(country, "Country cannot be null");
+    validateNotNullOrEmpty(country, "Country");
     if (country.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Address","Country cannot be empty");
+      throw new ValueObjectValidationException("Country","Country cannot be empty");
     }
   }
 

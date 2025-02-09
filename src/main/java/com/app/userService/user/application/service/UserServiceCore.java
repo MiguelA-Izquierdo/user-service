@@ -1,20 +1,24 @@
 package com.app.userService.user.application.service;
 
 import com.app.userService._shared.exceptions.InvalidPasswordException;
-import com.app.userService.user.application.dto.UserAuthDTO;
+import com.app.userService.user.application.bus.command.UpdateUserCommand;
 import com.app.userService.user.domain.exceptions.RoleAlreadyGrantedException;
 import com.app.userService.user.domain.exceptions.UserAlreadyExistsException;
 import com.app.userService.user.domain.model.*;
+import com.app.userService.user.domain.repositories.UserActionLogRepository;
 import com.app.userService.user.domain.repositories.UserRepository;
 import com.app.userService.user.domain.repositories.UserRoleRepository;
 import com.app.userService.user.domain.service.PasswordEncryptionService;
-import com.app.userService.user.domain.valueObjects.UserId;
-import jakarta.persistence.EntityNotFoundException;
+import com.app.userService.user.domain.valueObjects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
 
 @Service
 public class UserServiceCore {
@@ -54,8 +58,8 @@ public class UserServiceCore {
   public UserWrapper findUserById(UserId id){
     return this.userRepository.findById(id.getValue());
   }
-  public Optional<UserAuthDTO> findUserByEmail(String email){
-    return this.userRepository.findByEmail(email).map(UserAuthDTO::Of);
+  public UserWrapper findUserByEmail(String email){
+    return this.userRepository.findByEmail(email);
   }
   public PaginatedResult<User> findAll(Integer  page, Integer size){
     return this.userRepository.findAll(page, size);
@@ -74,23 +78,50 @@ public class UserServiceCore {
     userRepository.anonymize(anonymousUser);
     userRoleRepository.deleteByUser(user);
   }
+  public void updateUser(UpdateUserCommand command, User currentUser) {
+    User updatedUser = updateUserFields(command, currentUser);
+
+    if (!updatedUser.equals(currentUser)) {
+      userRepository.save(updatedUser);
+    }
+  }
+  private User updateUserFields(UpdateUserCommand command, User currentUser) {
+    return User.of(
+      currentUser.getId(),
+      updateIfChanged(command.userName(), currentUser.getName(), UserName::of),
+      updateIfChanged(command.lastName(), currentUser.getLastName(), UserLastName::of),
+      currentUser.getEmail(),
+      updateIfChanged(
+        command.identityDocument(),
+        currentUser.getIdentityDocument(),
+        doc -> IdentityDocument.of(doc.documentType(), doc.documentNumber())
+      ),
+      updateIfChanged(
+        command.phone(),
+        currentUser.getPhone(),
+        phone -> Phone.of(phone.countryCode(), phone.phoneNumber())
+      ),
+      updateIfChanged(
+        command.address(),
+        currentUser.getAddress(),
+        addr -> Address.of(addr.street(), addr.streetNumber(), addr.city(), addr.state(), addr.postalCode(), addr.country())
+      ),
+      currentUser.getPassword(),
+      currentUser.getCreatedAt(),
+      currentUser.getStatus(),
+      currentUser.getRoles()
+    );
+  }
+  private <T, R> R updateIfChanged(T newValue, R currentValue, Function<T, R> mapper) {
+    return newValue != null ? mapper.apply(newValue) : currentValue;
+  }
   public boolean verifyPassword(String rawPassword, String storedPassword) {
     return this.passwordEncryptionService.matches(rawPassword, storedPassword);
   }
   public String encryptPassword(String password){
     return this.passwordEncryptionService.encrypt(password);
   }
-  public boolean isSuperAdmin(String userId) {
-    UserId id = UserId.of(userId);
-    UserWrapper existingUser = this.findUserById(UserId.of(userId));
-
-    if (!existingUser.exists() || !existingUser.isActive()) {
-      throw new EntityNotFoundException("User with ID " + userId + " not found");
-    }
-
-    User user = existingUser.getUser()
-      .orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found"));
-
+  public boolean isSuperAdmin(User user) {
     return user.getRoles().stream()
       .anyMatch(role -> role.name().equals("ROLE_SUPER_ADMIN"));
   }

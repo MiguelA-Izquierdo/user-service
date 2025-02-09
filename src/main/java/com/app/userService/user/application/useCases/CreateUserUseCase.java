@@ -1,6 +1,7 @@
 package com.app.userService.user.application.useCases;
 
 import com.app.userService.user.application.bus.command.CreateUserCommand;
+import com.app.userService.user.application.service.UserActionLogService;
 import com.app.userService.user.application.service.UserEventService;
 import com.app.userService.user.application.service.UserServiceCore;
 import com.app.userService.user.domain.model.Role;
@@ -13,21 +14,29 @@ import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CreateUserUseCase {
 
   private final UserServiceCore userServiceCore;
   private final UserEventService userEventService;
-  public CreateUserUseCase(UserServiceCore userServiceCore, UserEventService userEventService){
+  private final UserActionLogService userActionLogService;
+  public CreateUserUseCase(UserServiceCore userServiceCore, UserEventService userEventService, UserActionLogService userActionLogService){
     this.userServiceCore = userServiceCore;
     this.userEventService = userEventService;
+    this.userActionLogService = userActionLogService;
   }
   @Transactional
   public void execute(CreateUserCommand command) {
     User user = createUserFromCommand(command);
     userServiceCore.createUser(user);
+
+    Map<String, String> metaData = new HashMap<>();
+    userActionLogService.registerUserCreated(user,metaData);
+
     userEventService.handleUserCreatedEvent(user);
   }
 

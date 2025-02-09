@@ -28,9 +28,13 @@ public class GlobalExceptionHandler {
   }
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponseDTO> handleAllExceptions(Exception ex) {
+//    ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
+//      HttpStatus.INTERNAL_SERVER_ERROR.value(),
+//      "Internal server error"
+//    );
     ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
       HttpStatus.INTERNAL_SERVER_ERROR.value(),
-      "Internal server error"
+      ex.getMessage()
     );
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);

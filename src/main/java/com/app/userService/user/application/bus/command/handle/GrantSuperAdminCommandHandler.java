@@ -16,7 +16,7 @@ public class GrantSuperAdminCommandHandler implements CommandHandler<GrantSuperA
 
   @Override
   public void handle(GrantSuperAdminCommand command) {
-    this.grantSuperAdminUseCase.execute(command);
+    grantSuperAdminUseCase.execute(command);
   }
 
   @Override

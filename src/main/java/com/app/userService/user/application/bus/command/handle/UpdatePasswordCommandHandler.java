@@ -20,7 +20,7 @@ public class UpdatePasswordCommandHandler implements CommandHandler<UpdatePasswo
 
   @Override
   public void handle(UpdatePasswordCommand command) {
-    this.updatePasswordCommandValidator.validate(command);
+    updatePasswordCommandValidator.validate(command);
     updatePasswordUseCase.execute(command);
   }
 

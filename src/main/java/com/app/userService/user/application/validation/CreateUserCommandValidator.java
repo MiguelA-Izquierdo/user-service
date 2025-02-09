@@ -17,66 +17,20 @@ public class CreateUserCommandValidator {
     ValidationError validationError = new ValidationError();
 
     logger.info("el comando {}", command);
-    try {
-      UserId.of(command.id());
-    } catch (Exception e) {
-      validationError.addError("id", e.getMessage());
-    }
 
-    try {
-      UserName.of(command.name());
-    } catch (Exception e) {
-      validationError.addError("name", e.getMessage());
-    }
+    validationError.validateField("User Id", command.getUserIdMap(), UserId::getValidationErrors, true);
+    validationError.validateField("User name", command.getUserNameMap(), UserName::getValidationErrors, true);
+    validationError.validateField("Last name", command.getLastNameMap(), UserLastName::getValidationErrors, true);
+    validationError.validateField("Email", command.getEmailMap(), UserEmail::getValidationErrors, true);
+    validationError.validateField("Phone", command.getPhoneMap(), Phone::getValidationErrors, true);
+    validationError.validateField("Identity document", command.getIdentityDocumentMap(), IdentityDocument::getValidationErrors, true);
+    validationError.validateField("Address", command.getAddressMap(), Address::getValidationErrors, true);
+    validationError.validateField("Password", command.getPasswordMap(), Password::getValidationErrors, true);
 
-    try {
-      UserLastName.of(command.lastName());
-    } catch (Exception e) {
-      validationError.addError("Last Name", e.getMessage());
-    }
-
-    try {
-      UserEmail.of(command.email());
-    } catch (Exception e) {
-      validationError.addError("Email", e.getMessage());
-    }
-
-    try {
-      Phone.of(command.countryCode(), command.number());
-    } catch (Exception e) {
-      validationError.addError("Phone", e.getMessage());
-    }
-
-    try {
-      IdentityDocument.of(command.documentType(), command.documentNumber());
-    } catch (Exception e) {
-      validationError.addError("Identity Document", e.getMessage());
-    }
-
-    try {
-      Address.of(
-        command.street(),
-        command.streetNumber(),
-        command.city(),
-        command.state(),
-        command.postalCode(),
-        command.country());
-    } catch (Exception e) {
-      validationError.addError("Address", e.getMessage());
-    }
-
-    try {
-     Password.of(command.password());
-    } catch (Exception e) {
-      validationError.addError("Password", e.getMessage());
-    }
 
     if (validationError.hasErrors()) {
       throw validationError;
     }
-
-
-
 
   }
 
