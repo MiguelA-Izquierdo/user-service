@@ -23,6 +23,7 @@ public class AnonymousUser {
   private final String postalCode;
   private final String country;
   private final String password;
+  private final String secretKey;
   private final UserStatus status;
   private final LocalDateTime createdAt;
   private final List<Role> roles;
@@ -44,6 +45,7 @@ public class AnonymousUser {
       .withPostalCode(user.getAddress().getPostalCode())
       .withCountry(user.getAddress().getCountry())
       .withPassword(user.getPassword())
+      .withSecretKey(user.getSecretKey())
       .withCreatedAt(user.getCreatedAt())
       .withRoles(new ArrayList<>())
       .build();
@@ -65,6 +67,7 @@ public class AnonymousUser {
     this.postalCode = builder.postalCode;
     this.country = builder.country;
     this.password = builder.password;
+    this.secretKey = builder.secretKey;
     this.status = builder.status;
     this.createdAt = builder.createdAt;
     this.roles = builder.roles;
@@ -86,6 +89,7 @@ public class AnonymousUser {
     private String postalCode;
     private String country;
     private String password;
+    private String secretKey;
     private UserStatus status = UserStatus.DELETED;
     private LocalDateTime createdAt;
     private List<Role> roles = new ArrayList<>();
@@ -162,6 +166,10 @@ public class AnonymousUser {
 
     public Builder withPassword(String password) {
       this.password = anonymizeString(password);
+      return this;
+    }
+    public Builder withSecretKey(String secretKey) {
+      this.secretKey = anonymizeString(secretKey);
       return this;
     }
 
@@ -249,6 +257,10 @@ public class AnonymousUser {
 
   public String getPassword() {
     return password;
+  }
+
+  public String getSecretKey() {
+    return secretKey;
   }
 
   public UserStatus getStatus() {

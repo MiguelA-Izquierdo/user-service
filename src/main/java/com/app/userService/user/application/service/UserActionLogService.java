@@ -35,6 +35,9 @@ public class UserActionLogService {
   public void registerLoginWithoutToken(User user, Map<String, String> metaData){
     this.createUserActionLog(user, UserAction.LOGGED, metaData);
   }
+  public void registerLogout(User user, Map<String, String> metaData){
+    this.createUserActionLog(user, UserAction.LOGOUT, metaData);
+  }
   public void registerLoginWithToken(User user, Map<String, String> metaData){
     this.createUserActionLog(user, UserAction.LOGGED_WITH_TOKEN, metaData);
   }

@@ -39,6 +39,7 @@ public class LoginUseCase {
     if (!existingUser.exists() || !existingUser.isActive()) {
       throw new EntityNotFoundException("User with ID "  + " not found");
     }
+
     User user = existingUser.getUser()
       .orElseThrow(() -> new EntityNotFoundException("User with ID " + " not found"));
 

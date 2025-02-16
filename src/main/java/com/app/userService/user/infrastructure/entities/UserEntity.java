@@ -38,6 +38,9 @@ public class UserEntity {
   private String postalCode;
   @Column(name = "country", nullable = false, length = 100)
   private String country;
+
+  @Column(name = "secretKey", nullable = false, length = 100)
+  private String secretKey;
   @Column(name = "password")
   private String password;
   @Column(name = "created_at")
@@ -45,15 +48,15 @@ public class UserEntity {
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private UserStatus status;
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<UserRoleEntity> roles;
-
   public UserEntity(){}
   public UserEntity(UUID id,
                       String name,
                       String lastName,
                       String email,
                       String password,
+                      String secretKey,
                       UserStatus status,
                       String countryCode,
                       String phoneNumber,
@@ -71,6 +74,7 @@ public class UserEntity {
     this.lastName = lastName;
     this.email = email;
     this.password = password;
+    this.secretKey = secretKey;
     this.status = status;
     this.countryCode = countryCode;
     this.phoneNumber = phoneNumber;
@@ -141,11 +145,12 @@ public class UserEntity {
   public String getCountry() {
     return country;
   }
-
   public String getPassword() {
     return password;
   }
-
+  public String getSecretKey() {
+    return secretKey;
+  }
   public UserStatus getStatus() {
     return status;
   }

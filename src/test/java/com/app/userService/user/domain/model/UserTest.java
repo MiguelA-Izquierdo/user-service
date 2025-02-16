@@ -23,12 +23,13 @@ class UserTest {
     Phone phone = Phone.of("+34", "622655655");
     Address address = Address.of("Gran Vía", "5", "Madrid", "Comunidad de Madrid", "10005", "España");
     String password = "password123";
+    String secretKey = "secretKey123456";
     LocalDateTime createdAt = LocalDateTime.now();
     UserStatus status = UserStatus.ACTIVE;
     Role role = Role.ROLE_USER;
     List<Role> roles = List.of(role);
 
-    user = User.of(userId, userName, userLastName, userEmail, identityDocument, phone, address, password, createdAt, status, roles);
+    user = User.of(userId, userName, userLastName, userEmail, identityDocument, phone, address, password, secretKey,createdAt, status, roles);
   }
 
   @Test

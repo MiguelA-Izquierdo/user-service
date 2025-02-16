@@ -1,6 +1,5 @@
 package com.app.userService.user.application.useCases;
 
-import com.app.userService._shared.infraestructure.ValidationError;
 import com.app.userService.user.application.bus.command.UpdateUserCommand;
 import com.app.userService.user.application.service.UserServiceCore;
 import com.app.userService.user.domain.model.Role;
@@ -49,6 +48,7 @@ public class UpdateUserUseCase {
     Phone phone = currentUser.getPhone();
     Address address = currentUser.getAddress();
     String password = currentUser.getPassword();
+    String secretkey = currentUser.getSecretKey();
     LocalDateTime dateCreated = currentUser.getCreatedAt();
     UserStatus status = currentUser.getStatus();
     List<Role> roles = currentUser.getRoles();
@@ -94,7 +94,7 @@ public class UpdateUserUseCase {
     }
 
     if (hasChanges) {
-      User.of(userId, userName, lastName, userEmail, identityDocument, phone, address, password, dateCreated, status, roles);
+      User.of(userId, userName, lastName, userEmail, identityDocument, phone, address, password, secretkey, dateCreated, status, roles);
     }
 
   }

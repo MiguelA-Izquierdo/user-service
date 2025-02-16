@@ -14,6 +14,7 @@ public class User {
   private final Phone phone;
   private final Address address;
   private String password;
+  private String secretKey;
   private final UserStatus status;
   private final LocalDateTime createdAt;
   private final List<Role> roles;
@@ -26,6 +27,7 @@ public class User {
                Phone phone,
                Address address,
                String password,
+               String secretKey,
                LocalDateTime createdAt,
                UserStatus status,
                List<Role> roles) {
@@ -38,6 +40,7 @@ public class User {
     this.address = address;
     this.createdAt = createdAt;
     this.password = password;
+    this.secretKey = secretKey;
     this.status = status;
     this.roles = roles;
   }
@@ -50,6 +53,7 @@ public class User {
                         Phone phone,
                         Address address,
                         String password,
+                        String secretKey,
                         LocalDateTime createdAt,
                         UserStatus status,
                         List<Role> roles) {
@@ -62,6 +66,7 @@ public class User {
       .phone(phone)
       .address(address)
       .password(password)
+      .secretKey(secretKey)
       .createdAt(createdAt)
       .status(status)
       .roles(roles)
@@ -81,6 +86,7 @@ public class User {
     private Phone phone;
     private Address address;
     private String password;
+    private String secretKey;
     private LocalDateTime createdAt;
     private UserStatus status;
     private List<Role> roles;
@@ -124,6 +130,10 @@ public class User {
       this.password = password;
       return this;
     }
+    public Builder secretKey(String secretKey) {
+      this.secretKey = secretKey;
+      return this;
+    }
 
     public Builder createdAt(LocalDateTime createdAt) {
       this.createdAt = createdAt;
@@ -141,7 +151,7 @@ public class User {
     }
 
     public User build() {
-      return new User(id, name, lastName, email, identityDocument, phone, address, password, createdAt, status, roles);
+      return new User(id, name, lastName, email, identityDocument, phone, address, password, secretKey, createdAt, status, roles);
     }
   }
 
@@ -189,6 +199,12 @@ public class User {
     return roles;
   }
 
+  public String getSecretKey(){
+    return secretKey;
+  }
+  public void updateSecretKey(String secretKey){
+    this.secretKey = secretKey;
+  }
   public void updatePassword(String newPassword) {
     this.password = newPassword;
   }

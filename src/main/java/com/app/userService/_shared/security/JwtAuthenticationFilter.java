@@ -1,6 +1,9 @@
 package com.app.userService._shared.security;
 
+import com.app.userService._shared.infraestructure.dto.ErrorResponseDTO;
+import com.app.userService.auth.domain.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +16,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,32 +23,30 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-
-
+  private final AuthService authService;
   @Value("${jwt.secret}")
   private String secretKey;
 
   private final SecurityPropertiesService securityPropertiesService;
 
-  public JwtAuthenticationFilter(SecurityPropertiesService securityPropertiesService) {
+  public JwtAuthenticationFilter(SecurityPropertiesService securityPropertiesService,AuthService authService) {
     this.securityPropertiesService = securityPropertiesService;
+    this.authService = authService;
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+  protected void doFilterInternal(HttpServletRequest request,
+                                  @NotNull HttpServletResponse response,
+                                  @NotNull FilterChain filterChain)
     throws ServletException, IOException {
 
     logger.info("Processing request: {} {}", request.getRequestURI(), request.getMethod());
-
-    String requestUri = request.getRequestURI();
-    String method = request.getMethod();
 
     if (securityPropertiesService.isPublicRoute(request)) {
       filterChain.doFilter(request, response);
@@ -55,18 +55,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     String token = extractTokenFromHeader(request);
     if (token == null) {
-      sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Token not provided");
+      sendErrorResponse(response, "Token not provided");
       return;
     }
 
     try {
-      Claims claims = Jwts.parserBuilder()
-        .setSigningKey(getSecretKey())
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
+      if (!authService.validateToken(token)) {
+        sendErrorResponse(response, "Token not valid");
+        return;
+      }
 
+      Claims claims = authService.getClaimsFromToken(token);
       String userId = claims.getSubject();
+
       List<GrantedAuthority> authorities = extractAuthoritiesFromClaims(claims);
 
       UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -76,7 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       SecurityContextHolder.getContext().setAuthentication(authentication);
     } catch (Exception e) {
       logger.error("Token validation failed", e);
-      sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Token not valid");
+      sendErrorResponse(response, "Token not valid");
       return;
     }
 
@@ -102,20 +103,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return Collections.emptyList();
   }
 
-  private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
-    Map<String, Object> errorResponse = new HashMap<>();
-    errorResponse.put("status", "error");
-    errorResponse.put("code", status.value());
-    errorResponse.put("message", message);
-
-    response.setStatus(status.value());
-    response.setContentType("application/json");
+  private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
+    ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
+      HttpStatus.UNAUTHORIZED.value(),
+      message
+    );
 
     ObjectMapper objectMapper = new ObjectMapper();
     response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-  }
-
-  private Key getSecretKey() {
-    return io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes());
   }
 }

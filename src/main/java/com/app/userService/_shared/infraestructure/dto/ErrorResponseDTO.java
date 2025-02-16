@@ -34,7 +34,7 @@ public class ErrorResponseDTO {
     return new ErrorResponseDTO(status, message, errors);
   }
 
-  public boolean success() {
+  public boolean getSuccess() {
     return success;
   }
 

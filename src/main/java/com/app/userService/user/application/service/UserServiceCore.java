@@ -5,19 +5,18 @@ import com.app.userService.user.application.bus.command.UpdateUserCommand;
 import com.app.userService.user.domain.exceptions.RoleAlreadyGrantedException;
 import com.app.userService.user.domain.exceptions.UserAlreadyExistsException;
 import com.app.userService.user.domain.model.*;
-import com.app.userService.user.domain.repositories.UserActionLogRepository;
 import com.app.userService.user.domain.repositories.UserRepository;
 import com.app.userService.user.domain.repositories.UserRoleRepository;
 import com.app.userService.user.domain.service.PasswordEncryptionService;
 import com.app.userService.user.domain.valueObjects.*;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Random;
 import java.util.function.Function;
 
 @Service
@@ -55,6 +54,7 @@ public class UserServiceCore {
       throw new RoleAlreadyGrantedException("User already has the SUPER_ADMIN role.");
     }
   }
+  @Transactional
   public UserWrapper findUserById(UserId id){
     return this.userRepository.findById(id.getValue());
   }
@@ -63,6 +63,11 @@ public class UserServiceCore {
   }
   public PaginatedResult<User> findAll(Integer  page, Integer size){
     return this.userRepository.findAll(page, size);
+  }
+  public void logoutUser(User user){
+    String newSecretKey = generateRandomSecretKey();
+    user.updateSecretKey(newSecretKey);
+    userRepository.save(user);
   }
   public void updatePassword(User user, String currentPassword, String newPassword){
     boolean isValidCurrentPassword = this.verifyPassword(currentPassword, user.getPassword());
@@ -107,6 +112,7 @@ public class UserServiceCore {
         addr -> Address.of(addr.street(), addr.streetNumber(), addr.city(), addr.state(), addr.postalCode(), addr.country())
       ),
       currentUser.getPassword(),
+      currentUser.getSecretKey(),
       currentUser.getCreatedAt(),
       currentUser.getStatus(),
       currentUser.getRoles()
@@ -121,8 +127,11 @@ public class UserServiceCore {
   public String encryptPassword(String password){
     return this.passwordEncryptionService.encrypt(password);
   }
-  public boolean isSuperAdmin(User user) {
-    return user.getRoles().stream()
-      .anyMatch(role -> role.name().equals("ROLE_SUPER_ADMIN"));
+  public String generateRandomSecretKey(){
+    return new Random()
+      .ints(18, 48, 122)
+      .filter(Character::isLetterOrDigit)
+      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+      .toString();
   }
 }

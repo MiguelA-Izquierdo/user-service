@@ -19,6 +19,7 @@ public class UserMapper {
       userDomain.getLastName().getValue(),
       userDomain.getEmail().getEmail(),
       userDomain.getPassword(),
+      userDomain.getSecretKey(),
       userDomain.getStatus(),
       userDomain.getPhone().getCountryCode(),
       userDomain.getPhone().getNumber(),
@@ -43,6 +44,7 @@ public class UserMapper {
       anonymousUser.getLastName(),
       anonymousUser.getEmail(),
       anonymousUser.getPassword(),
+      anonymousUser.getSecretKey(),
       anonymousUser.getStatus(),
       anonymousUser.getCountryCode(),
       anonymousUser.getNumber(),
@@ -82,6 +84,7 @@ public class UserMapper {
       Phone.of(userEntity.getCountryCode(), userEntity.getPhoneNumber()),
       userAddress,
       userEntity.getPassword(),
+      userEntity.getSecretKey(),
       userEntity.getCreatedAt(),
       userEntity.getStatus(),
       roles
