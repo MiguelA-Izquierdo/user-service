@@ -1,6 +1,8 @@
 package com.app.userService.user.application.service;
 
 import com.app.userService._shared.exceptions.InvalidPasswordException;
+import com.app.userService._shared.exceptions.UserLockedException;
+import com.app.userService.auth.application.service.LoginAttemptService;
 import com.app.userService.user.application.bus.command.UpdateUserCommand;
 import com.app.userService.user.domain.exceptions.RoleAlreadyGrantedException;
 import com.app.userService.user.domain.exceptions.UserAlreadyExistsException;
@@ -9,12 +11,17 @@ import com.app.userService.user.domain.repositories.UserRepository;
 import com.app.userService.user.domain.repositories.UserRoleRepository;
 import com.app.userService.user.domain.service.PasswordEncryptionService;
 import com.app.userService.user.domain.valueObjects.*;
-import jakarta.transaction.Transactional;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
+
+
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
@@ -26,11 +33,20 @@ public class UserServiceCore {
   private final PasswordEncryptionService passwordEncryptionService;
   private final UserRepository userRepository;
   private final UserRoleRepository userRoleRepository;
+  private final UserEventService userEventService;
+  private final UserActionLogService userActionLogService;
+  private final LoginAttemptService loginAttemptService;
   public UserServiceCore(PasswordEncryptionService passwordEncryptionService,
                          UserRepository userRepository,
+                         UserEventService userEventService,
+                         UserActionLogService userActionLogService,
+                         LoginAttemptService loginAttemptService,
                          UserRoleRepository userRoleRepository) {
     this.userRepository = userRepository;
     this.userRoleRepository = userRoleRepository;
+    this.userEventService = userEventService;
+    this.userActionLogService = userActionLogService;
+    this.loginAttemptService = loginAttemptService;
     this.passwordEncryptionService = passwordEncryptionService;
   }
 
@@ -66,7 +82,7 @@ public class UserServiceCore {
   }
   public void logoutUser(User user){
     String newSecretKey = generateRandomSecretKey();
-    user.updateSecretKey(newSecretKey);
+    user.logout(newSecretKey);
     userRepository.save(user);
   }
   public void updatePassword(User user, String currentPassword, String newPassword){
@@ -74,6 +90,11 @@ public class UserServiceCore {
     if(!isValidCurrentPassword){
       throw new InvalidPasswordException("The current password provided is incorrect.");
     }
+    String hashedPassword = this.encryptPassword(newPassword);
+    user.updatePassword(hashedPassword);
+    this.userRepository.save(user);
+  }
+  public void updatePassword(User user, String newPassword){
     String hashedPassword = this.encryptPassword(newPassword);
     user.updatePassword(hashedPassword);
     this.userRepository.save(user);
@@ -112,6 +133,7 @@ public class UserServiceCore {
         addr -> Address.of(addr.street(), addr.streetNumber(), addr.city(), addr.state(), addr.postalCode(), addr.country())
       ),
       currentUser.getPassword(),
+      currentUser.getFailedLoginAttempts(),
       currentUser.getSecretKey(),
       currentUser.getCreatedAt(),
       currentUser.getStatus(),
@@ -133,5 +155,35 @@ public class UserServiceCore {
       .filter(Character::isLetterOrDigit)
       .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
       .toString();
+  }
+  public void login(User user, String passwordInput){
+    if (user.isLocked()) {
+      throw new UserLockedException("Your account has been locked.");
+    }
+
+    boolean isCredentialsValid = this.verifyPassword(passwordInput, user.getPassword());
+
+    if (!isCredentialsValid) {
+      this.loginAttemptService.updateFailedLoginAttempts(user);
+      userRepository.save(user);
+
+      if (user.isLocked()) {
+        logoutUser(user);
+        HashMap<String, String> metaData = new HashMap<>();
+        this.userActionLogService.registerUserLocked(user, metaData);
+        this.userEventService.handleUserLockedEvent(user);
+        throw new UserLockedException("Your account has been locked due to too many failed login attempts.");
+      }
+
+      throw new InvalidPasswordException("The current password provided is incorrect.");
+    }
+
+    user.clearFailedLoginAttempts();
+    userRepository.save(user);
+  }
+
+  public void unlockUser(User user){
+    user.unlockAccount();
+    userRepository.save(user);
   }
 }

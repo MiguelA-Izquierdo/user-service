@@ -9,6 +9,8 @@ import com.app.userService.user.domain.repositories.UserActionLogRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -37,6 +39,12 @@ public class UserActionLogService {
   }
   public void registerLogout(User user, Map<String, String> metaData){
     this.createUserActionLog(user, UserAction.LOGOUT, metaData);
+  }
+  public void registerUserLocked(User user, Map<String, String> metaData){
+    this.createUserActionLog(user, UserAction.LOCKED, metaData);
+  }
+  public void registerUserUnlocked(User user, Map<String, String> metaData){
+    this.createUserActionLog(user, UserAction.UNLOCKED, metaData);
   }
   public void registerLoginWithToken(User user, Map<String, String> metaData){
     this.createUserActionLog(user, UserAction.LOGGED_WITH_TOKEN, metaData);

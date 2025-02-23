@@ -41,6 +41,7 @@ public class CreateUserUseCase {
   }
 
   private User createUserFromCommand(CreateUserCommand command){
+    Integer failedLoginAttempts = 0;
     String secretKey = userServiceCore.generateRandomSecretKey();
     UserId userId = UserId.of(command.id());
     UserName userName = UserName.of(command.name());
@@ -59,7 +60,7 @@ public class CreateUserUseCase {
     String passwordHashed = userServiceCore.encryptPassword(command.password());
 
     List<Role> emptyRolesList = new ArrayList<>();
-    return User.of(userId, userName, userLastName, userEmail, identityDocument, phone, address, passwordHashed,secretKey, LocalDateTime.now(), UserStatus.ACTIVE,emptyRolesList);
+    return User.of(userId, userName, userLastName, userEmail, identityDocument, phone, address, passwordHashed, failedLoginAttempts, secretKey, LocalDateTime.now(), UserStatus.ACTIVE,emptyRolesList);
   }
 
 }

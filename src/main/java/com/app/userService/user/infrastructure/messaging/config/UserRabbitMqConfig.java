@@ -23,6 +23,8 @@ public class UserRabbitMqConfig {
 
   @Value("${messaging.queue.userDeleted}")
   private String userDeletedQueue;
+  @Value("${messaging.queue.userLocked}")
+  private String userLockedQueue;
 
   @Value("${messaging.routing.key.userCreated}")
   private String userCreatedRoutingKey;
@@ -32,6 +34,8 @@ public class UserRabbitMqConfig {
 
   @Value("${messaging.routing.key.userDeleted}")
   private String userDeletedRoutingKey;
+  @Value("${messaging.routing.key.userLocked}")
+  private String userLockedRoutingKey;
 
   @Bean
   public Queue userCreatedQueue() {
@@ -46,6 +50,10 @@ public class UserRabbitMqConfig {
   @Bean
   public Queue userDeletedQueue() {
     return new Queue(userDeletedQueue, true);
+  }
+  @Bean
+  public Queue userLockedQueue() {
+    return new Queue(userLockedQueue, true);
   }
 
 
@@ -70,5 +78,10 @@ public class UserRabbitMqConfig {
   public Binding userDeletedBinding() {
     return new Binding(userDeletedQueue, Binding.DestinationType.QUEUE,
       userExchange, userDeletedRoutingKey, null);
+  }
+  @Bean
+  public Binding userLockeddBinding() {
+    return new Binding(userLockedQueue, Binding.DestinationType.QUEUE,
+      userExchange, userLockedRoutingKey, null);
   }
 }

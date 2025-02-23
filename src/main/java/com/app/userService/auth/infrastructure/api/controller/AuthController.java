@@ -3,6 +3,7 @@ package com.app.userService.auth.infrastructure.api.controller;
 import com.app.userService._shared.infraestructure.dto.SuccessResponseDTO;
 import com.app.userService.auth.application.bus.command.AuthCommandBus;
 import com.app.userService.auth.application.bus.command.LogoutUserCommand;
+import com.app.userService.auth.application.bus.command.UnlockResetPasswordCommand;
 import com.app.userService.auth.application.bus.query.AuthQueryBus;
 import com.app.userService.auth.application.bus.query.LoginQuery;
 import com.app.userService.auth.application.bus.query.LoginWithTokenQuery;
@@ -63,7 +64,7 @@ public class AuthController {
       "User logout successfully"
     );
 
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
   }
 
   @PostMapping("/logout/{userIdToLogout}")
@@ -78,6 +79,16 @@ public class AuthController {
       "User logout successfully"
     );
 
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+  }
+  @PostMapping("/unlock-reset-password")
+  public ResponseEntity<Object> resetPassword(@RequestBody UnlockResetPasswordCommand command) {
+    commandBus.dispatch(command);
+    SuccessResponseDTO response = SuccessResponseDTO.Of(
+      HttpStatus.NO_CONTENT.value(),
+      "User unlocked successfully"
+    );
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
   }
 }

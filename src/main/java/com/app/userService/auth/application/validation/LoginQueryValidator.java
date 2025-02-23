@@ -18,25 +18,15 @@ public class LoginQueryValidator {
       validationError.addError("User email","Email", e.getMessage());
     }
 
-    if (!isValidPassword(query.password())) {
-      validationError.addError("Password",
-        "Password",
-        "Password must be at least 9 characters long, include one uppercase letter, and one special character."
-      );
+    try {
+      Password.of(query.password());
+    } catch (Exception e) {
+      validationError.addError("Password","Password", e.getMessage());
     }
 
     if (validationError.hasErrors()) {
       throw validationError;
     }
 
-  }
-
-  private boolean isValidPassword(String password) {
-    if (password == null || password.isEmpty()) {
-      return false;
-    }
-
-    String passwordRegex = "^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{9,}$";
-    return password.matches(passwordRegex);
   }
 }

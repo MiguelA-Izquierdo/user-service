@@ -1,6 +1,5 @@
-package com.app.userService.user.infrastructure.repository;
+package com.app.userService.user.infrastructure.repositories;
 
-import com.app.userService.user.application.service.UserServiceCore;
 import com.app.userService.user.domain.model.UserActionLog;
 import com.app.userService.user.domain.repositories.UserActionLogRepository;
 import com.app.userService.user.infrastructure.entities.UserActionLogEntity;

@@ -43,6 +43,8 @@ public class UserEntity {
   private String secretKey;
   @Column(name = "password")
   private String password;
+  @Column(name = "failed_login_attempts")
+  private Integer failedLoginAttempts;
   @Column(name = "created_at")
   private LocalDateTime createdAt;
   @Enumerated(EnumType.STRING)
@@ -56,6 +58,7 @@ public class UserEntity {
                       String lastName,
                       String email,
                       String password,
+                      Integer failedLoginAttempts,
                       String secretKey,
                       UserStatus status,
                       String countryCode,
@@ -74,6 +77,7 @@ public class UserEntity {
     this.lastName = lastName;
     this.email = email;
     this.password = password;
+    this.failedLoginAttempts = failedLoginAttempts;
     this.secretKey = secretKey;
     this.status = status;
     this.countryCode = countryCode;
@@ -147,6 +151,10 @@ public class UserEntity {
   }
   public String getPassword() {
     return password;
+  }
+
+  public Integer getFailedLoginAttempts() {
+    return failedLoginAttempts;
   }
   public String getSecretKey() {
     return secretKey;

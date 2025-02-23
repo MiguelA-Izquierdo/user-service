@@ -1,8 +1,11 @@
 package com.app.userService._shared.infraestructure;
 
+import com.app.userService._shared.exceptions.EntityExistsException;
 import com.app.userService._shared.exceptions.InvalidPasswordException;
 import com.app.userService._shared.exceptions.JwtValidationError;
+import com.app.userService._shared.exceptions.UserLockedException;
 import com.app.userService._shared.infraestructure.dto.ErrorResponseDTO;
+import com.app.userService.auth.domain.exceptions.TokenExpiredException;
 import com.app.userService.user.domain.exceptions.RoleAlreadyGrantedException;
 import com.app.userService.user.domain.exceptions.UserAlreadyExistsException;
 import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
@@ -22,6 +25,15 @@ public class GlobalExceptionHandler {
     ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
       HttpStatus.INTERNAL_SERVER_ERROR.value(),
       "A null value was encountered"
+    );
+
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+  }
+  @ExceptionHandler(EntityExistsException.class)
+  public ResponseEntity<ErrorResponseDTO> handleEntityExistsException(EntityExistsException ex) {
+    ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
+      HttpStatus.CONFLICT.value(),
+      ex.getMessage()
     );
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
@@ -90,6 +102,16 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }
 
+  @ExceptionHandler(UserLockedException.class)
+  public ResponseEntity<ErrorResponseDTO> handleUserLockedException(UserLockedException ex) {
+    ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
+      HttpStatus.FORBIDDEN.value(),
+      ex.getMessage()
+    );
+
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+  }
+
   @ExceptionHandler(JwtValidationError.class)
   public ResponseEntity<ErrorResponseDTO> handleJwtValidationError(JwtValidationError ex) {
     ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
@@ -108,6 +130,15 @@ public class GlobalExceptionHandler {
     );
 
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+  }
+ @ExceptionHandler(TokenExpiredException.class)
+  public ResponseEntity<ErrorResponseDTO> handleTokenExpiredException(TokenExpiredException ex) {
+    ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
+      HttpStatus.BAD_REQUEST.value(),
+      ex.getMessage()
+    );
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
   }
 
 

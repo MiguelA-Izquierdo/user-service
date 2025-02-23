@@ -30,7 +30,7 @@ public class OutboxEventPublisher {
 
     pendingEvents.forEach(event -> {
       try {
-        logger.debug("Vamos a publicar el evento {} {}", event.getId(), event.getRoutingKey());
+        logger.debug("Vamos a publicar el evento {} {} {}", event.getQueue(),event.getId(), event.getRoutingKey());
         eventPublisher.publish(event);
         event.markAsProcessed();
         outboxEventRepository.save(event);

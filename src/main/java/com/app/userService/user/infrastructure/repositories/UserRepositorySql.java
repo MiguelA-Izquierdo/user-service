@@ -1,4 +1,4 @@
-package com.app.userService.user.infrastructure.repository;
+package com.app.userService.user.infrastructure.repositories;
 
 import com.app.userService.user.domain.model.*;
 import com.app.userService.user.domain.repositories.UserRepository;
@@ -11,15 +11,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @Repository
 public class UserRepositorySql implements UserRepository {
   private static final Logger logger = LoggerFactory.getLogger(UserRepositorySql.class);
-  private static final UserStatus activeStatus = UserStatus.ACTIVE;
+  private static final Set<UserStatus> activeStatuses = new HashSet<>() {{
+    add(UserStatus.ACTIVE);
+    add(UserStatus.LOCKED);
+  }};
   private final UserJpaRepository jpaRepository;
   public UserRepositorySql(UserJpaRepository jpaRepository){
     this.jpaRepository = jpaRepository;
@@ -40,7 +41,7 @@ public class UserRepositorySql implements UserRepository {
   public UserWrapper findByEmail(String email) {
     return jpaRepository.findByEmail(email)
       .map(userEntity -> {
-        if (userEntity.getStatus() == activeStatus) {
+        if (isActiveStatus(userEntity.getStatus())){
           User user = UserMapper.toDomain(userEntity);
           return UserWrapper.active(user);
         } else {
@@ -54,7 +55,7 @@ public class UserRepositorySql implements UserRepository {
   public UserWrapper findByIdOrEmail(UUID userId, String email) {
     return jpaRepository.findByIdOrEmail(userId, email)
       .map(userEntity -> {
-        if (userEntity.getStatus() == activeStatus) {
+        if (isActiveStatus(userEntity.getStatus())) {
           User user = UserMapper.toDomain(userEntity);
           return UserWrapper.active(user);
         } else {
@@ -68,7 +69,7 @@ public class UserRepositorySql implements UserRepository {
   public UserWrapper findById(UUID id) {
     return jpaRepository.findById(id)
       .map(userEntity -> {
-        if (userEntity.getStatus() == activeStatus) {
+        if (isActiveStatus(userEntity.getStatus())) {
           User user = UserMapper.toDomain(userEntity);
           return UserWrapper.active(user);
         } else {
@@ -81,7 +82,7 @@ public class UserRepositorySql implements UserRepository {
   @Override
   public PaginatedResult<User> findAll(int page, int size){
     Pageable pageable = PageRequest.of(page, size);
-    Page<UserEntity> userPage = jpaRepository.findAllByStatus(activeStatus,pageable);
+    Page<UserEntity> userPage = jpaRepository.findAllByStatusIn(activeStatuses,pageable);
 
     List<User> users = userPage.getContent()
       .stream()
@@ -94,4 +95,7 @@ public class UserRepositorySql implements UserRepository {
     return PaginatedResult.of(users, totalUsers, totalPages);
   }
 
+  private boolean isActiveStatus(UserStatus status) {
+    return activeStatuses.contains(status);
+  }
 }

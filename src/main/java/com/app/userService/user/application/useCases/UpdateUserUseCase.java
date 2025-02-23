@@ -94,7 +94,7 @@ public class UpdateUserUseCase {
     }
 
     if (hasChanges) {
-      User.of(userId, userName, lastName, userEmail, identityDocument, phone, address, password, secretkey, dateCreated, status, roles);
+      User.of(userId, userName, lastName, userEmail, identityDocument, phone, address, password, currentUser.getFailedLoginAttempts(),secretkey, dateCreated, status, roles);
     }
 
   }

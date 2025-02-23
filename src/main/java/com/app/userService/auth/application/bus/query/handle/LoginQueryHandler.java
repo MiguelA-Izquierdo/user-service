@@ -11,6 +11,7 @@ import com.app.userService.auth.application.validation.LoginQueryValidator;
 import org.springframework.stereotype.Service;
 
 
+
 @Service
 public class LoginQueryHandler implements QueryHandler<LoginQuery,UserLoggedDTO> {
   private final LoginUseCase loginUseCase;

@@ -4,8 +4,10 @@ import com.app.userService.user.domain.valueObjects.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 public class User {
+  private static final int MAX_FAILED_ATTEMPTS = 5;
   private final UserId id;
   private final UserName name;
   private final UserLastName lastName;
@@ -15,7 +17,8 @@ public class User {
   private final Address address;
   private String password;
   private String secretKey;
-  private final UserStatus status;
+  private Integer failedLoginAttempts;
+  private UserStatus status;
   private final LocalDateTime createdAt;
   private final List<Role> roles;
 
@@ -27,6 +30,7 @@ public class User {
                Phone phone,
                Address address,
                String password,
+               Integer failedLoginAttempts,
                String secretKey,
                LocalDateTime createdAt,
                UserStatus status,
@@ -39,6 +43,7 @@ public class User {
     this.phone = phone;
     this.address = address;
     this.createdAt = createdAt;
+    this.failedLoginAttempts = failedLoginAttempts;
     this.password = password;
     this.secretKey = secretKey;
     this.status = status;
@@ -53,106 +58,12 @@ public class User {
                         Phone phone,
                         Address address,
                         String password,
+                        Integer failedLoginAttempts,
                         String secretKey,
                         LocalDateTime createdAt,
                         UserStatus status,
                         List<Role> roles) {
-    return new Builder()
-      .id(userId)
-      .name(userName)
-      .lastName(userLastName)
-      .email(userEmail)
-      .identityDocument(identityDocument)
-      .phone(phone)
-      .address(address)
-      .password(password)
-      .secretKey(secretKey)
-      .createdAt(createdAt)
-      .status(status)
-      .roles(roles)
-      .build();
-  }
-
-  public static Builder builder() {
-    return new Builder();
-  }
-
-  public static class Builder {
-    private UserId id;
-    private UserName name;
-    private UserLastName lastName;
-    private UserEmail email;
-    private IdentityDocument identityDocument;
-    private Phone phone;
-    private Address address;
-    private String password;
-    private String secretKey;
-    private LocalDateTime createdAt;
-    private UserStatus status;
-    private List<Role> roles;
-
-    public Builder id(UserId id) {
-      this.id = id;
-      return this;
-    }
-
-    public Builder name(UserName name) {
-      this.name = name;
-      return this;
-    }
-
-    public Builder lastName(UserLastName lastName) {
-      this.lastName = lastName;
-      return this;
-    }
-
-    public Builder email(UserEmail email) {
-      this.email = email;
-      return this;
-    }
-
-    public Builder identityDocument(IdentityDocument identityDocument) {
-      this.identityDocument = identityDocument;
-      return this;
-    }
-
-    public Builder phone(Phone phone) {
-      this.phone = phone;
-      return this;
-    }
-
-    public Builder address(Address address) {
-      this.address = address;
-      return this;
-    }
-
-    public Builder password(String password) {
-      this.password = password;
-      return this;
-    }
-    public Builder secretKey(String secretKey) {
-      this.secretKey = secretKey;
-      return this;
-    }
-
-    public Builder createdAt(LocalDateTime createdAt) {
-      this.createdAt = createdAt;
-      return this;
-    }
-
-    public Builder status(UserStatus status) {
-      this.status = status;
-      return this;
-    }
-
-    public Builder roles(List<Role> roles) {
-      this.roles = roles;
-      return this;
-    }
-
-    public User build() {
-      return new User(id, name, lastName, email, identityDocument, phone, address, password, secretKey, createdAt, status, roles);
-    }
+    return new User(userId, userName, userLastName, userEmail, identityDocument, phone, address, password, failedLoginAttempts, secretKey, createdAt, status, roles);
   }
 
   public UserId getId() {
@@ -194,18 +105,43 @@ public class User {
   public LocalDateTime getCreatedAt() {
     return createdAt;
   }
-
   public List<Role> getRoles() {
     return roles;
   }
-
+  public Integer getFailedLoginAttempts() {
+    return failedLoginAttempts;
+  }
   public String getSecretKey(){
     return secretKey;
   }
-  public void updateSecretKey(String secretKey){
-    this.secretKey = secretKey;
+  public void logout(String newSecretKey){
+    this.secretKey = newSecretKey;
   }
   public void updatePassword(String newPassword) {
     this.password = newPassword;
+  }
+  public boolean isLocked() {
+    return this.status == UserStatus.LOCKED;
+  }
+  private void lockAccount() {
+    this.status = UserStatus.LOCKED;
+  }
+  public void clearFailedLoginAttempts() {
+    this.failedLoginAttempts = 0;
+  }
+  public void unlockAccount() {
+    this.failedLoginAttempts = 0;
+    this.status = UserStatus.ACTIVE;
+  }
+  public void registerFailedLoginAttempt() {
+    if (this.failedLoginAttempts == null) {
+      this.failedLoginAttempts = 1;
+    } else {
+      this.failedLoginAttempts +=1;
+    }
+
+    if (this.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
+      this.lockAccount();
+    }
   }
 }

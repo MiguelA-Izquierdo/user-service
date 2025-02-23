@@ -1,7 +1,6 @@
-package com.app.userService.user.infrastructure.repository;
+package com.app.userService.user.infrastructure.repositories;
 
 import com.app.userService.user.domain.model.Role;
-import com.app.userService.user.domain.model.User;
 import com.app.userService.user.infrastructure.entities.UserEntity;
 import com.app.userService.user.infrastructure.entities.UserRoleEntity;
 import org.springframework.data.jpa.repository.Query;

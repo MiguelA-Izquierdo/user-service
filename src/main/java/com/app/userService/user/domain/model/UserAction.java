@@ -7,4 +7,6 @@ public enum UserAction {
   LOGGED,
   LOGGED_WITH_TOKEN,
   LOGOUT,
+  LOCKED,
+  UNLOCKED
 }

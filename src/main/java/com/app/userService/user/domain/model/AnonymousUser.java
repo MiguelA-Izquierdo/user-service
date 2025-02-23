@@ -23,6 +23,7 @@ public class AnonymousUser {
   private final String postalCode;
   private final String country;
   private final String password;
+  private final Integer failedLoginAttempts;
   private final String secretKey;
   private final UserStatus status;
   private final LocalDateTime createdAt;
@@ -45,6 +46,7 @@ public class AnonymousUser {
       .withPostalCode(user.getAddress().getPostalCode())
       .withCountry(user.getAddress().getCountry())
       .withPassword(user.getPassword())
+      .withFailedLoginAttempts(user.getFailedLoginAttempts())
       .withSecretKey(user.getSecretKey())
       .withCreatedAt(user.getCreatedAt())
       .withRoles(new ArrayList<>())
@@ -67,6 +69,7 @@ public class AnonymousUser {
     this.postalCode = builder.postalCode;
     this.country = builder.country;
     this.password = builder.password;
+    this.failedLoginAttempts = builder.failedLoginAttempts;
     this.secretKey = builder.secretKey;
     this.status = builder.status;
     this.createdAt = builder.createdAt;
@@ -89,6 +92,7 @@ public class AnonymousUser {
     private String postalCode;
     private String country;
     private String password;
+    private Integer failedLoginAttempts;
     private String secretKey;
     private UserStatus status = UserStatus.DELETED;
     private LocalDateTime createdAt;
@@ -166,6 +170,10 @@ public class AnonymousUser {
 
     public Builder withPassword(String password) {
       this.password = anonymizeString(password);
+      return this;
+    }
+    public Builder withFailedLoginAttempts(Integer failedLoginAttempts) {
+      this.failedLoginAttempts = failedLoginAttempts;
       return this;
     }
     public Builder withSecretKey(String secretKey) {
@@ -257,6 +265,10 @@ public class AnonymousUser {
 
   public String getPassword() {
     return password;
+  }
+
+  public Integer getFailedLoginAttempts() {
+    return failedLoginAttempts;
   }
 
   public String getSecretKey() {

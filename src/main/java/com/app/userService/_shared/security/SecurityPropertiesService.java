@@ -12,7 +12,8 @@ public class SecurityPropertiesService {
 
   private static final String[] PUBLIC_POST_ROUTES = {
     "/users",
-    "/auth"
+    "/auth",
+    "/auth//unlock-reset-password"
   };
 
   private static final String[] PUBLIC_GET_ROUTES = {
