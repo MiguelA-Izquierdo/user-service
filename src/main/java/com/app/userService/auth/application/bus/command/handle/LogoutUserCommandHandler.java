@@ -1,10 +1,8 @@
 package com.app.userService.auth.application.bus.command.handle;
 
-import com.app.userService._shared.bus.command.CommandHandler;
+import com.app.userService._shared.application.bus.command.CommandHandler;
 import com.app.userService.auth.application.bus.command.LogoutUserCommand;
 import com.app.userService.auth.application.useCases.LogoutUseCase;
-import com.app.userService.user.application.bus.command.DeleteUserCommand;
-import com.app.userService.user.application.useCases.DeleteUserUseCase;
 import org.springframework.stereotype.Service;
 
 

@@ -1,6 +1,6 @@
 package com.app.userService.user.application.bus.query.handler;
 
-import com.app.userService._shared.bus.query.QueryHandler;
+import com.app.userService._shared.application.bus.query.QueryHandler;
 import com.app.userService.user.application.bus.query.GetAllUsersQuery;
 import com.app.userService.user.application.useCases.GetAllUsersUseCase;
 import com.app.userService.user.application.validation.GetAllUsersQueryValidator;

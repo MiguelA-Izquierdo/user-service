@@ -1,10 +1,13 @@
 package com.app.userService.auth.application.useCases;
 
 
+import com.app.userService._shared.application.service.UserEventService;
 import com.app.userService.auth.application.bus.command.LogoutUserCommand;
+import com.app.userService.auth.application.service.LoginService;
 import com.app.userService.user.application.service.UserActionLogService;
 import com.app.userService.user.application.service.UserServiceCore;
 import com.app.userService.user.domain.model.User;
+import com.app.userService.user.domain.model.UserAction;
 import com.app.userService.user.domain.model.UserWrapper;
 import com.app.userService.user.domain.valueObjects.UserId;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,9 +22,17 @@ import java.util.Map;
 public class LogoutUseCase {
   private final UserServiceCore userServiceCore;
   private final UserActionLogService userActionLogService;
-  public LogoutUseCase(UserServiceCore userServiceCore,  UserActionLogService userActionLogService){
+  private final LoginService loginService;
+  private final UserEventService userEventService;
+
+  public LogoutUseCase(UserServiceCore userServiceCore,
+                       UserActionLogService userActionLogService,
+                       UserEventService userEventService,
+                       LoginService loginService ){
     this.userServiceCore = userServiceCore;
     this.userActionLogService = userActionLogService;
+    this.loginService = loginService;
+    this.userEventService = userEventService;
   }
   @Transactional
   public void execute(LogoutUserCommand command) {
@@ -32,11 +43,12 @@ public class LogoutUseCase {
     User user = existingUser.getUser()
       .orElseThrow(() -> new EntityNotFoundException("User with ID " + " not found"));
 
-    Map<String, String> metaData = new HashMap<>();
-    metaData.put("executorUserId", command.executorUserId());
+    loginService.logoutUser(user);
 
-    userServiceCore.logoutUser(user);
-    userActionLogService.registerLogout(user, metaData);
-    }
+    userEventService.handleUserLogoutEvent(user);
+
+    userActionLogService.addMetadata("executorUserId", command.executorUserId());
+    userActionLogService.registerUserAction(user, UserAction.LOGOUT);
+  }
 
 }

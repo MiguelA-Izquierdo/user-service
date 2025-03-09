@@ -1,7 +1,7 @@
 package com.app.userService.user.application.bus.command;
 
-import com.app.userService._shared.bus.command.Command;
-import com.app.userService._shared.bus.command.CommandBus;
+import com.app.userService._shared.application.bus.command.Command;
+import com.app.userService._shared.application.bus.command.CommandBus;
 
 import java.util.HashMap;
 import java.util.Map;

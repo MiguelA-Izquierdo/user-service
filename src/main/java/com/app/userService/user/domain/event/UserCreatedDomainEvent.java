@@ -1,5 +1,6 @@
 package com.app.userService.user.domain.event;
 
+import com.app.userService._shared.domain.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

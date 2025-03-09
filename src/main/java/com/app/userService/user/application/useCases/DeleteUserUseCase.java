@@ -2,9 +2,10 @@ package com.app.userService.user.application.useCases;
 
 import com.app.userService.user.application.bus.command.DeleteUserCommand;
 import com.app.userService.user.application.service.UserActionLogService;
-import com.app.userService.user.application.service.UserEventService;
+import com.app.userService._shared.application.service.UserEventService;
 import com.app.userService.user.application.service.UserServiceCore;
 import com.app.userService.user.domain.model.User;
+import com.app.userService.user.domain.model.UserAction;
 import com.app.userService.user.domain.model.UserWrapper;
 import com.app.userService.user.domain.valueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,13 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class DeleteUserUseCase {
   private static final Logger logger = LoggerFactory.getLogger(DeleteUserUseCase.class);
-
   private final UserServiceCore userServiceCore;
   private final UserEventService userEventService;
   private final UserActionLogService userActionLogService;
@@ -41,8 +38,7 @@ public class DeleteUserUseCase {
 
     userServiceCore.anonymizeUser(user);
 
-    Map<String, String> metaData = new HashMap<>();
-    userActionLogService.registerUserDeleted(user, metaData);
+    userActionLogService.registerUserAction(user, UserAction.DELETED);
 
     userEventService.handleUserDeletedEvent(user);
   }

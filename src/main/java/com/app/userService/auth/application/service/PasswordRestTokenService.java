@@ -1,6 +1,6 @@
 package com.app.userService.auth.application.service;
 
-import com.app.userService._shared.exceptions.EntityExistsException;
+import com.app.userService._shared.infraestructure.exceptions.EntityExistsException;
 import com.app.userService.auth.domain.model.PasswordResetToken;
 import com.app.userService.auth.domain.repositories.PasswordResetTokenRepository;
 

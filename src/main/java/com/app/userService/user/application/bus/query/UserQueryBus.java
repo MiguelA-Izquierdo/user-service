@@ -1,8 +1,8 @@
 package com.app.userService.user.application.bus.query;
 
-import com.app.userService._shared.bus.query.Query;
-import com.app.userService._shared.bus.query.QueryBus;
-import com.app.userService._shared.bus.query.QueryHandler;
+import com.app.userService._shared.application.bus.query.Query;
+import com.app.userService._shared.application.bus.query.QueryBus;
+import com.app.userService._shared.application.bus.query.QueryHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

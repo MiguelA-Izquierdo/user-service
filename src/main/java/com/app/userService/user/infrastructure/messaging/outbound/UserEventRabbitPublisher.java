@@ -1,6 +1,6 @@
 package com.app.userService.user.infrastructure.messaging.outbound;
 
-import com.app.userService.user.domain.event.Event;
+import com.app.userService._shared.domain.event.Event;
 import com.app.userService.user.domain.service.EventPublisher;
 import com.app.userService._shared.infraestructure.serialization.JsonSerializationService;
 import com.fasterxml.jackson.core.JsonProcessingException;

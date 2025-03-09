@@ -2,15 +2,17 @@ package com.app.userService._shared.infraestructure.service;
 
 import com.app.userService._shared.application.service.RequestContext;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
 @RequestScope
-@Component
+@Service
 public class RequestContextService implements RequestContext {
 
   private String clientIp;
   private String userAgent;
   private String requestUrl;
+  private String authenticatedUserId;
 
   @Override
   public String getClientIp() {
@@ -40,5 +42,14 @@ public class RequestContextService implements RequestContext {
   @Override
   public void setRequestUrl(String requestUrl) {
     this.requestUrl = requestUrl;
+  }
+  @Override
+  public String getAuthenticatedUserId() {
+    return authenticatedUserId;
+  }
+
+  @Override
+  public void setAuthenticatedUserId(String requestUrl) {
+    this.authenticatedUserId = authenticatedUserId;
   }
 }

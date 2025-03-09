@@ -1,6 +1,6 @@
 package com.app.userService.user.application.bus.command.handle;
 
-import com.app.userService._shared.bus.command.CommandHandler;
+import com.app.userService._shared.application.bus.command.CommandHandler;
 import com.app.userService.user.application.bus.command.UpdatePasswordCommand;
 import com.app.userService.user.application.useCases.UpdatePasswordUseCase;
 import com.app.userService.user.application.validation.UpdatePasswordCommandValidator;

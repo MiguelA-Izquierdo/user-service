@@ -1,6 +1,6 @@
 package com.app.userService.user.domain.model;
 
-import com.app.userService.user.domain.event.Event;
+import com.app.userService._shared.domain.event.Event;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

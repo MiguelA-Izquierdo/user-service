@@ -1,6 +1,6 @@
 package com.app.userService.user.application.bus.command.handle;
 
-import com.app.userService._shared.bus.command.CommandHandler;
+import com.app.userService._shared.application.bus.command.CommandHandler;
 import com.app.userService.user.application.bus.command.GrantSuperAdminCommand;
 import com.app.userService.user.application.useCases.GrantSuperAdminUseCase;
 import org.springframework.stereotype.Service;

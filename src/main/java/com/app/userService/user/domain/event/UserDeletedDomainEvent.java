@@ -1,5 +1,7 @@
 package com.app.userService.user.domain.event;
 
+import com.app.userService._shared.domain.event.Event;
+
 import java.util.UUID;
 
 public class UserDeletedDomainEvent implements Event<UserDeletedDomainEvent.UserPayload> {

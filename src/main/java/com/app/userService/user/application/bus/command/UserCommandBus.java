@@ -1,8 +1,8 @@
 package com.app.userService.user.application.bus.command;
 
-import com.app.userService._shared.bus.command.Command;
-import com.app.userService._shared.bus.command.CommandBus;
-import com.app.userService._shared.bus.command.CommandHandler;
+import com.app.userService._shared.application.bus.command.Command;
+import com.app.userService._shared.application.bus.command.CommandBus;
+import com.app.userService._shared.application.bus.command.CommandHandler;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;

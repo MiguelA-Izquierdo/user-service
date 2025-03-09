@@ -1,18 +1,21 @@
 package com.app.userService.user.infrastructure.api.controller;
 
 import com.app.userService._shared.infraestructure.dto.ErrorResponseDTO;
+import com.app.userService._shared.infraestructure.dto.SuccessResponseDTO;
+
 import com.app.userService.user.application.bus.command.*;
 import com.app.userService.user.application.bus.query.GetAllUsersQuery;
 import com.app.userService.user.application.bus.query.GetUserByIdQuery;
 import com.app.userService.user.application.bus.query.UserQueryBus;
 import com.app.userService.user.application.dto.PaginatedUsersDTO;
+
 import com.app.userService.user.domain.model.PaginatedResult;
-import com.app.userService.user.infrastructure.api.dto.CreateUserCommandDTO;
-import com.app.userService._shared.infraestructure.dto.SuccessResponseDTO;
-import com.app.userService.user.infrastructure.api.dto.UserResponseDTO;
 import com.app.userService.user.domain.model.User;
 
+import com.app.userService.user.infrastructure.api.dto.CreateUserCommandDTO;
+import com.app.userService.user.infrastructure.api.dto.UserResponseDTO;
 import com.app.userService.user.infrastructure.service.CreateUserCommandFactory;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -20,10 +23,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.servlet.http.HttpServletRequest;
+
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.Map;

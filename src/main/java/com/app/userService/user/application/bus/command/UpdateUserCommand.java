@@ -1,7 +1,7 @@
 package com.app.userService.user.application.bus.command;
 
-import com.app.userService._shared.bus.command.Command;
-import com.app.userService._shared.bus.command.CommandBus;
+import com.app.userService._shared.application.bus.command.Command;
+import com.app.userService._shared.application.bus.command.CommandBus;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -184,6 +184,36 @@ public record UpdateUserCommand(
       addressMap.put("country", address.country);
     }
     return addressMap;
+  }
+
+  @Override
+  public String userId() {
+    return userId;
+  }
+
+  @Override
+  public String userName() {
+    return userName;
+  }
+
+  @Override
+  public String lastName() {
+    return lastName;
+  }
+
+  @Override
+  public IdentityDocument identityDocument() {
+    return identityDocument;
+  }
+
+  @Override
+  public Phone phone() {
+    return phone;
+  }
+
+  @Override
+  public Address address() {
+    return address;
   }
 }
 

@@ -1,6 +1,6 @@
 package com.app.userService.user.application.bus.command.handle;
 
-import com.app.userService._shared.bus.command.CommandHandler;
+import com.app.userService._shared.application.bus.command.CommandHandler;
 import com.app.userService.user.application.bus.command.CreateUserCommand;
 import com.app.userService.user.application.useCases.CreateUserUseCase;
 import com.app.userService.user.application.validation.CreateUserCommandValidator;

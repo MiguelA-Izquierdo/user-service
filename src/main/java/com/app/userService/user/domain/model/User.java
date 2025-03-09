@@ -66,6 +66,21 @@ public class User {
     return new User(userId, userName, userLastName, userEmail, identityDocument, phone, address, password, failedLoginAttempts, secretKey, createdAt, status, roles);
   }
 
+  public static User of(UserId userId,
+                        UserName userName,
+                        UserLastName userLastName,
+                        UserEmail userEmail,
+                        IdentityDocument identityDocument,
+                        Phone phone,
+                        Address address,
+                        String password,
+                        Integer failedLoginAttempts,
+                        LocalDateTime createdAt,
+                        UserStatus status,
+                        List<Role> roles) {
+    String secretKey = generateRandomSecretKey();
+    return new User(userId, userName, userLastName, userEmail, identityDocument, phone, address, password, failedLoginAttempts, secretKey, createdAt, status, roles);
+  }
   public UserId getId() {
     return id;
   }
@@ -114,10 +129,11 @@ public class User {
   public String getSecretKey(){
     return secretKey;
   }
-  public void logout(String newSecretKey){
-    this.secretKey = newSecretKey;
+  public void logout(){
+      this.secretKey = generateRandomSecretKey();
   }
   public void updatePassword(String newPassword) {
+    this.secretKey = generateRandomSecretKey();
     this.password = newPassword;
   }
   public boolean isLocked() {
@@ -125,6 +141,13 @@ public class User {
   }
   private void lockAccount() {
     this.status = UserStatus.LOCKED;
+  }
+  private static String generateRandomSecretKey(){
+    return new Random()
+      .ints(18, 48, 122)
+      .filter(Character::isLetterOrDigit)
+      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+      .toString();
   }
   public void clearFailedLoginAttempts() {
     this.failedLoginAttempts = 0;

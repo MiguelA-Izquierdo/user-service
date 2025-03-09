@@ -31,4 +31,12 @@ public class OpenApiConfig {
       .packagesToScan("com.app.userService.user.infrastructure.api.controller")
       .build();
   }
+
+  @Bean
+  public GroupedOpenApi authApi() {
+    return GroupedOpenApi.builder()
+      .group("auth-api")
+      .packagesToScan("com.app.userService.auth.infrastructure.api.controller")
+      .build();
+  }
 }

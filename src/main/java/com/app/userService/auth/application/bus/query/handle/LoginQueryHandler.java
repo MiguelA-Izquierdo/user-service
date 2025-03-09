@@ -1,6 +1,6 @@
 package com.app.userService.auth.application.bus.query.handle;
 
-import com.app.userService._shared.bus.query.QueryHandler;
+import com.app.userService._shared.application.bus.query.QueryHandler;
 
 import com.app.userService.auth.application.bus.query.LoginQuery;
 import com.app.userService.auth.application.dto.UserLoggedDTO;

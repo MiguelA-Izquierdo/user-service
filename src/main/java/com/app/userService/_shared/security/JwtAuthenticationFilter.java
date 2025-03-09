@@ -1,5 +1,6 @@
 package com.app.userService._shared.security;
 
+import com.app.userService._shared.application.service.RequestContext;
 import com.app.userService._shared.infraestructure.dto.ErrorResponseDTO;
 import com.app.userService.auth.domain.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,10 +35,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private String secretKey;
 
   private final SecurityPropertiesService securityPropertiesService;
+  private final RequestContext requestContext;
 
-  public JwtAuthenticationFilter(SecurityPropertiesService securityPropertiesService,AuthService authService) {
+  public JwtAuthenticationFilter(SecurityPropertiesService securityPropertiesService,
+                                 AuthService authService,
+                                 RequestContext requestContext) {
     this.securityPropertiesService = securityPropertiesService;
     this.authService = authService;
+    this.requestContext = requestContext;
   }
 
   @Override
@@ -67,7 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       Claims claims = authService.getClaimsFromToken(token);
       String userId = claims.getSubject();
-
+      requestContext.setAuthenticatedUserId(userId);
       List<GrantedAuthority> authorities = extractAuthoritiesFromClaims(claims);
 
       UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
