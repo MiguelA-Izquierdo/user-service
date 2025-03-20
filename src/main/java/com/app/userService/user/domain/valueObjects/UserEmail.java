@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 
-public class UserEmail {
+public class UserEmail extends ValueObjectAbstract{
   private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
   private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
@@ -50,15 +50,13 @@ public class UserEmail {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null || getClass() != obj.getClass()) return false;
-    UserEmail that = (UserEmail) obj;
-    return email.equals(that.email);
+  protected boolean compareAttributes(Object o) {
+    if (!(o instanceof UserEmail that)) return false;
+    return this.email.equals(that.email);
   }
 
   @Override
-  public int hashCode() {
+  protected int generateHashCode() {
     return email.hashCode();
   }
 }

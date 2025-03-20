@@ -85,22 +85,21 @@ public class IdentityDocument extends ValueObjectAbstract{
   public String getDocumentNumber() {
     return documentNumber;
   }
+
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    IdentityDocument that = (IdentityDocument) o;
+  public String toString() {
+    return documentType + ": " + documentNumber;
+  }
+
+  @Override
+  protected boolean compareAttributes(Object o) {
+    if (!(o instanceof IdentityDocument that)) return false;
     return Objects.equals(documentType, that.documentType) &&
       Objects.equals(documentNumber, that.documentNumber);
   }
 
   @Override
-  public int hashCode() {
+  protected int generateHashCode() {
     return Objects.hash(documentType, documentNumber);
-  }
-
-  @Override
-  public String toString() {
-    return documentType + ": " + documentNumber;
   }
 }

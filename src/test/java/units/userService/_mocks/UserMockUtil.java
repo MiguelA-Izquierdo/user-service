@@ -1,61 +1,37 @@
 package units.userService._mocks;
 
 import com.app.userService.user.application.bus.command.CreateUserCommand;
-import com.app.userService.user.application.bus.command.UpdatePasswordCommand;
 import com.app.userService.user.application.bus.command.UpdateUserCommand;
 import com.app.userService.user.domain.valueObjects.*;
-import jakarta.validation.constraints.Email;
 import org.mockito.Mockito;
 import com.app.userService.user.domain.model.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class UserMockUtil {
 
   public static User createMockUser() {
-    User mockUser = Mockito.mock(User.class);
+    UserId userId = UserId.of(UUID.randomUUID().toString());
+    IdentityDocument identityDocument = IdentityDocument.of("Passport", "123456789");
+    Phone phone = Phone.of("+34", "633633633");
+    Address address = Address.of("Main St", "123", "Springfield", "Illinois", "62704", "USA");
 
-    String userId = UUID.randomUUID().toString();
-    UserId mockUserId = Mockito.mock(userId);
-    Mockito.when(mockUserId.getValue()).thenReturn(UUID.randomUUID());
-    Mockito.when(mockUser.getId()).thenReturn(mockUserId);
-
-    UserName mockName = Mockito.mock(UserName.class);
-    Mockito.when(mockName.getValue()).thenReturn("John");
-    Mockito.when(mockUser.getName()).thenReturn(mockName);
-
-    UserLastName mockLastName = Mockito.mock(UserLastName.class);
-    Mockito.when(mockLastName.getValue()).thenReturn("Doe");
-    Mockito.when(mockUser.getLastName()).thenReturn(mockLastName);
-
-    UserEmail mockEmail = Mockito.mock(UserEmail.class);
-    Mockito.when(mockEmail.getEmail()).thenReturn("johndoe@example.com");
-    Mockito.when(mockUser.getEmail()).thenReturn(mockEmail);
-
-    IdentityDocument mockIdentityDocument = Mockito.mock(IdentityDocument.class);
-    Mockito.when(mockIdentityDocument.getDocumentType()).thenReturn("Passport");
-    Mockito.when(mockIdentityDocument.getDocumentNumber()).thenReturn("123456789");
-    Mockito.when(mockUser.getIdentityDocument()).thenReturn(mockIdentityDocument);
-
-    Phone mockPhone = Mockito.mock(Phone.class);
-    Mockito.when(mockPhone.getCountryCode()).thenReturn("+1");
-    Mockito.when(mockPhone.getNumber()).thenReturn("1234567890");
-    Mockito.when(mockUser.getPhone()).thenReturn(mockPhone);
-
-    Address mockAddress = Mockito.mock(Address.class);
-    Mockito.when(mockAddress.getStreet()).thenReturn("Main St");
-    Mockito.when(mockAddress.getNumber()).thenReturn("123");
-    Mockito.when(mockAddress.getCity()).thenReturn("Springfield");
-    Mockito.when(mockAddress.getState()).thenReturn("Illinois");
-    Mockito.when(mockAddress.getPostalCode()).thenReturn("62704");
-    Mockito.when(mockAddress.getCountry()).thenReturn("USA");
-    Mockito.when(mockUser.getAddress()).thenReturn(mockAddress);
-
-    Mockito.when(mockUser.getPassword()).thenReturn("password123");
-    Mockito.when(mockUser.getCreatedAt()).thenReturn(LocalDateTime.now());
-
-    return mockUser;
+    return User.of(userId,
+      UserName.of("John"),
+      UserLastName.of("Doe"),
+      UserEmail.of("johndoe@example.com"),
+      identityDocument,
+      phone,
+      address,
+      "password123",
+      0,
+      "SecrectTest",
+      LocalDateTime.now(),
+      UserStatus.ACTIVE,
+      List.of(Role.ROLE_USER)
+      );
   }
 
   public static CreateUserCommand createCreateUserCommand() {
@@ -86,7 +62,7 @@ public class UserMockUtil {
     UpdateUserCommand.IdentityDocument identityDocument = new UpdateUserCommand.IdentityDocument("DNI", "73559527F");
     UpdateUserCommand.Address address = new UpdateUserCommand.Address(
       "Main St",
-      "123",
+      "321",
       "Springfield",
       "Illinois",
       "62704",
@@ -101,4 +77,34 @@ public class UserMockUtil {
       phone,
       address);
   }
+  public static UpdateUserCommand createUpdateUserCommandFromUser(User user) {
+    UpdateUserCommand.Phone phone = new UpdateUserCommand.Phone(
+      user.getPhone().getCountryCode(),
+      user.getPhone().getNumber()
+    );
+
+    UpdateUserCommand.IdentityDocument identityDocument = new UpdateUserCommand.IdentityDocument(
+      user.getIdentityDocument().getDocumentType(),
+      user.getIdentityDocument().getDocumentNumber()
+    );
+
+    UpdateUserCommand.Address address = new UpdateUserCommand.Address(
+      user.getAddress().getStreet(),
+      user.getAddress().getNumber(),
+      user.getAddress().getCity(),
+      user.getAddress().getState(),
+      user.getAddress().getPostalCode(),
+      user.getAddress().getCountry()
+    );
+
+    return new UpdateUserCommand(
+      user.getId().getValue().toString(),
+      user.getName().getValue(),
+      user.getLastName().getValue(),
+      identityDocument,
+      phone,
+      address
+    );
+  }
+
 }

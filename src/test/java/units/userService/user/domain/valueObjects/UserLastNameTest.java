@@ -52,7 +52,7 @@ class UserLastNameTest {
     Exception exception = Assertions.assertThrows(ValueObjectValidationException.class, () ->
       UserLastName.of(null)
     );
-    Assertions.assertEquals("User last cannot be null or empty", exception.getMessage());
+    Assertions.assertEquals("UserLastName cannot be null or empty", exception.getMessage());
   }
 
   @Test
@@ -60,7 +60,7 @@ class UserLastNameTest {
     Exception exception = Assertions.assertThrows(ValueObjectValidationException.class, () ->
       UserLastName.of("")
     );
-    Assertions.assertEquals("User last cannot be null or empty", exception.getMessage());
+    Assertions.assertEquals("UserLastName cannot be null or empty", exception.getMessage());
   }
 
   @Test
@@ -68,7 +68,7 @@ class UserLastNameTest {
     Exception exception = Assertions.assertThrows(ValueObjectValidationException.class, () ->
       UserLastName.of("   ")
     );
-    Assertions.assertEquals("User last cannot be null or empty", exception.getMessage());
+    Assertions.assertEquals("UserLastName cannot be null or empty", exception.getMessage());
   }
 
   @Test

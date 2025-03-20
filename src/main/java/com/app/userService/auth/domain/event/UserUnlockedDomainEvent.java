@@ -45,7 +45,7 @@ public class UserUnlockedDomainEvent implements Event<UserUnlockedDomainEvent.Us
 
   @Override
   public String getType() {
-    return "user.created";
+    return "user.unlocked";
   }
 
   @Override

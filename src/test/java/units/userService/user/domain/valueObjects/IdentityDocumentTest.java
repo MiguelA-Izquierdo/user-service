@@ -5,6 +5,11 @@ import com.app.userService.user.domain.valueObjects.IdentityDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 
 class IdentityDocumentTest {
 
@@ -73,6 +78,14 @@ class IdentityDocumentTest {
   }
 
   @Test
+  void testNotValidDocumentType() {
+    Exception exception = Assertions.assertThrows(ValueObjectValidationException.class, () ->
+      IdentityDocument.of("LOL", "12345678A")
+    );
+    Assertions.assertEquals("Invalid document type. Allowed types: DNI, NIE, Passport", exception.getMessage());
+  }
+
+  @Test
   void testNullDocumentNumber() {
     Exception exception = Assertions.assertThrows(ValueObjectValidationException.class, () ->
       IdentityDocument.of("DNI", null)
@@ -94,5 +107,61 @@ class IdentityDocumentTest {
       IdentityDocument.of("DNI", "")
     );
     Assertions.assertEquals("Document number cannot be null or empty", exception.getMessage());
+  }
+
+  @Test
+  void testGetValidationErrors() {
+    Map<String, String> identityDocumentMap = new HashMap<>();
+
+    identityDocumentMap.put("documentType", "");
+    identityDocumentMap.put("documentNumber", null);
+
+    Map<String, String> errors = IdentityDocument.getValidationErrors(identityDocumentMap);
+
+    assertEquals("Document type cannot be null or empty", errors.get("Document type"));
+    assertEquals("Document number cannot be null or empty", errors.get("Document number"));
+  }
+  @Test
+  void testGetValidationErrorsIsEmpty() {
+    Map<String, String> identityDocumentMap = new HashMap<>();
+
+    identityDocumentMap.put("documentType", "DNI");
+    identityDocumentMap.put("documentNumber", "12345678A");
+
+    Map<String, String> errors = IdentityDocument.getValidationErrors(identityDocumentMap);
+
+    assertTrue(errors.isEmpty());
+  }
+
+  @Test
+  void testEquals_SameObject() {
+    IdentityDocument doc1 = IdentityDocument.of("Passport", "A12345678");
+    assertEquals(doc1, doc1, "Un objeto debe ser igual a sí mismo");
+  }
+
+  @Test
+  void testEquals_NullObject() {
+    IdentityDocument doc1 = IdentityDocument.of("Passport", "A12345678");
+    assertNotNull(doc1, "Un objeto no debe ser igual a null");
+  }
+  @Test
+  void testEquals_EqualObjects() {
+    IdentityDocument doc1 = IdentityDocument.of("Passport", "A12345678");
+    IdentityDocument doc2 = IdentityDocument.of("Passport", "A12345678");
+    assertEquals(doc1, doc2, "Dos objetos con el mismo tipo y número deben ser iguales");
+  }
+
+  @Test
+  void testEquals_DifferentDocumentType() {
+    IdentityDocument doc1 = IdentityDocument.of("Passport", "A12345678");
+    IdentityDocument doc2 = IdentityDocument.of("DNI", "12345678A");
+    assertNotEquals(doc1, doc2, "Objetos con diferente tipo de documento no deben ser iguales");
+  }
+
+  @Test
+  void testEquals_DifferentDocumentNumber() {
+    IdentityDocument doc1 = IdentityDocument.of("Passport", "A12345678");
+    IdentityDocument doc2 = IdentityDocument.of("Passport", "E12345678");
+    assertNotEquals(doc1, doc2, "Objetos con diferente número de documento no deben ser iguales");
   }
 }

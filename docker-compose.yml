@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  user-service:
+    build:
+      context: .  # Carpeta donde está tu Dockerfile
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app/userService
+    env_file:
+      - .env
+    environment:
+      DB_URL: ${DB_URL}  # Aquí apunta a tu DB externa
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+      JWT_SECRET: ${JWT_SECRET}
+      RABBITMQ_USER_SERVICE_HOST: ${RABBITMQ_USER_SERVICE_HOST}  # Aquí apunta a tu RabbitMQ externo
+      RABBITMQ_USER_SERVICE_PORT: ${RABBITMQ_USER_SERVICE_PORT}
+      RABBITMQ_USER_SERVICE_USER_NAME: ${RABBITMQ_USER_SERVICE_USER_NAME}
+      RABBITMQ_USER_SERVICE_PASSWORD: ${RABBITMQ_USER_SERVICE_PASSWORD}
+      RABBITMQ_USER_SERVICE_VIRTUAL_HOST: ${RABBITMQ_USER_SERVICE_VIRTUAL_HOST}
+
+    ports:
+      - "8081:8080"  # Exponer el puerto solo para tu aplicación
+
+# Ya no hay servicios 'db' ni 'rabbitmq' porque van a estar en servidores externos

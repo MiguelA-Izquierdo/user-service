@@ -29,6 +29,7 @@ public class UserActionLogEntity {
   private Instant timestamp;
 
   @Convert(converter = MetadataConverter.class)
+  @Column(name = "metadata", length = 10000)
   private Map<String, String> metadata;
 
   public UserActionLogEntity() {}

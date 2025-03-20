@@ -23,23 +23,25 @@ class AnonymousUserTest {
   void testAnonymousUserCreation() {
     AnonymousUser anonymousUser = AnonymousUser.of(mockUser);
 
-    Assertions.assertNotNull(anonymousUser);
-    Assertions.assertEquals("****", anonymousUser.getName());
-    Assertions.assertEquals("***", anonymousUser.getLastName());
-    Assertions.assertEquals("anon-" + mockUser.getId().getValue().toString() + "@anon.com", anonymousUser.getEmail());
-    Assertions.assertEquals("********", anonymousUser.getDocumentType());
-    Assertions.assertEquals("*********", anonymousUser.getDocumentNumber());
-    Assertions.assertEquals("**", anonymousUser.getCountryCode());
-    Assertions.assertEquals("**********", anonymousUser.getNumber());
-    Assertions.assertEquals("*******", anonymousUser.getStreet());
-    Assertions.assertEquals("***", anonymousUser.getStreetNumber());
-    Assertions.assertEquals("***********", anonymousUser.getCity());
-    Assertions.assertEquals("********", anonymousUser.getState());
-    Assertions.assertEquals("*****", anonymousUser.getPostalCode());
-    Assertions.assertEquals("***", anonymousUser.getCountry());
-    Assertions.assertEquals("***********", anonymousUser.getPassword());
-    Assertions.assertEquals(UserStatus.DELETED, anonymousUser.getStatus());
-    Assertions.assertTrue(anonymousUser.getRoles().isEmpty());
+    Assertions.assertNotNull(anonymousUser, "The anonymous user should not be null");
+    Assertions.assertEquals("****", anonymousUser.getName(), "The name should be anonymized as '****'");
+    Assertions.assertEquals("***", anonymousUser.getLastName(), "The last name should be anonymized as '***'");
+    Assertions.assertEquals("anon-" + mockUser.getId().getValue().toString() + "@anon.com", anonymousUser.getEmail(),
+      "The email should be anonymized with 'anon-' prefix and the user's ID");
+    Assertions.assertEquals("********", anonymousUser.getDocumentType(), "The document type should be anonymized as '********'");
+    Assertions.assertEquals("*********", anonymousUser.getDocumentNumber(), "The document number should be anonymized as '*********'");
+    Assertions.assertEquals("***", anonymousUser.getCountryCode(), "The country code should be anonymized as '***'");
+    Assertions.assertEquals("*********", anonymousUser.getNumber(), "The phone number should be anonymized as '**********'");
+    Assertions.assertEquals("*******", anonymousUser.getStreet(), "The street should be anonymized as '*******'");
+    Assertions.assertEquals("***", anonymousUser.getStreetNumber(), "The street number should be anonymized as '***'");
+    Assertions.assertEquals("***********", anonymousUser.getCity(), "The city should be anonymized as '***********'");
+    Assertions.assertEquals("********", anonymousUser.getState(), "The state should be anonymized as '********'");
+    Assertions.assertEquals("*****", anonymousUser.getPostalCode(), "The postal code should be anonymized as '*****'");
+    Assertions.assertEquals("***", anonymousUser.getCountry(), "The country should be anonymized as '***'");
+    Assertions.assertEquals("***********", anonymousUser.getPassword(), "The password should be anonymized as '***********'");
+    Assertions.assertEquals(UserStatus.DELETED, anonymousUser.getStatus(), "The user status should be 'DELETED'");
+    Assertions.assertTrue(anonymousUser.getRoles().isEmpty(), "The user should have no roles after anonymization");
+
   }
 }
 

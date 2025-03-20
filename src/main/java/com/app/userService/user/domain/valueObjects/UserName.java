@@ -46,21 +46,20 @@ public class UserName  extends ValueObjectAbstract {
     return value;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    UserName that = (UserName) o;
-    return value.equals(that.value);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(value);
-  }
 
   @Override
   public String toString() {
     return value;
+  }
+
+  @Override
+  protected boolean compareAttributes(Object o) {
+    if (!(o instanceof UserName that)) return false;
+    return Objects.equals(this.value, that.value);
+  }
+
+  @Override
+  protected int generateHashCode() {
+    return Objects.hash(value);
   }
 }

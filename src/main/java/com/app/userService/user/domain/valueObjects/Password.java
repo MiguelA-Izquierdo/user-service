@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 
-public class Password {
+public class Password extends ValueObjectAbstract{
   private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{9,}$";;
   private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
 
@@ -52,15 +52,14 @@ public class Password {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null || getClass() != obj.getClass()) return false;
-    Password that = (Password) obj;
-    return password.equals(that.password);
+  protected boolean compareAttributes(Object o) {
+    if (!(o instanceof Password that)) return false;
+    return this.password.equals(that.password);
   }
 
   @Override
-  public int hashCode() {
+  protected int generateHashCode() {
     return password.hashCode();
   }
+
 }

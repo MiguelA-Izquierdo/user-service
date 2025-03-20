@@ -63,44 +63,25 @@ public class Address extends ValueObjectAbstract{
 
   private static void validateStreet(String street) {
     validateNotNullOrEmpty(street, "Street");
-    if (street.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Street","Street cannot be empty");
-    }
   }
 
   private static void validateNumber(String number) {
     validateNotNullOrEmpty(number, "Number");
-    if (number.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Number","Number cannot be empty");
-    }
   }
 
   private static void validateCity(String city) {
     validateNotNullOrEmpty(city, "City");
-    if (city.trim().isEmpty()) {
-      throw new ValueObjectValidationException("City","City cannot be empty");
-    }
   }
 
   private static void validateState(String state) {
     validateNotNullOrEmpty(state,"State");
-    if (state.trim().isEmpty()) {
-      throw new ValueObjectValidationException("State","State cannot be empty");
-    }
   }
-
   private static void validatePostalCode(String postalCode) {
     validateNotNullOrEmpty(postalCode, "Postal code");
-    if (postalCode.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Postal code","Postal code cannot be empty");
-    }
   }
 
   private static void validateCountry(String country) {
     validateNotNullOrEmpty(country, "Country");
-    if (country.trim().isEmpty()) {
-      throw new ValueObjectValidationException("Country","Country cannot be empty");
-    }
   }
 
   public String getStreet() {
@@ -128,10 +109,14 @@ public class Address extends ValueObjectAbstract{
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Address address = (Address) o;
+  public String toString() {
+    return street + " " + city + ", " + state + ", " + postalCode + ", " + country;
+  }
+
+
+  @Override
+  protected boolean compareAttributes(Object o) {
+    if (!(o instanceof Address address)) return false;
     return Objects.equals(street, address.street) &&
       Objects.equals(number, address.number) &&
       Objects.equals(city, address.city) &&
@@ -141,16 +126,7 @@ public class Address extends ValueObjectAbstract{
   }
 
   @Override
-  public int hashCode() {
+  protected int generateHashCode() {
     return Objects.hash(street, number, city, state, postalCode, country);
-  }
-
-  @Override
-  public String toString() {
-    return (street != null ? street : "") + " "
-      + (city != null ? city : "") + ", "
-      + (state != null ? state : "") + ", "
-      + (postalCode != null ? postalCode : "") + ", "
-      + (country != null ? country : "");
   }
 }

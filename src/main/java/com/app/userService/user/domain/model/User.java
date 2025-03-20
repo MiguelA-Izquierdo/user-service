@@ -2,8 +2,10 @@ package com.app.userService.user.domain.model;
 
 import com.app.userService.user.domain.valueObjects.*;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class User {
@@ -167,4 +169,51 @@ public class User {
       this.lockAccount();
     }
   }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+
+    User other = (User) obj;
+    Field[] fields = getClass().getDeclaredFields();
+    try {
+      for (Field field : fields) {
+        field.setAccessible(true);
+        Object thisValue = field.get(this);
+        Object otherValue = field.get(other);
+
+        if (!Objects.equals(thisValue, otherValue)) {
+          return false;
+        }
+      }
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 17;
+    Field[] fields = getClass().getDeclaredFields();
+    try {
+      for (Field field : fields) {
+        field.setAccessible(true);
+        Object value = field.get(this);
+        result = 31 * result + (value == null ? 0 : value.hashCode());
+      }
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    }
+
+    return result;
+  }
+
 }

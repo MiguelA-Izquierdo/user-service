@@ -1,0 +1,24 @@
+# Ignorar la carpeta de compilación de Maven
+target/
+
+# Ignorar la carpeta de compilación de Gradle
+build/
+
+# Ignorar archivos de configuración de IntelliJ IDEA y Eclipse
+.idea/
+*.iml
+*.ipr
+*.iws
+*.class
+
+# Ignorar archivos de Git
+.git
+.gitignore
+
+# Ignorar archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de logs
+*.log
+logs/

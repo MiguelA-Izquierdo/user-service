@@ -72,21 +72,18 @@ public class Phone extends ValueObjectAbstract{
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Phone phone = (Phone) o;
-    return Objects.equals(countryCode, phone.countryCode) &&
-      Objects.equals(number, phone.number);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(countryCode, number);
-  }
-
-  @Override
   public String toString() {
     return countryCode + "" + number;
+  }
+
+  @Override
+  protected boolean compareAttributes(Object o) {
+    if (!(o instanceof Phone phone)) return false;
+    return Objects.equals(countryCode, phone.countryCode) && Objects.equals(number, phone.number);
+  }
+
+  @Override
+  protected int generateHashCode() {
+    return Objects.hash(countryCode, number);
   }
 }

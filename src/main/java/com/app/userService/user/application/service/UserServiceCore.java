@@ -8,6 +8,7 @@ import com.app.userService.user.domain.repositories.UserRepository;
 import com.app.userService.user.domain.repositories.UserRoleRepository;
 import com.app.userService.user.domain.valueObjects.*;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.slf4j.Logger;
@@ -78,27 +79,18 @@ public class UserServiceCore {
   private User updateUserFields(UpdateUserCommand command, User currentUser) {
     return User.of(
       currentUser.getId(),
-      updateIfChanged("Name",command.userName(), currentUser.getName(), UserName::of),
-      updateIfChanged("LastName",command.lastName(), currentUser.getLastName(), UserLastName::of),
+      command.userName() != null ? updateIfChanged("Name", UserName.of(command.userName()), currentUser.getName()) : currentUser.getName(),
+      command.lastName() != null ? updateIfChanged("LastName", UserLastName.of(command.lastName()), currentUser.getLastName()) : currentUser.getLastName(),
       currentUser.getEmail(),
-      updateIfChanged(
-        "Document",
-        command.identityDocument(),
-        currentUser.getIdentityDocument(),
-        doc -> IdentityDocument.of(doc.documentType(), doc.documentNumber())
-      ),
-      updateIfChanged(
-        "Phone number",
-        command.phone(),
-        currentUser.getPhone(),
-        phone -> Phone.of(phone.countryCode(), phone.phoneNumber())
-      ),
-      updateIfChanged(
-        "Address",
-        command.address(),
-        currentUser.getAddress(),
-        addr -> Address.of(addr.street(), addr.streetNumber(), addr.city(), addr.state(), addr.postalCode(), addr.country())
-      ),
+      (command.identityDocument() != null)
+        ? updateIfChanged("Document", IdentityDocument.of(command.identityDocument().documentType(), command.identityDocument().documentNumber()), currentUser.getIdentityDocument())
+        : currentUser.getIdentityDocument(),
+      (command.phone() != null)
+        ? updateIfChanged("Phone number", Phone.of(command.phone().countryCode(), command.phone().phoneNumber()), currentUser.getPhone())
+        : currentUser.getPhone(),
+      (command.address() != null)
+        ? updateIfChanged("Address", Address.of(command.address().street(), command.address().streetNumber(), command.address().city(), command.address().state(), command.address().postalCode(), command.address().country()), currentUser.getAddress())
+        : currentUser.getAddress(),
       currentUser.getPassword(),
       currentUser.getFailedLoginAttempts(),
       currentUser.getSecretKey(),
@@ -107,14 +99,14 @@ public class UserServiceCore {
       currentUser.getRoles()
     );
   }
-  private <T, R> R updateIfChanged(String field, T newValue, R currentValue, Function<T, R> mapper) {
-    if (!Objects.equals(currentValue, newValue)) {
+  private <T> T updateIfChanged(String field, T newValue, T currentValue) {
+    if (!newValue.equals(currentValue)) {
       userActionLogService.addMetadata(field + " old value:", String.valueOf(currentValue));
       userActionLogService.addMetadata(field + " new value:", String.valueOf(newValue));
     }
-    return newValue != null ? mapper.apply(newValue) : currentValue;
-  }
 
+    return newValue;
+  }
   public void unlockAccount(User user){
     user.unlockAccount();
     userRepository.save(user);
