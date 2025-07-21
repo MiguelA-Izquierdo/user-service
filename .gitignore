@@ -2,6 +2,8 @@
 *.class
 *.idea
 *.env
+*.env.local
+*.env.docker
 /target/
 # Log file
 *.log

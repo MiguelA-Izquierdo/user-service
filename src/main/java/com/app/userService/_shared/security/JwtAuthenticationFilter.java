@@ -115,6 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     );
 
     ObjectMapper objectMapper = new ObjectMapper();
+    response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
   }
 }

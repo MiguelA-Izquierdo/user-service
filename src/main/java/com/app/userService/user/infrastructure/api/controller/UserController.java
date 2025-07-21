@@ -166,6 +166,7 @@ public class UserController {
     },
     security = {@SecurityRequirement(name = "bearerAuth")}
   )
+
   @GetMapping
   @PreAuthorize("@userAuthorizationFilter.hasAccessAdmin(authentication).granted")
   public ResponseEntity<Object> getAll(@RequestParam(defaultValue = "0") int page,
@@ -188,7 +189,6 @@ public class UserController {
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
-
   @Operation(
     summary = "Get user details by ID",
     description = "Retrieves the details of a user by their unique ID.",
