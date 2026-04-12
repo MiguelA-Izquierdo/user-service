@@ -7,6 +7,6 @@ import io.jsonwebtoken.Claims;
 public interface AuthService {
   AuthToken generateToken(User user);
   boolean validateToken(String token);
-  String extractSubject(String token);
+  String extractSubjectUnchecked(String token);
   public Claims getClaimsFromToken(String token);
 }

@@ -181,12 +181,7 @@ public class AuthController {
     LogoutUserCommand command = new LogoutUserCommand(executorUserId, executorUserId);
 
     commandBus.dispatch(command);
-    SuccessResponseDTO response = SuccessResponseDTO.Of(
-      HttpStatus.NO_CONTENT.value(),
-      "User logout successfully"
-    );
-
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    return ResponseEntity.noContent().build();
   }
   @Operation(
     summary = "Logout a specific user",
@@ -241,18 +236,13 @@ public class AuthController {
   )
 
   @PostMapping("/logout/{userIdToLogout}")
-  @PreAuthorize("@userAuthorizationFilter.hasAccessToUser(authentication, #userId).granted")
+  @PreAuthorize("@userAuthorizationFilter.hasAccessToUser(authentication, #userIdToLogout).granted")
   public ResponseEntity<Object> logoutUser(@PathVariable String userIdToLogout) {
     String executorUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     LogoutUserCommand command = new LogoutUserCommand(userIdToLogout, executorUserId);
 
     commandBus.dispatch(command);
-    SuccessResponseDTO response = SuccessResponseDTO.Of(
-      HttpStatus.NO_CONTENT.value(),
-      "User logout successfully"
-    );
-
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    return ResponseEntity.noContent().build();
   }
   @Operation(
     summary = "Unlock and reset user password",
@@ -305,11 +295,6 @@ public class AuthController {
   @PostMapping("/unlock-reset-password")
   public ResponseEntity<Object> resetPassword(@RequestBody UnlockResetPasswordCommand command) {
     commandBus.dispatch(command);
-    SuccessResponseDTO response = SuccessResponseDTO.Of(
-      HttpStatus.NO_CONTENT.value(),
-      "User unlocked successfully"
-    );
-
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    return ResponseEntity.noContent().build();
   }
 }

@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -64,7 +65,7 @@ class DeleteUserUseCaseTest {
     verify(userActionLogService, times(1)).registerUserAction(userCaptor.capture(), eq(UserAction.DELETED));
     verify(userEventService, times(1)).handleUserDeletedEvent(userCaptor.capture());
 
-    assert userCaptor.getValue() == user;
+    assertSame(user, userCaptor.getValue());
 
     verify(userServiceCore, times(1)).findUserById(any(UserId.class));
   }

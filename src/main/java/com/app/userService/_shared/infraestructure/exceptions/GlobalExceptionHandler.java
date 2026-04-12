@@ -7,6 +7,8 @@ import com.app.userService.user.domain.exceptions.RoleAlreadyGrantedException;
 import com.app.userService.user.domain.exceptions.UserAlreadyExistsException;
 import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,14 +18,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+  private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
   @ExceptionHandler(NullPointerException.class)
   public ResponseEntity<ErrorResponseDTO> handleNullPointerException(NullPointerException ex) {
-    String message =  "A null value was encountered";
-    String messageDetails = ex.getMessage();
+    logger.error("NullPointerException: {}", ex.getMessage(), ex);
 
     ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
       HttpStatus.INTERNAL_SERVER_ERROR.value(),
-      message
+      "Internal server error"
     );
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
@@ -35,16 +38,15 @@ public class GlobalExceptionHandler {
       ex.getMessage()
     );
 
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponseDTO> handleAllExceptions(Exception ex) {
-    String message =  "Internal server error";
-    String messageDetails = ex.getMessage();
+    logger.error("Unhandled exception: {}", ex.getMessage(), ex);
 
     ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
       HttpStatus.INTERNAL_SERVER_ERROR.value(),
-      messageDetails
+      "Internal server error"
     );
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
@@ -132,11 +134,11 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(TokenExpiredException.class)
   public ResponseEntity<ErrorResponseDTO> handleTokenExpiredException(TokenExpiredException ex) {
     ErrorResponseDTO errorResponse = ErrorResponseDTO.Of(
-      HttpStatus.BAD_REQUEST.value(),
+      HttpStatus.UNAUTHORIZED.value(),
       ex.getMessage()
     );
 
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }
 
 

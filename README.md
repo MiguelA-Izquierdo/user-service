@@ -1,22 +1,118 @@
 # User Service
 
-This is a microservice for user management that includes authentication (Auth) features. The service allows for user registration, authentication, and management, following **Domain-Driven Design (DDD)** principles to organize the code into distinct layers, each with clear and separate responsibilities.
+A user management microservice with JWT authentication, built with **Spring Boot 3.4** and **Java 17**. It follows **Domain-Driven Design (DDD)** principles with a clear separation between domain, application, and infrastructure layers.
 
-## Project Structure
+---
 
-The project is organized according to DDD principles and is divided into the following main modules:
+## Tech Stack
 
-- **auth**: Contains the logic for authentication and authorization (JWT, credential validation).
-- **user**: Manages the logic related to users (registration, updating, deletion).
-- **_shared**: Common components and services, such as events and exceptions.
-- **infrastructure**: Implementation of API, repositories, and other external services.
+| Technology | Version |
+|---|---|
+| Java | 17 |
+| Spring Boot | 3.4.0 |
+| Spring Security | (included in Boot) |
+| Spring Data JPA | (included in Boot) |
+| MySQL | - |
+| RabbitMQ (AMQP) | - |
+| JWT (jjwt) | 0.11.5 |
+| Swagger / OpenAPI | springdoc 2.8.1 |
+| JaCoCo (coverage) | 0.8.8 |
+| Mockito | 5.5.0 |
 
-## Design
+---
 
-The project follows the **Domain-Driven Design (DDD)** pattern, allowing each module to align with the business domain and facilitating the system's maintainability and scalability. The layers are separated into:
+## Architecture
 
-- **Application Layer**: Defines the use cases and interactions with services.
-- **Domain Layer**: Models the entities, domain services, and business rules.
-- **Infrastructure Layer**: Implements API controllers, repositories, and other external dependencies.
+The project is organized into three main modules following DDD:
 
+```
+src/main/java/com/app/userService/
+├── _shared/          # Cross-cutting concerns (events, exceptions, security, DTOs)
+├── auth/             # Authentication module
+│   ├── domain/       # Models, domain services, value objects
+│   ├── application/  # Use cases, commands, queries, validators
+│   └── infrastructure/ # REST controllers, JPA repositories, JWT services
+└── user/             # User module
+    ├── domain/
+    ├── application/
+    └── infrastructure/
+```
 
+Each module exposes its logic through a **CommandBus** and a **QueryBus**, separating write and read operations (lightweight CQRS).
+
+### Security
+
+- **JWT-based** authentication.
+- Each user holds their own `secretKey`, allowing individual session invalidation without affecting other users.
+- Account locking with unlock via a reset token.
+
+#### Roles and permissions
+
+| Role | Permissions |
+|---|---|
+| `ROLE_USER` | Read, update, and delete **their own** profile. Change their own password. Logout themselves. |
+| `ROLE_ADMIN` | Everything a user can do on **any** user. Create users (`POST /users`). List all users (`GET /users`). Access Swagger UI. |
+| `ROLE_SUPER_ADMIN` | Everything an admin can do. Grant the super admin role to another user (`POST /users/grant-role-super-admin/{userId}`). Access health endpoint details. |
+
+---
+
+## API Documentation
+
+Full interactive documentation is available at `/swagger-ui.html` once the service is running.
+
+---
+
+## Deployment
+
+| Mode | Prerequisites | Guide |
+|---|---|---|
+| Docker Compose | Docker | [docs/deployment.md → Docker Compose](docs/deployment.md#docker-compose-recommended) |
+| Local (no Docker) | Java 17, Maven, MySQL, RabbitMQ | [docs/deployment.md → Local development](docs/deployment.md#local-development-without-docker) |
+
+**Docker Compose quick-start:**
+
+```bash
+cp .env.example .env.docker   # fill in secrets
+docker compose --env-file .env.docker up --build
+```
+
+**Local quick-start:**
+
+```bash
+cp .env.example .env          # fill in local values
+./mvnw spring-boot:run
+```
+
+See **[docs/deployment.md](docs/deployment.md)** for the full guide: environment variable reference, first login, and admin user setup.
+
+---
+
+## Tests
+
+```bash
+./mvnw test
+```
+
+To generate a JaCoCo coverage report:
+
+```bash
+./mvnw verify
+# Report available at: target/site/jacoco/index.html
+```
+
+---
+
+## Domain Events
+
+All events are published to the **`userExchange`** exchange (topic type).
+
+| Event type | Routing key | Queue | Trigger | Payload |
+|---|---|---|---|---|
+| `user.created` | `user.created` | `userCreatedQueue` | User created | `userId`, `name`, `lastName`, `email` |
+| `user.deleted` | `user.deleted` | `userDeletedQueue` | User deleted | `userId`, `name`, `lastName`, `email` |
+| `user.logged.with.token` | `user.logged.with.token` | `userLoggedQueue` | Login via existing JWT | `userId`, `name`, `lastName`, `email` |
+| `user.logged.without.token` | `user.logged.without.token` | `userLoggedQueue` | Login via credentials | `userId`, `name`, `lastName`, `email` |
+| `user.logout` | `user.logged.logout` | `userLoggedQueue` | User logout | `userId`, `name`, `lastName`, `email` |
+| `user.locked` | `user.locked` | `userLockedQueue` | Account locked | `userId`, `name`, `lastName`, `email`, `token`, `expirationDate` |
+
+> To subscribe to all login/logout activity use the binding pattern `user.logged.#`.

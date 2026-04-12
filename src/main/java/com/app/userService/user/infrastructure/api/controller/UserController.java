@@ -29,15 +29,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -48,6 +46,10 @@ public class UserController {
   private final UserCommandBus commandBus;
   private final UserQueryBus queryBus;
   private final CreateUserCommandFactory createUserCommandFactory;
+
+  @Value("${app.base-url}")
+  private String baseUrl;
+
   public UserController(UserCommandBus commandBus,
                         UserQueryBus queryBus,
                         CreateUserCommandFactory createUserCommandFactory) {
@@ -98,6 +100,7 @@ public class UserController {
     }
   )
   @PostMapping
+  @PreAuthorize("@userAuthorizationFilter.hasAccessAdmin(authentication).granted")
   public ResponseEntity<Object> create(@RequestBody CreateUserCommandDTO createUserCommandDTO) {
     CreateUserCommand command = createUserCommandFactory.create(createUserCommandDTO);
     commandBus.dispatch(command);
@@ -170,17 +173,12 @@ public class UserController {
   @GetMapping
   @PreAuthorize("@userAuthorizationFilter.hasAccessAdmin(authentication).granted")
   public ResponseEntity<Object> getAll(@RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "10") int size,
-                                       HttpServletRequest request) {
+                                       @RequestParam(defaultValue = "10") int size) {
     GetAllUsersQuery getAllUsersQuery = new GetAllUsersQuery(page, size);
     PaginatedResult<User> paginatedResult = queryBus.send(getAllUsersQuery);
-    String baseUrl = String.format("%s://%s:%d%s",
-      request.getScheme(),
-      request.getServerName(),
-      request.getServerPort(),
-      request.getRequestURI());
+    String usersBaseUrl = baseUrl + "/users";
 
-    PaginatedUsersDTO paginatedUsersDTO = PaginatedUsersDTO.of(paginatedResult, page, size, baseUrl);
+    PaginatedUsersDTO paginatedUsersDTO = PaginatedUsersDTO.of(paginatedResult, page, size, usersBaseUrl);
 
     SuccessResponseDTO response = SuccessResponseDTO.Of(
       HttpStatus.OK.value(),
@@ -337,33 +335,29 @@ public class UserController {
     DeleteUserCommand command = new DeleteUserCommand(userId);
     commandBus.dispatch(command);
 
-    SuccessResponseDTO response = SuccessResponseDTO.Of(
-      HttpStatus.NO_CONTENT.value(),
-      "User deleted successfully"
-    );
-
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    return ResponseEntity.noContent().build();
   }
 
   @PatchMapping
-  @PreAuthorize("@userAuthorizationFilter.hasAccessToUser(authentication, #userId).granted")
+  @PreAuthorize("@userAuthorizationFilter.hasAccessToUser(authentication, #command.userId()).granted")
   public ResponseEntity<Object> update(@RequestBody UpdateUserCommand command) {
     commandBus.dispatch(command);
 
     SuccessResponseDTO response = SuccessResponseDTO.Of(
-      HttpStatus.NO_CONTENT.value(),
+      HttpStatus.OK.value(),
       "User updated successfully"
     );
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
   @PatchMapping("/password")
+  @PreAuthorize("@userAuthorizationFilter.hasAccessToUser(authentication, #command.id()).granted")
   public ResponseEntity<Object> updatePassword(@RequestBody UpdatePasswordCommand command) {
     commandBus.dispatch(command);
-    Map<String, Object> response = new HashMap<>();
-    response.put("success", true);
-    response.put("status", HttpStatus.OK.value());
-    response.put("message", "Password updated successfully");
+    SuccessResponseDTO response = SuccessResponseDTO.Of(
+      HttpStatus.OK.value(),
+      "Password updated successfully"
+    );
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 

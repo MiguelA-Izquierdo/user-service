@@ -16,6 +16,7 @@ import units.userService._mocks.UserMockUtil;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -52,8 +53,8 @@ class UpdateUserUseCaseTest {
 
     UpdateUserCommand capturedCommand = commandCaptor.getValue();
     User capturedUser = userCaptor.getValue();
-    assert capturedCommand.userId().equals(userId.toString());
-    assert capturedUser.equals(user);
+    assertEquals(userId.toString(), capturedCommand.userId());
+    assertEquals(user, capturedUser);
 
     verify(userActionLogService, times(1)).registerUserAction(user, UserAction.UPDATED);
   }

@@ -11,15 +11,11 @@ import java.util.List;
 public class SecurityPropertiesService {
 
   private static final String[] PUBLIC_POST_ROUTES = {
-    "/users",
     "/auth",
-    "/auth//unlock-reset-password"
+    "/auth/unlock-reset-password"
   };
 
   private static final String[] PUBLIC_GET_ROUTES = {
-    "/swagger-ui/**",
-    "/v3/api-docs/**",
-    "/swagger-resources/**",
     "/favicon.ico"
   };
 
@@ -27,7 +23,6 @@ public class SecurityPropertiesService {
   };
 
   private static final String[] PUBLIC_PATCH_ROUTES = {
-    "/users/password"
   };
 
   private static final String[] PUBLIC_DELETE_ROUTES = {

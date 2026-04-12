@@ -32,12 +32,14 @@ public class AuthJwtService implements AuthService {
   private static final Logger logger = LoggerFactory.getLogger(AuthJwtService.class);
   private static final long EXPIRATION_TIME = 86400000L;
   private final UserServiceCore userService;
+  private final ObjectMapper objectMapper;
 
   @Value("${jwt.secret}")
   private String generalSecret;
 
-  public AuthJwtService(UserServiceCore userService) {
+  public AuthJwtService(UserServiceCore userService, ObjectMapper objectMapper) {
     this.userService = userService;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -60,7 +62,7 @@ public class AuthJwtService implements AuthService {
   @Override
   public boolean validateToken(String token) {
     try {
-      String userId = extractSubject(token);
+      String userId = extractSubjectUnchecked(token);
       String secretKey = generateMixedSecret(userId);
       if (secretKey == null) return false;
       Jwts.parserBuilder()
@@ -72,8 +74,13 @@ public class AuthJwtService implements AuthService {
       return false;
     }
   }
+  /**
+   * Extracts the subject (userId) from the JWT payload WITHOUT verifying the signature.
+   * Only use this to obtain the userId needed to look up the signing secret.
+   * Actual token integrity is validated afterwards in {@link #validateToken}.
+   */
   @Override
-  public String extractSubject(String token) {
+  public String extractSubjectUnchecked(String token) {
     try {
       String[] parts = token.split("\\.");
       if (parts.length < 2) {
@@ -81,16 +88,12 @@ public class AuthJwtService implements AuthService {
       }
 
       String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
-
-      ObjectMapper objectMapper = new ObjectMapper();
       Map<String, Object> claims = objectMapper.readValue(payloadJson, new TypeReference<>() {});
 
       return (String) claims.get("sub");
     } catch (Exception e) {
       throw new RuntimeException("Error extracting subject from token", e);
     }
-  }
-  public void invalidateUserTokens(String userId) {
   }
   private String generateMixedSecret(String userId) {
     UserWrapper userWrapper = this.userService.findUserById(UserId.of(userId));
@@ -113,7 +116,7 @@ public class AuthJwtService implements AuthService {
   }
   public Claims getClaimsFromToken(String token) {
     try {
-      String userId = extractSubject(token);
+      String userId = extractSubjectUnchecked(token);
       String secretKey = generateMixedSecret(userId);
 
       return Jwts.parserBuilder()

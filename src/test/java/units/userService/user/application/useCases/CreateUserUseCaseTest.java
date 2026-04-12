@@ -11,6 +11,8 @@ import com.app.userService.user.domain.model.UserAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import units.userService._mocks.UserMockUtil;
 
 class CreateUserUseCaseTest {
@@ -54,7 +56,7 @@ class CreateUserUseCaseTest {
 
     Mockito.verify(userEventService, Mockito.times(1)).handleUserCreatedEvent(ArgumentMatchers.any(User.class));
 
-    assert createdUser.getEmail().toString().equals("johndoe@example.com");
-    assert createdUser.getPassword().equals("hashedPassword");
+    assertEquals("johndoe@example.com", createdUser.getEmail().toString());
+    assertEquals("hashedPassword", createdUser.getPassword());
   }
 }

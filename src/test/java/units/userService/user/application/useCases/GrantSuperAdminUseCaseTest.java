@@ -16,6 +16,7 @@ import units.userService._mocks.UserMockUtil;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -51,7 +52,7 @@ class GrantSuperAdminUseCaseTest {
     ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
     verify(userServiceCore, times(1)).grantSuperAdmin(userCaptor.capture());
     User capturedUser = userCaptor.getValue();
-    assert capturedUser == user;
+    assertSame(user, capturedUser);
 
     verify(userActionLogService, times(1)).registerUserAction(user, UserAction.GRANTED_ADMIN);
   }

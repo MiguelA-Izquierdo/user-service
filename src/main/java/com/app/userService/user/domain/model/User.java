@@ -2,11 +2,10 @@ package com.app.userService.user.domain.model;
 
 import com.app.userService.user.domain.valueObjects.*;
 
-import java.lang.reflect.Field;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class User {
   private static final int MAX_FAILED_ATTEMPTS = 5;
@@ -145,7 +144,7 @@ public class User {
     this.status = UserStatus.LOCKED;
   }
   private static String generateRandomSecretKey(){
-    return new Random()
+    return new SecureRandom()
       .ints(18, 48, 122)
       .filter(Character::isLetterOrDigit)
       .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
@@ -173,47 +172,28 @@ public class User {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
     User other = (User) obj;
-    Field[] fields = getClass().getDeclaredFields();
-    try {
-      for (Field field : fields) {
-        field.setAccessible(true);
-        Object thisValue = field.get(this);
-        Object otherValue = field.get(other);
-
-        if (!Objects.equals(thisValue, otherValue)) {
-          return false;
-        }
-      }
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    }
-
-    return true;
+    return Objects.equals(id, other.id)
+      && Objects.equals(name, other.name)
+      && Objects.equals(lastName, other.lastName)
+      && Objects.equals(email, other.email)
+      && Objects.equals(identityDocument, other.identityDocument)
+      && Objects.equals(phone, other.phone)
+      && Objects.equals(address, other.address)
+      && Objects.equals(password, other.password)
+      && Objects.equals(secretKey, other.secretKey)
+      && Objects.equals(failedLoginAttempts, other.failedLoginAttempts)
+      && status == other.status
+      && Objects.equals(createdAt, other.createdAt)
+      && Objects.equals(roles, other.roles);
   }
 
   @Override
   public int hashCode() {
-    int result = 17;
-    Field[] fields = getClass().getDeclaredFields();
-    try {
-      for (Field field : fields) {
-        field.setAccessible(true);
-        Object value = field.get(this);
-        result = 31 * result + (value == null ? 0 : value.hashCode());
-      }
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    }
-
-    return result;
+    return Objects.hash(id, name, lastName, email, identityDocument, phone, address,
+      password, secretKey, failedLoginAttempts, status, createdAt, roles);
   }
 
 }

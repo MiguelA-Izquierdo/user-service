@@ -38,10 +38,10 @@ public class LogoutUseCase {
   public void execute(LogoutUserCommand command) {
     UserWrapper existingUser = this.userServiceCore.findUserById(UserId.of(command.userId()));
     if (!existingUser.exists() || !existingUser.isActive()) {
-      throw new EntityNotFoundException("User with ID "  + " not found");
+      throw new EntityNotFoundException("User with ID " + command.userId() + " not found");
     }
     User user = existingUser.getUser()
-      .orElseThrow(() -> new EntityNotFoundException("User with ID " + " not found"));
+      .orElseThrow(() -> new EntityNotFoundException("User with ID " + command.userId() + " not found"));
 
     loginService.logoutUser(user);
 

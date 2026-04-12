@@ -49,7 +49,7 @@ public class RequestContextService implements RequestContext {
   }
 
   @Override
-  public void setAuthenticatedUserId(String requestUrl) {
+  public void setAuthenticatedUserId(String authenticatedUserId) {
     this.authenticatedUserId = authenticatedUserId;
   }
 }

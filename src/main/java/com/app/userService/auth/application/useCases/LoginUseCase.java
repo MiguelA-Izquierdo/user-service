@@ -6,6 +6,7 @@ import com.app.userService.auth.application.bus.query.LoginQuery;
 import com.app.userService.auth.application.dto.UserLoggedDTO;
 import com.app.userService.auth.application.service.LoginService;
 
+import com.app.userService._shared.infraestructure.exceptions.InvalidPasswordException;
 import com.app.userService.auth.domain.service.AuthService;
 import com.app.userService.auth.domain.valueObjects.AuthToken;
 
@@ -17,8 +18,6 @@ import com.app.userService.user.domain.model.UserAction;
 import com.app.userService.user.domain.model.UserWrapper;
 
 import org.springframework.stereotype.Service;
-
-import jakarta.persistence.EntityNotFoundException;
 
 
 @Service
@@ -42,11 +41,11 @@ public class LoginUseCase {
   public UserLoggedDTO execute(LoginQuery loginQuery) {
     UserWrapper existingUser = this.userServiceCore.findUserByEmail(loginQuery.email());
     if (!existingUser.exists() || !existingUser.isActive()) {
-      throw new EntityNotFoundException("User with ID "  + " not found");
+      throw new InvalidPasswordException("Invalid credentials");
     }
 
     User user = existingUser.getUser()
-      .orElseThrow(() -> new EntityNotFoundException("User with ID " + " not found"));
+      .orElseThrow(() -> new InvalidPasswordException("Invalid credentials"));
 
     this.loginService.login(user, loginQuery.password());
 

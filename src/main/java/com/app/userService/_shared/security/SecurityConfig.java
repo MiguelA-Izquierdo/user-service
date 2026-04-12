@@ -35,6 +35,8 @@ public class SecurityConfig {
       .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(securityPropertiesService::isPublicRoute).permitAll()
+        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
+          .hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
         .anyRequest().authenticated()
       )
       .sessionManagement(session -> session
