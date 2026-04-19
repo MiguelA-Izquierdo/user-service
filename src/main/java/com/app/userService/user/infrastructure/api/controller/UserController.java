@@ -46,16 +46,16 @@ public class UserController {
   private final UserCommandBus commandBus;
   private final UserQueryBus queryBus;
   private final CreateUserCommandFactory createUserCommandFactory;
-
-  @Value("${app.base-url}")
-  private String baseUrl;
+  private final String baseUrl;
 
   public UserController(UserCommandBus commandBus,
                         UserQueryBus queryBus,
-                        CreateUserCommandFactory createUserCommandFactory) {
+                        CreateUserCommandFactory createUserCommandFactory,
+                        @Value("${app.base-url}") String baseUrl) {
     this.commandBus = commandBus;
     this.queryBus = queryBus;
     this.createUserCommandFactory = createUserCommandFactory;
+    this.baseUrl = baseUrl;
   }
 
   @Operation(

@@ -1,10 +1,8 @@
 package com.app.userService.user.infrastructure.messaging.config;
 
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,50 +17,17 @@ import org.springframework.retry.support.RetryTemplate;
 public class RabbitMqConfig {
   private static final Logger logger = LoggerFactory.getLogger(RabbitMqConfig.class);
 
-  @Value("${rabbitmq.userService.host}")
-  private String userServiceHost;
+  @Value("${rabbitmq.retry.maxAttempts:3}")
+  private int maxAttempts;
 
-  @Value("${rabbitmq.userService.port}")
-  private int userServicePort;
+  @Value("${rabbitmq.retry.initialInterval:1000}")
+  private long initialInterval;
 
-  @Value("${rabbitmq.userService.username}")
-  private String userServiceUsername;
+  @Value("${rabbitmq.retry.maxInterval:30000}")
+  private long maxInterval;
 
-  @Value("${rabbitmq.userService.password}")
-  private String userServicePassword;
-
-  @Value("${rabbitmq.userService.virtualHost}")
-  private String userServiceVirtualHost;
-
-  @Value("${rabbitmq.retry.maxAttempts}")
-  private Integer maxAttempts;
-
-  @Value("${rabbitmq.retry.initialInterval}")
-  private Long initialInterval;
-
-  @Value("${rabbitmq.retry.maxInterval}")
-  private Long maxInterval;
-
-  @Value("${rabbitmq.retry.multiplier}")
-  private Float multiplier;
-
-  @PostConstruct
-  public void validateConfig() {
-    if (userServiceHost == null || userServiceUsername == null || userServicePassword == null) {
-      throw new IllegalArgumentException("RabbitMQ connection parameters are missing!");
-    }
-  }
-
-  @Bean
-  public ConnectionFactory connectionFactory() {
-    CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-    connectionFactory.setHost(userServiceHost);
-    connectionFactory.setPort(userServicePort);
-    connectionFactory.setUsername(userServiceUsername);
-    connectionFactory.setPassword(userServicePassword);
-    connectionFactory.setVirtualHost(userServiceVirtualHost);
-    return connectionFactory;
-  }
+  @Value("${rabbitmq.retry.multiplier:2.0}")
+  private double multiplier;
 
   @Bean
   public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
@@ -70,26 +35,21 @@ public class RabbitMqConfig {
   }
 
   @Bean
-  public RabbitTemplate rabbitTemplate(ConnectionFactory userConnectionFactory) {
-    RabbitTemplate rabbitTemplate = new RabbitTemplate(userConnectionFactory);
+  public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
     rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter());
     rabbitTemplate.setRetryTemplate(retryTemplate());
     rabbitTemplate.setMandatory(true);
-    rabbitTemplate.setChannelTransacted(true);
 
-    rabbitTemplate.setConfirmCallback(confirmCallback());
+    rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+      if (ack) {
+        logger.info("Mensaje confirmado con éxito: {}", correlationData);
+      } else {
+        logger.warn("Fallo en la confirmación del mensaje: {} causa: {}", correlationData, cause);
+      }
+    });
 
     return rabbitTemplate;
-  }
-
-  private RabbitTemplate.ConfirmCallback confirmCallback() {
-    return (correlationData, ack, cause) -> {
-      if (ack) {
-        logger.info("Mensaje confirmado con éxito: " + correlationData);
-      } else {
-        logger.info("Fallo en la confirmación del mensaje: " + correlationData + " causa: " + cause);
-      }
-    };
   }
 
   @Bean
