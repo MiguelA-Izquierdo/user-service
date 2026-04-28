@@ -2,7 +2,7 @@ package com.app.userService.auth.application.useCases;
 
 
 import com.app.userService.auth.application.bus.command.UnlockResetPasswordCommand;
-import com.app.userService.auth.application.service.PasswordRestTokenService;
+import com.app.userService.auth.application.service.PasswordResetTokenService;
 import com.app.userService.user.application.service.UserPasswordService;
 import com.app.userService.auth.domain.exceptions.TokenExpiredException;
 import com.app.userService.auth.domain.model.PasswordResetToken;
@@ -14,17 +14,17 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.Objects;
 
 
 @Service
 public class UnlockResetPasswordUseCase {
   private final UserServiceCore userServiceCore;
   private final UserPasswordService userPasswordService;
-  private final PasswordRestTokenService passwordRestTokenService;
+  private final PasswordResetTokenService passwordRestTokenService;
   private final UserActionLogService userActionLogService;
   public UnlockResetPasswordUseCase(UserServiceCore userServiceCore,
-                                    PasswordRestTokenService passwordRestTokenService,
+                                    PasswordResetTokenService passwordRestTokenService,
                                     UserPasswordService userPasswordService,
                                     UserActionLogService userActionLogService){
     this.userServiceCore = userServiceCore;
@@ -34,6 +34,7 @@ public class UnlockResetPasswordUseCase {
   }
   @Transactional
   public void execute(UnlockResetPasswordCommand command) {
+    Objects.requireNonNull(command, "UnlockResetPasswordCommand cannot be null");
     PasswordResetToken passwordResetToken = passwordRestTokenService.findByToken(command.token())
       .orElseThrow(() -> new EntityNotFoundException("Token not found."));
 

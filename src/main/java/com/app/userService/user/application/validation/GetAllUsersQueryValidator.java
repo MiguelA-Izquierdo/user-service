@@ -1,7 +1,7 @@
 package com.app.userService.user.application.validation;
 
 
-import com.app.userService._shared.infraestructure.ValidationError;
+import com.app.userService._shared.infrastructure.ValidationError;
 import com.app.userService.user.application.bus.query.GetAllUsersQuery;
 import org.springframework.stereotype.Component;
 

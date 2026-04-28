@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
+import java.util.Objects;
+
 @Service
 public class UpdatePasswordUseCase {
 
@@ -26,6 +28,7 @@ public class UpdatePasswordUseCase {
   }
   @Transactional
   public void execute(UpdatePasswordCommand updatePasswordCommand) {
+    Objects.requireNonNull(updatePasswordCommand, "UpdatePasswordCommand cannot be null");
     UserWrapper existingUser = userServiceCore.findUserById(UserId.of(updatePasswordCommand.id()));
 
     if (!existingUser.exists() || !existingUser.isActive()) {

@@ -1,7 +1,7 @@
 package com.app.userService.auth.infrastructure.api.controller;
 
-import com.app.userService._shared.infraestructure.dto.ErrorResponseDTO;
-import com.app.userService._shared.infraestructure.dto.SuccessResponseDTO;
+import com.app.userService._shared.infrastructure.dto.ErrorResponseDTO;
+import com.app.userService._shared.infrastructure.dto.SuccessResponseDTO;
 
 import com.app.userService.auth.application.bus.command.AuthCommandBus;
 import com.app.userService.auth.application.bus.command.LogoutUserCommand;

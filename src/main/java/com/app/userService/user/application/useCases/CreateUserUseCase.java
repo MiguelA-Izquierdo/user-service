@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CreateUserUseCase {
@@ -32,6 +33,7 @@ public class CreateUserUseCase {
   }
   @Transactional
   public void execute(CreateUserCommand command) {
+    Objects.requireNonNull(command, "CreateUserCommand cannot be null");
     User user = createUserFromCommand(command);
     userServiceCore.registerUser(user);
 

@@ -8,13 +8,14 @@ import java.util.regex.Pattern;
 
 
 public class Password extends ValueObjectAbstract{
-  private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{9,}$";;
+  private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{12,}$";
   private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
+  private static final String VALIDATION_MESSAGE = "Password must be at least 12 characters and include uppercase, lowercase, digit, and special character.";
 
   private final String password;
   private Password(String password) {
     if (!isValid(password)) {
-      throw new IllegalArgumentException("Password must be at least 9 characters long, include one uppercase letter, and one special character." );
+      throw new ValueObjectValidationException("password", VALIDATION_MESSAGE);
     }
     this.password = password;
   }

@@ -1,7 +1,7 @@
 package com.app.userService.user.application.service;
 
 
-import com.app.userService._shared.infraestructure.exceptions.InvalidPasswordException;
+import com.app.userService._shared.infrastructure.exceptions.InvalidPasswordException;
 import com.app.userService.user.domain.model.User;
 import com.app.userService.user.domain.repositories.UserRepository;
 import com.app.userService.user.domain.service.PasswordEncryptionService;

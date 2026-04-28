@@ -1,5 +1,6 @@
 package com.app.userService._shared.security;
 
+import com.app.userService.user.domain.model.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -12,55 +13,24 @@ public class UserAuthorizationFilter {
   private static final Logger logger = LoggerFactory.getLogger(UserAuthorizationFilter.class);
 
   public AuthorizationDecision hasAccessToUser(Authentication authentication, String userId) {
-    logger.info("hasAccessToUser {} {}",authentication.getAuthorities(),authentication.getName());
-
-    String authenticatedUserId = authentication.getName();
-
-    boolean hasAdminRole = authentication.getAuthorities().stream()
-      .anyMatch(grantedAuthority ->
-        grantedAuthority.getAuthority().equals("ROLE_ADMIN") ||
-          grantedAuthority.getAuthority().equals("ROLE_SUPER_ADMIN")
-      );
-    if (authenticatedUserId.equals(userId) || hasAdminRole) {
-      return new AuthorizationDecision(true);
-    }
-
-    return new AuthorizationDecision(false);
+    logger.info("hasAccessToUser {} {}", authentication.getAuthorities(), authentication.getName());
+    boolean granted = authentication.getName().equals(userId)
+        || hasRole(authentication, Role.ROLE_ADMIN)
+        || hasRole(authentication, Role.ROLE_SUPER_ADMIN);
+    return new AuthorizationDecision(granted);
   }
 
   public AuthorizationDecision hasAccessAdmin(Authentication authentication) {
-
-    logger.info("vamos a comprobar si tiene acceso a admin");
-    boolean hasAdminRole = authentication.getAuthorities().stream()
-      .anyMatch(grantedAuthority ->
-        grantedAuthority.getAuthority().equals("ROLE_ADMIN") ||
-          grantedAuthority.getAuthority().equals("ROLE_SUPER_ADMIN")
-      );
-
-    if (hasAdminRole) {
-      return new AuthorizationDecision(true);
-    }
-
-    return new AuthorizationDecision(false);
+    boolean granted = hasRole(authentication, Role.ROLE_ADMIN) || hasRole(authentication, Role.ROLE_SUPER_ADMIN);
+    return new AuthorizationDecision(granted);
   }
 
   public AuthorizationDecision hasAccessSuperAdmin(Authentication authentication) {
-
-    boolean hasAdminRole = authentication.getAuthorities().stream()
-      .anyMatch(grantedAuthority ->
-          grantedAuthority.getAuthority().equals("ROLE_SUPER_ADMIN")
-      );
-
-    if (hasAdminRole) {
-      return new AuthorizationDecision(true);
-    }
-
-    return new AuthorizationDecision(false);
+    return new AuthorizationDecision(hasRole(authentication, Role.ROLE_SUPER_ADMIN));
   }
 
-
-  private boolean hasRole(Authentication authentication, String role) {
+  private boolean hasRole(Authentication authentication, Role role) {
     return authentication.getAuthorities().stream()
-      .anyMatch(authority -> authority.getAuthority().equals(role));
+        .anyMatch(authority -> authority.getAuthority().equals(role.name()));
   }
 }

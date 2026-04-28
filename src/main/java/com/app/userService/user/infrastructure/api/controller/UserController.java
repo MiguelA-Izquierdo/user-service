@@ -1,7 +1,7 @@
 package com.app.userService.user.infrastructure.api.controller;
 
-import com.app.userService._shared.infraestructure.dto.ErrorResponseDTO;
-import com.app.userService._shared.infraestructure.dto.SuccessResponseDTO;
+import com.app.userService._shared.infrastructure.dto.ErrorResponseDTO;
+import com.app.userService._shared.infrastructure.dto.SuccessResponseDTO;
 
 import com.app.userService.user.application.bus.command.*;
 import com.app.userService.user.application.bus.query.GetAllUsersQuery;

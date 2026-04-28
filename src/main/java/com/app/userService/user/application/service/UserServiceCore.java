@@ -8,20 +8,16 @@ import com.app.userService.user.domain.repositories.UserRepository;
 import com.app.userService.user.domain.repositories.UserRoleRepository;
 import com.app.userService.user.domain.valueObjects.*;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.transaction.annotation.Transactional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 @Service
 public class UserServiceCore {
-  private static final Logger logger = LoggerFactory.getLogger(UserServiceCore.class);
   private final UserRepository userRepository;
   private final UserRoleRepository userRoleRepository;
   private final UserActionLogService userActionLogService;
@@ -33,6 +29,7 @@ public class UserServiceCore {
     this.userActionLogService = userActionLogService;
   }
 
+  @Transactional
   public void registerUser(User user) {
     UserWrapper existingUser = this.userRepository.findByIdOrEmail(
       user.getId().getValue(),
@@ -70,41 +67,45 @@ public class UserServiceCore {
     userRoleRepository.deleteByUser(user);
   }
   public void updateUser(UpdateUserCommand command, User currentUser) {
-    User updatedUser = updateUserFields(command, currentUser);
+    Map<String, String> changes = new LinkedHashMap<>();
+    User updatedUser = updateUserFields(command, currentUser, changes);
 
     if (!updatedUser.equals(currentUser)) {
+      changes.forEach(userActionLogService::addMetadata);
       userRepository.save(updatedUser);
     }
   }
-  private User updateUserFields(UpdateUserCommand command, User currentUser) {
+  private User updateUserFields(UpdateUserCommand command, User current, Map<String, String> changes) {
     return User.of(
-      currentUser.getId(),
-      command.userName() != null ? updateIfChanged("Name", UserName.of(command.userName()), currentUser.getName()) : currentUser.getName(),
-      command.lastName() != null ? updateIfChanged("LastName", UserLastName.of(command.lastName()), currentUser.getLastName()) : currentUser.getLastName(),
-      currentUser.getEmail(),
-      (command.identityDocument() != null)
-        ? updateIfChanged("Document", IdentityDocument.of(command.identityDocument().documentType(), command.identityDocument().documentNumber()), currentUser.getIdentityDocument())
-        : currentUser.getIdentityDocument(),
-      (command.phone() != null)
-        ? updateIfChanged("Phone number", Phone.of(command.phone().countryCode(), command.phone().phoneNumber()), currentUser.getPhone())
-        : currentUser.getPhone(),
-      (command.address() != null)
-        ? updateIfChanged("Address", Address.of(command.address().street(), command.address().streetNumber(), command.address().city(), command.address().state(), command.address().postalCode(), command.address().country()), currentUser.getAddress())
-        : currentUser.getAddress(),
-      currentUser.getPassword(),
-      currentUser.getFailedLoginAttempts(),
-      currentUser.getSecretKey(),
-      currentUser.getCreatedAt(),
-      currentUser.getStatus(),
-      currentUser.getRoles()
+      current.getId(),
+      resolveField(command.userName(), UserName::of, current.getName(), "Name", changes),
+      resolveField(command.lastName(), UserLastName::of, current.getLastName(), "LastName", changes),
+      current.getEmail(),
+      resolveField(command.identityDocument(),
+        d -> IdentityDocument.of(d.documentType(), d.documentNumber()),
+        current.getIdentityDocument(), "Document", changes),
+      resolveField(command.phone(),
+        p -> Phone.of(p.countryCode(), p.phoneNumber()),
+        current.getPhone(), "Phone number", changes),
+      resolveField(command.address(),
+        a -> Address.of(a.street(), a.streetNumber(), a.city(), a.state(), a.postalCode(), a.country()),
+        current.getAddress(), "Address", changes),
+      current.getPassword(),
+      current.getFailedLoginAttempts(),
+      current.getSecretKey(),
+      current.getCreatedAt(),
+      current.getStatus(),
+      current.getRoles()
     );
   }
-  private <T> T updateIfChanged(String field, T newValue, T currentValue) {
-    if (!newValue.equals(currentValue)) {
-      userActionLogService.addMetadata(field + " old value:", String.valueOf(currentValue));
-      userActionLogService.addMetadata(field + " new value:", String.valueOf(newValue));
+  private <T, R> R resolveField(T commandValue, Function<T, R> factory, R current,
+                                 String fieldName, Map<String, String> changes) {
+    if (commandValue == null) return current;
+    R newValue = factory.apply(commandValue);
+    if (!newValue.equals(current)) {
+      changes.put(fieldName + " old value:", String.valueOf(current));
+      changes.put(fieldName + " new value:", String.valueOf(newValue));
     }
-
     return newValue;
   }
   public void unlockAccount(User user){

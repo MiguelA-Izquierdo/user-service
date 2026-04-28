@@ -9,6 +9,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class UpdateUserUseCase {
   private final UserServiceCore userServiceCore;
@@ -21,6 +23,7 @@ public class UpdateUserUseCase {
   }
   @Transactional
   public void execute(UpdateUserCommand updateUserCommand) {
+    Objects.requireNonNull(updateUserCommand, "UpdateUserCommand cannot be null");
     UserWrapper existingUser = userServiceCore.findUserById(UserId.of(updateUserCommand.userId()));
 
     if (!existingUser.exists() || !existingUser.isActive()) {

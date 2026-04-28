@@ -1,6 +1,6 @@
 # Compiled class file
 *.class
-*.idea
+.idea/
 *.env
 *.env.local
 *.env.docker

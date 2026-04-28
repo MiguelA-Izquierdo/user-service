@@ -25,6 +25,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthJwtService implements AuthService {
@@ -60,25 +62,22 @@ public class AuthJwtService implements AuthService {
     return new AuthToken(token, expirationDate);
   }
   @Override
-  public boolean validateToken(String token) {
+  public Optional<Claims> validateAndExtractClaims(String token) {
     try {
       String userId = extractSubjectUnchecked(token);
       String secretKey = generateMixedSecret(userId);
-      if (secretKey == null) return false;
-      Jwts.parserBuilder()
+      if (secretKey == null) return Optional.empty();
+      Claims claims = Jwts.parserBuilder()
         .setSigningKey(getSecretKey(secretKey))
         .build()
-        .parseClaimsJws(token);
-      return true;
+        .parseClaimsJws(token)
+        .getBody();
+      return Optional.of(claims);
     } catch (Exception e) {
-      return false;
+      return Optional.empty();
     }
   }
-  /**
-   * Extracts the subject (userId) from the JWT payload WITHOUT verifying the signature.
-   * Only use this to obtain the userId needed to look up the signing secret.
-   * Actual token integrity is validated afterwards in {@link #validateToken}.
-   */
+
   @Override
   public String extractSubjectUnchecked(String token) {
     try {
@@ -86,25 +85,31 @@ public class AuthJwtService implements AuthService {
       if (parts.length < 2) {
         throw new IllegalArgumentException("Invalid JWT token format");
       }
-
       String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
       Map<String, Object> claims = objectMapper.readValue(payloadJson, new TypeReference<>() {});
-
       return (String) claims.get("sub");
     } catch (Exception e) {
       throw new RuntimeException("Error extracting subject from token", e);
     }
   }
+
   private String generateMixedSecret(String userId) {
+    try {
+      UUID.fromString(userId);
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
     UserWrapper userWrapper = this.userService.findUserById(UserId.of(userId));
     return userWrapper.getUser()
       .map(u -> hashSecret(generalSecret + u.getSecretKey()))
       .orElse(null);
   }
+
   private SecretKey getSecretKey(String secret) {
     byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
     return Keys.hmacShaKeyFor(keyBytes);
   }
+
   private String hashSecret(String input) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -112,20 +117,6 @@ public class AuthJwtService implements AuthService {
       return Base64.getEncoder().encodeToString(hash);
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException("Error generando hash de clave secreta", e);
-    }
-  }
-  public Claims getClaimsFromToken(String token) {
-    try {
-      String userId = extractSubjectUnchecked(token);
-      String secretKey = generateMixedSecret(userId);
-
-      return Jwts.parserBuilder()
-        .setSigningKey(getSecretKey(secretKey))
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
-    } catch (Exception e) {
-      throw new RuntimeException("Error parsing JWT token", e);
     }
   }
 

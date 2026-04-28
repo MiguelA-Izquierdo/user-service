@@ -6,7 +6,7 @@ import com.app.userService.auth.application.bus.query.LoginQuery;
 import com.app.userService.auth.application.dto.UserLoggedDTO;
 import com.app.userService.auth.application.service.LoginService;
 
-import com.app.userService._shared.infraestructure.exceptions.InvalidPasswordException;
+import com.app.userService._shared.infrastructure.exceptions.InvalidPasswordException;
 import com.app.userService.auth.domain.service.AuthService;
 import com.app.userService.auth.domain.valueObjects.AuthToken;
 
@@ -19,6 +19,7 @@ import com.app.userService.user.domain.model.UserWrapper;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 
 @Service
 public class LoginUseCase {
@@ -39,6 +40,7 @@ public class LoginUseCase {
     this.userEventService = userEventService;
   }
   public UserLoggedDTO execute(LoginQuery loginQuery) {
+    Objects.requireNonNull(loginQuery, "LoginQuery cannot be null");
     UserWrapper existingUser = this.userServiceCore.findUserByEmail(loginQuery.email());
     if (!existingUser.exists() || !existingUser.isActive()) {
       throw new InvalidPasswordException("Invalid credentials");

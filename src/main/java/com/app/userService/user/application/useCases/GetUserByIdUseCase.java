@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 
-import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 @Service
 public class GetUserByIdUseCase {
@@ -18,7 +18,7 @@ public class GetUserByIdUseCase {
   }
   @Transactional
   public Optional<User> execute(GetUserByIdQuery getUserByIdQuery) {
-
+    Objects.requireNonNull(getUserByIdQuery, "GetUserByIdQuery cannot be null");
     return userServiceCore.findUserById(UserId.of(getUserByIdQuery.getId())).getUser();
   }
 }

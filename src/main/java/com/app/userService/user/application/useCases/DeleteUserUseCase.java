@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class DeleteUserUseCase {
   private static final Logger logger = LoggerFactory.getLogger(DeleteUserUseCase.class);
@@ -27,6 +29,7 @@ public class DeleteUserUseCase {
   }
   @Transactional
   public void execute(DeleteUserCommand command) {
+    Objects.requireNonNull(command, "DeleteUserCommand cannot be null");
     UserWrapper existingUser = userServiceCore.findUserById(UserId.of(command.id()));
 
     if (!existingUser.exists() || !existingUser.isActive()) {

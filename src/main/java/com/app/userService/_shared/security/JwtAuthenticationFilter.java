@@ -1,13 +1,12 @@
 package com.app.userService._shared.security;
 
 import com.app.userService._shared.application.service.RequestContext;
-import com.app.userService._shared.infraestructure.dto.ErrorResponseDTO;
+import com.app.userService._shared.infrastructure.dto.ErrorResponseDTO;
 import com.app.userService.auth.domain.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,23 +25,25 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
   private final AuthService authService;
-  @Value("${jwt.secret}")
-  private String secretKey;
+  private final ObjectMapper objectMapper;
 
   private final SecurityPropertiesService securityPropertiesService;
   private final RequestContext requestContext;
 
   public JwtAuthenticationFilter(SecurityPropertiesService securityPropertiesService,
                                  AuthService authService,
-                                 RequestContext requestContext) {
+                                 RequestContext requestContext,
+                                 ObjectMapper objectMapper) {
     this.securityPropertiesService = securityPropertiesService;
     this.authService = authService;
     this.requestContext = requestContext;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -65,12 +66,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     try {
-      if (!authService.validateToken(token)) {
+      Optional<Claims> claimsOpt = authService.validateAndExtractClaims(token);
+      if (claimsOpt.isEmpty()) {
         sendErrorResponse(response, "Token not valid");
         return;
       }
 
-      Claims claims = authService.getClaimsFromToken(token);
+      Claims claims = claimsOpt.get();
       String userId = claims.getSubject();
       requestContext.setAuthenticatedUserId(userId);
       List<GrantedAuthority> authorities = extractAuthoritiesFromClaims(claims);
@@ -114,7 +116,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       message
     );
 
-    ObjectMapper objectMapper = new ObjectMapper();
     response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
   }

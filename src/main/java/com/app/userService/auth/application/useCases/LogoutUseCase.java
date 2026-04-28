@@ -14,8 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -36,6 +35,7 @@ public class LogoutUseCase {
   }
   @Transactional
   public void execute(LogoutUserCommand command) {
+    Objects.requireNonNull(command, "LogoutUserCommand cannot be null");
     UserWrapper existingUser = this.userServiceCore.findUserById(UserId.of(command.userId()));
     if (!existingUser.exists() || !existingUser.isActive()) {
       throw new EntityNotFoundException("User with ID " + command.userId() + " not found");

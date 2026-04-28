@@ -18,8 +18,7 @@ import com.app.userService.user.domain.valueObjects.UserId;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -39,10 +38,11 @@ public class LoginWithTokenUseCase {
   }
 
   public UserLoggedDTO execute(LoginWithTokenQuery loginQuery) {
+    Objects.requireNonNull(loginQuery, "LoginWithTokenQuery cannot be null");
     UserWrapper existingUser = this.userServiceCore.findUserById(UserId.of(loginQuery.userId()));
 
     if (!existingUser.exists() || !existingUser.isActive()) {
-      throw new EntityNotFoundException("User with ID "  + " not found");
+      throw new EntityNotFoundException("User with ID " + loginQuery.userId()  + " not found");
     }
 
     User user = existingUser.getUser()

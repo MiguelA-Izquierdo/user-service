@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class GetAllUsersUseCase {
   private static final Logger logger = LoggerFactory.getLogger(GetAllUsersUseCase.class);
@@ -19,7 +21,7 @@ public class GetAllUsersUseCase {
   }
 
   public PaginatedResult<User> execute(GetAllUsersQuery getAllUsersQuery) {
-
+    Objects.requireNonNull(getAllUsersQuery, "GetAllUsersQuery cannot be null");
     return userServiceCore.findAll(getAllUsersQuery.page(), getAllUsersQuery.size());
   }
 }

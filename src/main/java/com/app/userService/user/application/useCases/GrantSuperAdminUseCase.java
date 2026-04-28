@@ -12,8 +12,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class GrantSuperAdminUseCase {
@@ -25,6 +24,7 @@ public class GrantSuperAdminUseCase {
   }
   @Transactional
   public void execute(GrantSuperAdminCommand grantSuperAdminCommand) {
+    Objects.requireNonNull(grantSuperAdminCommand, "GrantSuperAdminCommand cannot be null");
     UserWrapper existingUser = userServiceCore.findUserById(UserId.of(grantSuperAdminCommand.id()));
 
     if (!existingUser.exists() || !existingUser.isActive()) {

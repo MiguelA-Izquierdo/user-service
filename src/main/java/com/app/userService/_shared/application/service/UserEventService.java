@@ -2,7 +2,7 @@ package com.app.userService._shared.application.service;
 
 import com.app.userService._shared.domain.event.Event;
 
-import com.app.userService.auth.application.service.PasswordRestTokenService;
+import com.app.userService.auth.application.service.PasswordResetTokenService;
 import com.app.userService.auth.domain.event.UserLoggedDomainEvent;
 import com.app.userService.auth.domain.event.UserLogoutDomainEvent;
 import com.app.userService.auth.domain.model.PasswordResetToken;
@@ -24,7 +24,7 @@ import java.util.UUID;
 @Service
 public class UserEventService {
   private final TokenService tokenService;
-  private final PasswordRestTokenService passwordRestTokenService;
+  private final PasswordResetTokenService passwordResetTokenService;
   private final OutboxEventRepository outboxEventRepository;
   private final ObjectMapper objectMapper;
   private final UserEventFactory userEventFactory;
@@ -32,12 +32,12 @@ public class UserEventService {
   public UserEventService(OutboxEventRepository outboxEventRepository,
                           ObjectMapper objectMapper,
                           TokenService tokenService,
-                          PasswordRestTokenService passwordRestTokenService,
+                          PasswordResetTokenService passwordResetTokenService,
                           UserEventFactory userEventFactory) {
     this.outboxEventRepository = outboxEventRepository;
     this.objectMapper = objectMapper;
     this.tokenService = tokenService;
-    this.passwordRestTokenService = passwordRestTokenService;
+    this.passwordResetTokenService = passwordResetTokenService;
     this.userEventFactory = userEventFactory;
   }
 
@@ -62,7 +62,7 @@ public class UserEventService {
       expirationTime,
       false
     );
-    passwordRestTokenService.createPasswordRestToken(passwordResetToken);
+    passwordResetTokenService.createPasswordResetToken(passwordResetToken);
     UserLockedDomainEvent event = userEventFactory.createUserLockedEvent(user, token);
     storeOutboxEvent(event);
   }

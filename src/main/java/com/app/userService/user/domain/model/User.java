@@ -4,6 +4,7 @@ import com.app.userService.user.domain.valueObjects.*;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +49,7 @@ public class User {
     this.password = password;
     this.secretKey = secretKey;
     this.status = status;
-    this.roles = roles;
+    this.roles = roles != null ? List.copyOf(roles) : Collections.emptyList();
   }
 
   public static User of(UserId userId,
@@ -122,7 +123,7 @@ public class User {
     return createdAt;
   }
   public List<Role> getRoles() {
-    return roles;
+    return Collections.unmodifiableList(roles);
   }
   public Integer getFailedLoginAttempts() {
     return failedLoginAttempts;
