@@ -92,10 +92,10 @@ The service starts at `http://localhost:8080`.
 | `DB_USER` | Database username | Yes | — |
 | `DB_PASSWORD` | Database password | Yes | — |
 | `JWT_SECRET` | Secret key for signing JWTs (min. 32 chars) | Yes | — |
-| `RABBITMQ_USER_SERVICE_HOST` | RabbitMQ host | Yes | — |
-| `RABBITMQ_USER_SERVICE_PORT` | RabbitMQ port | Yes | — |
-| `RABBITMQ_USER_SERVICE_USER_NAME` | RabbitMQ username | Yes | — |
-| `RABBITMQ_USER_SERVICE_PASSWORD` | RabbitMQ password | Yes | — |
+| `RABBITMQ_HOST` | RabbitMQ host | Yes | — |
+| `RABBITMQ_PORT` | RabbitMQ port | Yes | — |
+| `RABBITMQ_USERNAME` | RabbitMQ username | Yes | — |
+| `RABBITMQ_PASSWORD` | RabbitMQ password | Yes | — |
 | `CORS_ALLOWED_ORIGINS` | Allowed CORS origins | No | `http://localhost:4200` |
 | `APP_BASE_URL` | Public-facing base URL (used in pagination links) | No | `http://localhost:8080` |
 | `ADMIN_EMAIL` | Email for the auto-created super admin | Yes | — |

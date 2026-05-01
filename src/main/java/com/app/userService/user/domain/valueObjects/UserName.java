@@ -2,8 +2,6 @@ package com.app.userService.user.domain.valueObjects;
 
 import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class UserName  extends ValueObjectAbstract {
@@ -16,19 +14,6 @@ public class UserName  extends ValueObjectAbstract {
 
   public static UserName of(String value) {
     return new UserName(value);
-  }
-  public static <T> Map<String, String> getValidationErrors(Map<String, T> args) {
-    HashMap<String, String> errors = new HashMap<>();
-
-    String userName = (String) args.get("userName");
-
-    try {
-      validate(userName);
-    } catch (ValueObjectValidationException e) {
-      errors.put(e.getField(), e.getMessage());
-    }
-
-    return errors;
   }
   public String getValue() {
     return value;

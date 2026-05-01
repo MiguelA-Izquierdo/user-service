@@ -5,9 +5,6 @@ import com.app.userService.user.domain.valueObjects.IdentityDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -107,30 +104,6 @@ class IdentityDocumentTest {
       IdentityDocument.of("DNI", "")
     );
     Assertions.assertEquals("Document number cannot be null or empty", exception.getMessage());
-  }
-
-  @Test
-  void testGetValidationErrors() {
-    Map<String, String> identityDocumentMap = new HashMap<>();
-
-    identityDocumentMap.put("documentType", "");
-    identityDocumentMap.put("documentNumber", null);
-
-    Map<String, String> errors = IdentityDocument.getValidationErrors(identityDocumentMap);
-
-    assertEquals("Document type cannot be null or empty", errors.get("Document type"));
-    assertEquals("Document number cannot be null or empty", errors.get("Document number"));
-  }
-  @Test
-  void testGetValidationErrorsIsEmpty() {
-    Map<String, String> identityDocumentMap = new HashMap<>();
-
-    identityDocumentMap.put("documentType", "DNI");
-    identityDocumentMap.put("documentNumber", "12345678A");
-
-    Map<String, String> errors = IdentityDocument.getValidationErrors(identityDocumentMap);
-
-    assertTrue(errors.isEmpty());
   }
 
   @Test

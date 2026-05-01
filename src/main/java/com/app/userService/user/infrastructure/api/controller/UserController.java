@@ -97,7 +97,8 @@ public class UserController {
           mediaType = "application/json",
           schema = @Schema(implementation = ErrorResponseDTO.class)
         ))
-    }
+    },
+    security = {@SecurityRequirement(name = "bearerAuth")}
   )
   @PostMapping
   @PreAuthorize("@userAuthorizationFilter.hasAccessAdmin(authentication).granted")
@@ -338,6 +339,46 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
+  @Operation(
+    summary = "Update user profile",
+    description = "Partially updates the profile of an existing user. Only the fields provided in the request body are modified; omitted fields are left unchanged.",
+    requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = @Content(
+        mediaType = "application/json",
+        schema = @Schema(implementation = UpdateUserCommand.class),
+        examples = {
+          @ExampleObject(
+            name = "partialUpdate",
+            value = "{\n  \"userId\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"userName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"phone\": { \"countryCode\": \"+34\", \"phoneNumber\": \"612345678\" },\n  \"address\": { \"street\": \"Gran Via\", \"streetNumber\": \"1\", \"city\": \"Madrid\", \"state\": \"Madrid\", \"postalCode\": \"28013\", \"country\": \"Spain\" },\n  \"identityDocument\": { \"documentType\": \"DNI\", \"documentNumber\": \"12345678A\" }\n}"
+          )
+        }
+      )
+    ),
+    responses = {
+      @ApiResponse(
+        responseCode = "200",
+        description = "User updated successfully",
+        content = @Content(
+          mediaType = "application/json",
+          schema = @Schema(implementation = SuccessResponseDTO.class),
+          examples = {
+            @ExampleObject(name = "userUpdated", value = "{\n  \"success\": true,\n  \"status\": 200,\n  \"message\": \"User updated successfully\"\n}")
+          }
+        )
+      ),
+      @ApiResponse(responseCode = "400", description = "Invalid request",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(responseCode = "401", description = "Token not valid or missing",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(responseCode = "404", description = "User not found",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(responseCode = "500", description = "Internal server error",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class)))
+    },
+    security = {@SecurityRequirement(name = "bearerAuth")}
+  )
   @PatchMapping
   @PreAuthorize("@userAuthorizationFilter.hasAccessToUser(authentication, #command.userId()).granted")
   public ResponseEntity<Object> update(@RequestBody UpdateUserCommand command) {
@@ -350,6 +391,46 @@ public class UserController {
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
+  @Operation(
+    summary = "Change user password",
+    description = "Updates the password of an existing user. The current password must be provided for verification before the new password is accepted.",
+    requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = @Content(
+        mediaType = "application/json",
+        schema = @Schema(implementation = UpdatePasswordCommand.class),
+        examples = {
+          @ExampleObject(
+            name = "passwordChange",
+            value = "{\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"currentPassword\": \"OldPass1!\",\n  \"newPassword\": \"NewPass1!\"\n}"
+          )
+        }
+      )
+    ),
+    responses = {
+      @ApiResponse(
+        responseCode = "200",
+        description = "Password updated successfully",
+        content = @Content(
+          mediaType = "application/json",
+          schema = @Schema(implementation = SuccessResponseDTO.class),
+          examples = {
+            @ExampleObject(name = "passwordUpdated", value = "{\n  \"success\": true,\n  \"status\": 200,\n  \"message\": \"Password updated successfully\"\n}")
+          }
+        )
+      ),
+      @ApiResponse(responseCode = "400", description = "Invalid request or current password incorrect",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(responseCode = "401", description = "Token not valid or missing",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(responseCode = "403", description = "Forbidden - Access is denied",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(responseCode = "404", description = "User not found",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class))),
+      @ApiResponse(responseCode = "500", description = "Internal server error",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class)))
+    },
+    security = {@SecurityRequirement(name = "bearerAuth")}
+  )
   @PatchMapping("/password")
   @PreAuthorize("@userAuthorizationFilter.hasAccessToUser(authentication, #command.id()).granted")
   public ResponseEntity<Object> updatePassword(@RequestBody UpdatePasswordCommand command) {

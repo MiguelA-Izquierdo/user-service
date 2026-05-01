@@ -2,8 +2,6 @@ package com.app.userService.user.domain.valueObjects;
 
   import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
 
-  import java.util.HashMap;
-  import java.util.Map;
   import java.util.Objects;
   import java.util.UUID;
 
@@ -30,19 +28,6 @@ public class UserId extends ValueObjectAbstract{
     }
   }
 
-  public static <T> Map<String, String> getValidationErrors(Map<String, T> args) {
-    HashMap<String, String> errors = new HashMap<>();
-
-    String userId = (String) args.get("userId");
-
-    try {
-      UserId.of(userId);
-    } catch (ValueObjectValidationException e) {
-      errors.put(e.getField(), e.getMessage());
-    }
-
-    return errors;
-  }
   public UUID getValue() {
     return value;
   }

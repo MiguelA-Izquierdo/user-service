@@ -2,8 +2,6 @@ package com.app.userService.user.domain.valueObjects;
 
 import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -25,26 +23,6 @@ public class IdentityDocument extends ValueObjectAbstract{
     validateDocumentNumber(documentType, documentNumber);
 
     return new IdentityDocument(documentType, documentNumber);
-  }
-  public static <T> Map<String, String> getValidationErrors(Map<String, T> args) {
-    HashMap<String, String> errors = new HashMap<>();
-
-    String documentType = (String) args.get("documentType");
-    String documentNumber = (String) args.get("documentNumber");
-
-    try {
-      validateDocumentType(documentType);
-    } catch (ValueObjectValidationException e) {
-      errors.put(e.getField(), e.getMessage());
-    }
-
-    try {
-      validateDocumentNumber(documentType, documentNumber);
-    } catch (ValueObjectValidationException e) {
-      errors.put(e.getField(), e.getMessage());
-    }
-
-    return errors;
   }
   private static void validateDocumentType(String documentType) {
     validateNotNullOrEmpty(documentType, "Document type");

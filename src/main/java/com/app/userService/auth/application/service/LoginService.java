@@ -36,7 +36,6 @@ public class LoginService {
 
     if (!isCredentialsValid) {
       handleFailedLogin(user);
-      return;
     }
 
     user.clearFailedLoginAttempts();

@@ -52,11 +52,7 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        try {
-            seedAdminUser();
-        } catch (Exception e) {
-            logger.warn("Admin user seeding skipped: {}", e.getMessage());
-        }
+        seedAdminUser();
     }
 
     private void seedAdminUser() {
@@ -64,6 +60,8 @@ public class DataInitializer implements ApplicationRunner {
             logger.info("Admin user already exists, skipping seed.");
             return;
         }
+
+        Password.of(adminPassword);
 
         User admin = User.of(
                 UserId.of(UUID.randomUUID().toString()),

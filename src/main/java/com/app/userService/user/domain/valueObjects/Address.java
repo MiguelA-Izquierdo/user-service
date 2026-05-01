@@ -2,10 +2,7 @@ package com.app.userService.user.domain.valueObjects;
 
 import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class Address extends ValueObjectAbstract{
   private final String street;
@@ -34,33 +31,6 @@ public class Address extends ValueObjectAbstract{
 
     return new Address(street, number, city, state, postalCode, country);
   }
-  public static <T> Map<String, String> getValidationErrors(Map<String, T> args) {
-    HashMap<String, String> errors = new HashMap<>();
-
-    Map<String, Consumer<Map<String, T>>> validations = Map.of(
-      "street", (map) -> validateStreet(getStringValue(map.get("street"))),
-      "streetNumber", (map) -> validateNumber(getStringValue(map.get("streetNumber"))),
-      "city", (map) -> validateCity(getStringValue(map.get("city"))),
-      "state", (map) -> validateState(getStringValue(map.get("state"))),
-      "postalCode", (map) -> validatePostalCode(getStringValue(map.get("postalCode"))),
-      "country", (map) -> validateCountry(getStringValue(map.get("country")))
-    );
-
-    validations.forEach((field, validator) -> {
-      try {
-        validator.accept(args);
-      } catch (ValueObjectValidationException e) {
-        errors.put(e.getField(), e.getMessage());
-      }
-    });
-
-    return errors;
-  }
-
-  private static String getStringValue(Object value) {
-    return value != null ? value.toString().trim() : "";
-  }
-
   private static void validateStreet(String street) {
     validateNotNullOrEmpty(street, "Street");
   }

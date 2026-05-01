@@ -1,27 +1,24 @@
 package com.app.userService._shared.infrastructure;
 
+import com.app.userService.user.domain.exceptions.ValueObjectValidationException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public class ValidationError extends RuntimeException {
   private final Map<String, Map<String, String>> errors = new HashMap<>();
+
+  public void validate(String fieldName, Runnable validation) {
+    try {
+      validation.run();
+    } catch (ValueObjectValidationException e) {
+      addError(fieldName, e.getField(), e.getMessage());
+    }
+  }
 
   public void addError(String field, String subField, String message) {
     errors.putIfAbsent(field, new HashMap<>());
 
     errors.get(field).put(subField, message);
-  }
-  public  <T> void validateField(
-    String fieldMainName,
-    Map<String, T> fields,
-    Function<Map<String, T>, Map<String, String>> validator,
-    Boolean isRequired) {
-
-    if (!fields.isEmpty() || isRequired) {
-      Map<String, String> errors = validator.apply(fields);
-      errors.forEach((field, value) -> addError(fieldMainName, field, value));
-    }
   }
   public Map<String, Map<String, String>> getErrors() {
     return errors;

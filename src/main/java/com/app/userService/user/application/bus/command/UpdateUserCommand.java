@@ -7,9 +7,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.util.HashMap;
-import java.util.Map;
-
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record UpdateUserCommand(
@@ -127,63 +124,6 @@ public record UpdateUserCommand(
         return new Address("", "", "", "", "", "");
       }
     }
-  }
-
-  public Map<String, String> getUserIdMap() {
-    Map<String, String> userIdMap = new HashMap<>();
-
-    if (userId != null) {
-      userIdMap.put("userId", userId);
-    }
-    return userIdMap;
-  }
-  public Map<String, String> getUserNameMap() {
-    Map<String, String> userNameMap = new HashMap<>();
-
-    if (userName != null) {
-      userNameMap.put("userName", userName);
-    }
-    return userNameMap;
-  }
-  public Map<String, String> getLastNameMap() {
-    Map<String, String> userNameMap = new HashMap<>();
-
-    if (lastName != null) {
-      userNameMap.put("lastName", lastName);
-    }
-    return userNameMap;
-  }
-  public Map<String, String> getIdentityDocumentMap() {
-    Map<String, String> identityDocumentMap = new HashMap<>();
-
-    if (identityDocument != null) {
-      identityDocumentMap.put("documentType", identityDocument.documentType);
-      identityDocumentMap.put("documentNumber", identityDocument.documentNumber);
-    }
-    return identityDocumentMap;
-  }
-  public Map<String, String> getPhoneMap() {
-    Map<String, String> phoneMap = new HashMap<>();
-
-    if (phone != null) {
-      phoneMap.put("countryCode", phone.countryCode);
-      phoneMap.put("number", phone.phoneNumber);
-    }
-
-    return phoneMap;
-  }
-  public Map<String, String> getAddressMap(){
-    Map<String, String> addressMap = new HashMap<>();
-
-    if(address != null){
-      addressMap.put("street", address.street);
-      addressMap.put("streetNumber", address.streetNumber);
-      addressMap.put("city", address.city);
-      addressMap.put("state", address.state);
-      addressMap.put("postalCode", address.postalCode);
-      addressMap.put("country", address.country);
-    }
-    return addressMap;
   }
 
   @Override

@@ -40,6 +40,8 @@ src/main/java/com/app/userService/
 
 Each module exposes its logic through a **CommandBus** and a **QueryBus**, separating write and read operations (lightweight CQRS).
 
+For the reasoning behind key design choices (outbox pattern, per-user JWT secret, rate limiting, DLQ) see **[docs/architecture.md](docs/architecture.md)**.
+
 ### Security
 
 - **JWT-based** authentication.
@@ -59,6 +61,10 @@ Each module exposes its logic through a **CommandBus** and a **QueryBus**, separ
 ## API Documentation
 
 Full interactive documentation is available at `/swagger-ui.html` once the service is running.
+
+> **Access requires `ROLE_ADMIN` or `ROLE_SUPER_ADMIN`.** Authenticate via `POST /auth` and include the returned token as `Authorization: Bearer <token>` in Swagger's "Authorize" dialog.
+
+For key flows (account lock, password reset, login, logout) see **[docs/flows.md](docs/flows.md)**.
 
 ---
 

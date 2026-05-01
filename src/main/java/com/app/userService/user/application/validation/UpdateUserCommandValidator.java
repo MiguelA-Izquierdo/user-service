@@ -12,31 +12,41 @@ public class UpdateUserCommandValidator {
     ValidationError validationError = new ValidationError();
 
     boolean hasAtLeastOneField =
-      hasValue(command.userName()) ||
-        hasValue(command.lastName()) ||
-        hasValue(command.identityDocument()) ||
-        hasValue(command.address()) ||
-        hasValue(command.phone());
+      command.userName() != null ||
+      command.lastName() != null ||
+      command.identityDocument() != null ||
+      command.address() != null ||
+      command.phone() != null;
 
     if (!hasAtLeastOneField) {
       validationError.addError("Invalid request", "Fields", "You must provide at least one primary field to update.");
       throw validationError;
     }
 
+    validationError.validate("User Id", () -> UserId.of(command.userId()));
 
-    validationError.validateField("User Id", command.getUserIdMap(), UserId::getValidationErrors, true);
-    validationError.validateField("User name", command.getUserNameMap(), UserName::getValidationErrors, false);
-    validationError.validateField("Last name", command.getLastNameMap(), UserLastName::getValidationErrors, false);
-    validationError.validateField("Identity document", command.getIdentityDocumentMap(), IdentityDocument::getValidationErrors, false);
-    validationError.validateField("Phone", command.getPhoneMap(), Phone::getValidationErrors, false);
-    validationError.validateField("Address", command.getAddressMap(), Address::getValidationErrors, false);
+    if (command.userName() != null)
+      validationError.validate("User name", () -> UserName.of(command.userName()));
+
+    if (command.lastName() != null)
+      validationError.validate("Last name", () -> UserLastName.of(command.lastName()));
+
+    if (command.identityDocument() != null)
+      validationError.validate("Identity document", () ->
+        IdentityDocument.of(command.identityDocument().documentType(), command.identityDocument().documentNumber()));
+
+    if (command.phone() != null)
+      validationError.validate("Phone", () ->
+        Phone.of(command.phone().countryCode(), command.phone().phoneNumber()));
+
+    if (command.address() != null)
+      validationError.validate("Address", () ->
+        Address.of(command.address().street(), command.address().streetNumber(),
+          command.address().city(), command.address().state(),
+          command.address().postalCode(), command.address().country()));
 
     if (validationError.hasErrors()) {
       throw validationError;
     }
-  }
-
-  private <T> boolean hasValue(T field) {
-    return field != null && !field.toString().isEmpty();
   }
 }

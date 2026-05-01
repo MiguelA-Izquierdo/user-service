@@ -1,34 +1,27 @@
 package com.app.userService.user.application.validation;
 
-
 import com.app.userService._shared.infrastructure.ValidationError;
 import com.app.userService.user.application.bus.command.CreateUserCommand;
 import com.app.userService.user.domain.valueObjects.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CreateUserCommandValidator {
-  private static final Logger logger = LoggerFactory.getLogger(CreateUserCommandValidator.class);
 
   public void validate(CreateUserCommand command) {
     ValidationError validationError = new ValidationError();
 
-    validationError.validateField("User Id", command.getUserIdMap(), UserId::getValidationErrors, true);
-    validationError.validateField("User name", command.getUserNameMap(), UserName::getValidationErrors, true);
-    validationError.validateField("Last name", command.getLastNameMap(), UserLastName::getValidationErrors, true);
-    validationError.validateField("Email", command.getEmailMap(), UserEmail::getValidationErrors, true);
-    validationError.validateField("Phone", command.getPhoneMap(), Phone::getValidationErrors, true);
-    validationError.validateField("Identity document", command.getIdentityDocumentMap(), IdentityDocument::getValidationErrors, true);
-    validationError.validateField("Address", command.getAddressMap(), Address::getValidationErrors, true);
-    validationError.validateField("Password", command.getPasswordMap(), Password::getValidationErrors, true);
-
+    validationError.validate("User Id", () -> UserId.of(command.id()));
+    validationError.validate("User name", () -> UserName.of(command.name()));
+    validationError.validate("Last name", () -> UserLastName.of(command.lastName()));
+    validationError.validate("Email", () -> UserEmail.of(command.email()));
+    validationError.validate("Phone", () -> Phone.of(command.countryCode(), command.number()));
+    validationError.validate("Identity document", () -> IdentityDocument.of(command.documentType(), command.documentNumber()));
+    validationError.validate("Address", () -> Address.of(command.street(), command.streetNumber(), command.city(), command.state(), command.postalCode(), command.country()));
+    validationError.validate("Password", () -> Password.of(command.password()));
 
     if (validationError.hasErrors()) {
       throw validationError;
     }
-
   }
-
 }

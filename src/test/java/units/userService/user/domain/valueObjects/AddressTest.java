@@ -4,9 +4,6 @@ import com.app.userService.user.domain.exceptions.ValueObjectValidationException
 import com.app.userService.user.domain.valueObjects.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AddressTest {
@@ -68,47 +65,5 @@ public class AddressTest {
     String expected = "Main St Springfield, IL, 62701, USA";
 
     assertEquals(expected, address.toString());
-  }
-  @Test
-  void testGetValidationErrors() {
-    Map<String, String> addressMap = new HashMap<>();
-
-    addressMap.put("street", "");
-    addressMap.put("streetNumber", null);
-    addressMap.put("city", "     ");
-    addressMap.put("state", "     ");
-    addressMap.put("postalCode", "     ");
-    addressMap.put("country", "     ");
-
-    Map<String, String> errors = Address.getValidationErrors(addressMap);
-
-    assertTrue(errors.containsKey("Street"));
-    assertTrue(errors.containsKey("Number"));
-    assertTrue(errors.containsKey("City"));
-    assertTrue(errors.containsKey("State"));
-    assertTrue(errors.containsKey("Postal code"));
-    assertTrue(errors.containsKey("Country"));
-
-    assertEquals("Street cannot be null or empty", errors.get("Street"));
-    assertEquals("Number cannot be null or empty", errors.get("Number"));
-    assertEquals("City cannot be null or empty", errors.get("City"));
-    assertEquals("State cannot be null or empty", errors.get("State"));
-    assertEquals("Postal code cannot be null or empty", errors.get("Postal code"));
-    assertEquals("Country cannot be null or empty", errors.get("Country"));
-  }
-  @Test
-  void testGetValidationErrorsIsEmpty() {
-    Map<String, String> addressMap = new HashMap<>();
-
-    addressMap.put("street", "Main Street");
-    addressMap.put("streetNumber", "123");
-    addressMap.put("city", "New York");
-    addressMap.put("state", "NY");
-    addressMap.put("postalCode", "10001");
-    addressMap.put("country", "USA");
-
-    Map<String, String> errors = Address.getValidationErrors(addressMap);
-
-    assertTrue(errors.isEmpty());
   }
 }

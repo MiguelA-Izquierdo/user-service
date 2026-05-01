@@ -87,8 +87,8 @@ public class AuthController {
     return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
   }
   @Operation(
-    summary = "Login a user whith token",
-    description = "Authenticates a user in the system by validating his token and providing an access token for secure sessions.",
+    summary = "Login a user with token",
+    description = "Authenticates a user in the system by validating their token and providing an access token for secure sessions.",
     parameters = {
       @Parameter(
         name = "Authorization",
@@ -131,7 +131,8 @@ public class AuthController {
           schema = @Schema(implementation = ErrorResponseDTO.class)
         )
       )
-    }
+    },
+    security = {@SecurityRequirement(name = "bearerAuth")}
   )
   @GetMapping
   public ResponseEntity<Object> loginWithToken() {
