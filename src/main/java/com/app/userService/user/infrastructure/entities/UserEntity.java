@@ -39,7 +39,7 @@ public class UserEntity {
   @Column(name = "country", nullable = false, length = 100)
   private String country;
 
-  @Column(name = "secretKey", nullable = false, length = 100)
+  @Column(name = "secret_key", nullable = false, length = 100)
   private String secretKey;
   @Column(name = "password")
   private String password;

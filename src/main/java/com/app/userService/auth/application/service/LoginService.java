@@ -26,7 +26,7 @@ public class LoginService {
     this.userEventService = userEventService;
     this.userActionLogService = userActionLogService;
   }
-  @Transactional
+  @Transactional(noRollbackFor = {InvalidPasswordException.class, UserLockedException.class})
   public void login(User user, String passwordInput){
     if (user.isLocked()) {
       throw new UserLockedException("Your account has been locked.");

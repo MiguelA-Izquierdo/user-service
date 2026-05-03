@@ -49,7 +49,7 @@ public class SecurityConfig {
             .includeSubDomains(true)
           );
         } else {
-          headers.httpStrictTransportSecurity(AbstractHttpConfigurer::disable);
+          headers.httpStrictTransportSecurity(hsts -> hsts.disable());
         }
       })
       .authorizeHttpRequests(auth -> auth

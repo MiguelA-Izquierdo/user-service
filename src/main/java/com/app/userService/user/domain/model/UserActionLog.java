@@ -3,6 +3,7 @@ package com.app.userService.user.domain.model;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class UserActionLog {
   private final UUID id;
@@ -16,7 +17,11 @@ public class UserActionLog {
     this.user = user;
     this.userAction = userAction;
     this.timestamp = timestamp != null ? timestamp : Instant.now();
-    this.metadata = metadata != null ? Map.copyOf(metadata) : Map.of();
+    this.metadata = metadata != null
+        ? metadata.entrySet().stream()
+            .filter(e -> e.getValue() != null)
+            .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue))
+        : Map.of();
   }
 
   public static UserActionLog of(UUID id, User user, UserAction userAction, Map<String, String> metadata) {
