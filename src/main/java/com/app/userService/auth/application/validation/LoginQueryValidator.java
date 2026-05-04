@@ -12,21 +12,11 @@ public class LoginQueryValidator {
   public void validate(LoginQuery query) {
     ValidationError validationError = new ValidationError();
 
-    try {
-      UserEmail.of(query.email());
-    } catch (Exception e) {
-      validationError.addError("User email","Email", e.getMessage());
-    }
-
-    try {
-      Password.of(query.password());
-    } catch (Exception e) {
-      validationError.addError("Password","Password", e.getMessage());
-    }
+    validationError.validate("Email", () -> UserEmail.of(query.email()));
+    validationError.validate("Password", () -> Password.of(query.password()));
 
     if (validationError.hasErrors()) {
       throw validationError;
     }
-
   }
 }
