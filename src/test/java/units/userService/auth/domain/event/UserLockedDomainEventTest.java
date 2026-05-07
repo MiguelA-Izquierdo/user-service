@@ -26,6 +26,7 @@ class UserLockedDomainEventTest {
     UserLockedDomainEvent event = new UserLockedDomainEvent(
       userExchange, userLockedQueue, userLockedRoutingKey, userId, name, lastName, email, token, expirationDate);
 
+    Assertions.assertNotNull(event.getEventId());
     Assertions.assertEquals(userExchange, event.getExchange());
     Assertions.assertEquals(userLockedQueue, event.getQueue());
     Assertions.assertEquals(userLockedRoutingKey, event.getRoutingKey());

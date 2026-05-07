@@ -29,7 +29,7 @@ class LoginQueryValidatorTest {
     LoginQuery query = new LoginQuery("not-an-email", "ValidPass1!@");
 
     ValidationError error = assertThrows(ValidationError.class, () -> validator.validate(query));
-    assertTrue(error.getErrors().containsKey("User email"));
+    assertTrue(error.getErrors().containsKey("Email"));
   }
 
   @Test

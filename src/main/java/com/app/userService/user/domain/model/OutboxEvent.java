@@ -34,31 +34,16 @@ public class OutboxEvent implements Event<String> {
     this.exchange = exchange;
   }
 
-  public static OutboxEvent of(UUID id,
-                               String eventType,
-                               String payload,
-                               OutboxEventStatus status,
-                               LocalDateTime createdAt,
-                               String queue,
-                               String exchange,
-                               String routingKey) {
-    return new Builder()
-      .id(id)
-      .type(eventType)
-      .payload(payload)
-      .status(status)
-      .createdAt(createdAt)
-      .queue(queue)
-      .exchange(exchange)
-      .routingKey(routingKey)
-      .build();
-  }
-
   public static Builder builder() {
     return new Builder();
   }
 
   public UUID getId() {
+    return id;
+  }
+
+  @Override
+  public UUID getEventId() {
     return id;
   }
 

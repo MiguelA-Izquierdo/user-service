@@ -37,7 +37,7 @@ class UnlockResetPasswordCommandValidatorTest {
     UnlockResetPasswordCommand command = new UnlockResetPasswordCommand("valid-token", "weak");
 
     ValidationError error = assertThrows(ValidationError.class, () -> validator.validate(command));
-    assertTrue(error.getErrors().containsKey("NewPassword"));
+    assertTrue(error.getErrors().containsKey("New password"));
   }
 
   @Test

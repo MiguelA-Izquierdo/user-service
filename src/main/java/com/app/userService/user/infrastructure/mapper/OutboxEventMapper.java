@@ -6,28 +6,28 @@ import com.app.userService.user.infrastructure.entities.OutboxEventEntity;
 public class OutboxEventMapper {
 
   public static OutboxEventEntity toEntity(OutboxEvent event) {
-    return new OutboxEventEntity(
-      event.getId(),
-      event.getType(),
-      event.getPayload(),
-      event.getStatus(),
-      event.getCreatedAt(),
-      event.getQueue(),
-      event.getRoutingKey(),
-      event.getExchange()
-    );
+    return OutboxEventEntity.builder()
+      .id(event.getId())
+      .eventType(event.getType())
+      .payload(event.getPayload())
+      .status(event.getStatus())
+      .createdAt(event.getCreatedAt())
+      .queue(event.getQueue())
+      .routingKey(event.getRoutingKey())
+      .exchange(event.getExchange())
+      .build();
   }
 
   public static OutboxEvent toDomain(OutboxEventEntity entity) {
-    return  OutboxEvent.of(
-      entity.getId(),
-      entity.getEventType(),
-      entity.getPayload(),
-      entity.getStatus(),
-      entity.getCreatedAt(),
-      entity.getQueue(),
-      entity.getRoutingKey(),
-      entity.getExchange()
-    );
+    return OutboxEvent.builder()
+      .id(entity.getId())
+      .type(entity.getEventType())
+      .payload(entity.getPayload())
+      .status(entity.getStatus())
+      .createdAt(entity.getCreatedAt())
+      .queue(entity.getQueue())
+      .routingKey(entity.getRoutingKey())
+      .exchange(entity.getExchange())
+      .build();
   }
 }

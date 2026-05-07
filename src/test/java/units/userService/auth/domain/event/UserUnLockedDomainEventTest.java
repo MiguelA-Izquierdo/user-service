@@ -25,6 +25,7 @@ class UserUnLockedDomainEventTest {
     UserUnlockedDomainEvent event = new UserUnlockedDomainEvent(
       userExchange, userUnLockedQueue, userUnLockedRoutingKey, userId, name, lastName, email);
 
+    Assertions.assertNotNull(event.getEventId());
     Assertions.assertEquals(userExchange, event.getExchange());
     Assertions.assertEquals(userUnLockedQueue, event.getQueue());
     Assertions.assertEquals(userUnLockedRoutingKey, event.getRoutingKey());

@@ -11,6 +11,7 @@ public class UserLockedDomainEvent implements Event<UserLockedDomainEvent.UserPa
 
   private static final Logger logger = LoggerFactory.getLogger(UserLockedDomainEvent.class);
 
+  private final UUID eventId;
   private final String userExchange;
   private final String userLockedQueue;
   private final String userLockedRoutingKey;
@@ -25,10 +26,16 @@ public class UserLockedDomainEvent implements Event<UserLockedDomainEvent.UserPa
                                String email,
                                String token,
                                LocalDateTime expirationDate) {
+    this.eventId = UUID.randomUUID();
     this.userExchange = userExchange;
     this.userLockedQueue = userLockedQueue;
     this.userLockedRoutingKey = userLockedRoutingKey;
     this.payload = new UserPayload(userId, name, lastName, email, token, expirationDate);
+  }
+
+  @Override
+  public UUID getEventId() {
+    return eventId;
   }
 
   @Override

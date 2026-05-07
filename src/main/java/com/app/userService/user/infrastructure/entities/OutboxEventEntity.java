@@ -29,17 +29,43 @@ public class OutboxEventEntity {
   @Column(nullable = false)
   private String exchange;
 
-  public OutboxEventEntity(){}
-  public OutboxEventEntity(UUID id, String eventType, String payload, OutboxEventStatus status,
-                           LocalDateTime createdAt, String queue, String routingKey, String exchange) {
-    this.id = id;
-    this.eventType = eventType;
-    this.payload = payload;
-    this.status = status;
-    this.createdAt = createdAt;
-    this.queue = queue;
-    this.routingKey = routingKey;
-    this.exchange = exchange;
+  public OutboxEventEntity() {}
+
+  private OutboxEventEntity(Builder builder) {
+    this.id = builder.id;
+    this.eventType = builder.eventType;
+    this.payload = builder.payload;
+    this.status = builder.status;
+    this.createdAt = builder.createdAt;
+    this.queue = builder.queue;
+    this.routingKey = builder.routingKey;
+    this.exchange = builder.exchange;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private UUID id;
+    private String eventType;
+    private String payload;
+    private OutboxEventStatus status;
+    private LocalDateTime createdAt;
+    private String queue;
+    private String routingKey;
+    private String exchange;
+
+    public Builder id(UUID id) { this.id = id; return this; }
+    public Builder eventType(String eventType) { this.eventType = eventType; return this; }
+    public Builder payload(String payload) { this.payload = payload; return this; }
+    public Builder status(OutboxEventStatus status) { this.status = status; return this; }
+    public Builder createdAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
+    public Builder queue(String queue) { this.queue = queue; return this; }
+    public Builder routingKey(String routingKey) { this.routingKey = routingKey; return this; }
+    public Builder exchange(String exchange) { this.exchange = exchange; return this; }
+
+    public OutboxEventEntity build() { return new OutboxEventEntity(this); }
   }
 
 

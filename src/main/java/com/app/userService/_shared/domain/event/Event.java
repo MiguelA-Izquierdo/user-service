@@ -1,6 +1,10 @@
 package com.app.userService._shared.domain.event;
 
+import java.util.UUID;
+
 public interface Event<T> {
+  UUID getEventId();
+
   String getQueue();
 
   String getExchange();
@@ -8,5 +12,6 @@ public interface Event<T> {
   String getRoutingKey();
 
   String getType();
+
   T getPayload();
 }

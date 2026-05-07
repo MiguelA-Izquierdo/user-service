@@ -22,6 +22,7 @@ class UserDeletedDomainEventTest {
     UserDeletedDomainEvent event = new UserDeletedDomainEvent(
       userExchange, userDeletedQueue, userDeletedRoutingKey, userId, name, lastName, email);
 
+    Assertions.assertNotNull(event.getEventId());
     Assertions.assertEquals(userExchange, event.getExchange());
     Assertions.assertEquals(userDeletedQueue, event.getQueue());
     Assertions.assertEquals(userDeletedRoutingKey, event.getRoutingKey());

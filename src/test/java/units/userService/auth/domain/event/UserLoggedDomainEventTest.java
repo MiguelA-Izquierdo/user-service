@@ -22,6 +22,7 @@ class UserLoggedDomainEventTest {
     UserLoggedDomainEvent event = new UserLoggedDomainEvent(
       userExchange, userLoggedQueue, userLoggedRoutingKey, userId, name, lastName, email);
 
+    Assertions.assertNotNull(event.getEventId());
     Assertions.assertEquals(userExchange, event.getExchange());
     Assertions.assertEquals(userLoggedQueue, event.getQueue());
     Assertions.assertEquals(userLoggedRoutingKey, event.getRoutingKey());

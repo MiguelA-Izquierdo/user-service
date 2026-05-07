@@ -17,9 +17,12 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
+import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -91,15 +94,20 @@ public abstract class IntegrationTestBase {
     }
 
     /**
-     * Verifies that a PENDING outbox event of the given type was persisted in the DB.
+     * Verifies that a PENDING outbox event of the given type was persisted in the DB with a non-null id.
+     * Returns the event id — callers can assert it matches an expected value if they have a reference.
      * Call this right after the action that should produce the event, before triggering the publisher.
      */
-    protected void assertOutboxEventPersisted(String eventType) {
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM outbox_events WHERE event_type = ? AND status = 'PENDING'",
-                Integer.class, eventType);
-        assertTrue(count != null && count > 0,
+    protected UUID assertOutboxEventPersisted(String eventType) {
+        List<byte[]> ids = jdbcTemplate.queryForList(
+                "SELECT id FROM outbox_events WHERE event_type = ? AND status = 'PENDING'",
+                byte[].class, eventType);
+        assertFalse(ids.isEmpty(),
                 "Expected a PENDING outbox event of type [" + eventType + "] but found none");
+        byte[] rawId = ids.get(0);
+        assertNotNull(rawId, "Outbox event [" + eventType + "] was persisted with a null id");
+        ByteBuffer bb = ByteBuffer.wrap(rawId);
+        return new UUID(bb.getLong(), bb.getLong());
     }
 
     /**

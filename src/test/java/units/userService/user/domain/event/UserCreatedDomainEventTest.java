@@ -22,6 +22,7 @@ class UserCreatedDomainEventTest {
     UserCreatedDomainEvent event = new UserCreatedDomainEvent(
       userExchange, userCreatedQueue, userCreatedRoutingKey, userId, name, lastName, email);
 
+    Assertions.assertNotNull(event.getEventId());
     Assertions.assertEquals(userExchange, event.getExchange());
     Assertions.assertEquals(userCreatedQueue, event.getQueue());
     Assertions.assertEquals(userCreatedRoutingKey, event.getRoutingKey());

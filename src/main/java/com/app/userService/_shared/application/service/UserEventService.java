@@ -79,16 +79,16 @@ public class UserEventService {
   private void storeOutboxEvent(Event<?> event) {
     try {
       String payload = objectMapper.writeValueAsString(event.getPayload());
-      OutboxEvent outboxEvent = OutboxEvent.of(
-        UUID.randomUUID(),
-        event.getType(),
-        payload,
-        OutboxEventStatus.PENDING,
-        LocalDateTime.now(),
-        event.getQueue(),
-        event.getRoutingKey(),
-        event.getExchange()
-      );
+      OutboxEvent outboxEvent = OutboxEvent.builder()
+        .id(event.getEventId())
+        .type(event.getType())
+        .payload(payload)
+        .status(OutboxEventStatus.PENDING)
+        .createdAt(LocalDateTime.now())
+        .queue(event.getQueue())
+        .exchange(event.getExchange())
+        .routingKey(event.getRoutingKey())
+        .build();
       outboxEventRepository.save(outboxEvent);
     } catch (JsonProcessingException e) {
       throw new RuntimeException("Error serializing event payload", e);

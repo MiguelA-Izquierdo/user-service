@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public class UserDeletedDomainEvent implements Event<UserDeletedDomainEvent.UserPayload> {
 
+  private final UUID eventId;
   private final String userExchange;
   private final String userDeletedQueue;
   private final String userDeletedRoutingKey;
@@ -15,10 +16,16 @@ public class UserDeletedDomainEvent implements Event<UserDeletedDomainEvent.User
                                 String userDeletedQueue,
                                 String userDeletedRoutingKey,
                                 UUID userId, String name, String lastName, String email) {
+    this.eventId = UUID.randomUUID();
     this.userExchange = userExchange;
     this.userDeletedQueue = userDeletedQueue;
     this.userDeletedRoutingKey = userDeletedRoutingKey;
     this.payload = new UserDeletedDomainEvent.UserPayload(userId, name, lastName, email);
+  }
+
+  @Override
+  public UUID getEventId() {
+    return eventId;
   }
 
   @Override

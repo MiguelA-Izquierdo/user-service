@@ -36,10 +36,14 @@ class OutboxEventTest {
 
   @Test
   void testOutboxEventCreation() {
-    OutboxEvent event = OutboxEvent.of(id, eventType, payload, status, createdAt, queue, exchange, routingKey);
+    OutboxEvent event = OutboxEvent.builder()
+      .id(id).type(eventType).payload(payload).status(status)
+      .createdAt(createdAt).queue(queue).exchange(exchange).routingKey(routingKey)
+      .build();
 
     Assertions.assertNotNull(event);
     Assertions.assertEquals(id, event.getId());
+    Assertions.assertEquals(id, event.getEventId());
     Assertions.assertEquals(eventType, event.getType());
     Assertions.assertEquals(payload, event.getPayload());
     Assertions.assertEquals(queue, event.getQueue());
@@ -51,7 +55,10 @@ class OutboxEventTest {
 
   @Test
   void testMarkAsProcessed() {
-    OutboxEvent event = OutboxEvent.of(id, eventType, payload, status, createdAt, queue, exchange, routingKey);
+    OutboxEvent event = OutboxEvent.builder()
+      .id(id).type(eventType).payload(payload).status(status)
+      .createdAt(createdAt).queue(queue).exchange(exchange).routingKey(routingKey)
+      .build();
 
     event.markAsProcessed();
 
@@ -60,7 +67,10 @@ class OutboxEventTest {
 
   @Test
   void testMarkAsFailed() {
-    OutboxEvent event = OutboxEvent.of(id, eventType, payload, status, createdAt, queue, exchange, routingKey);
+    OutboxEvent event = OutboxEvent.builder()
+      .id(id).type(eventType).payload(payload).status(status)
+      .createdAt(createdAt).queue(queue).exchange(exchange).routingKey(routingKey)
+      .build();
 
     event.markAsFailed();
 

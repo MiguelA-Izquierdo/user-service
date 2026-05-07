@@ -10,6 +10,7 @@ public class UserUnlockedDomainEvent implements Event<UserUnlockedDomainEvent.Us
 
   private static final Logger logger = LoggerFactory.getLogger(UserUnlockedDomainEvent.class);
 
+  private final UUID eventId;
   private final String userExchange;
   private final String userCreatedQueue;
   private final String userCreatedRoutingKey;
@@ -22,10 +23,16 @@ public class UserUnlockedDomainEvent implements Event<UserUnlockedDomainEvent.Us
                                  String name,
                                  String lastName,
                                  String email) {
+    this.eventId = UUID.randomUUID();
     this.userExchange = userExchange;
     this.userCreatedQueue = userCreatedQueue;
     this.userCreatedRoutingKey = userCreatedRoutingKey;
     this.payload = new UserPayload(userId, name, lastName, email);
+  }
+
+  @Override
+  public UUID getEventId() {
+    return eventId;
   }
 
   @Override

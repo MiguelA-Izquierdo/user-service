@@ -22,6 +22,7 @@ class UserLogoutDomainEventTest {
     UserLogoutDomainEvent event = new UserLogoutDomainEvent(
       userExchange, userLogoutQueue, userLogoutRoutingKey, userId, name, lastName, email);
 
+    Assertions.assertNotNull(event.getEventId());
     Assertions.assertEquals(userExchange, event.getExchange());
     Assertions.assertEquals(userLogoutQueue, event.getQueue());
     Assertions.assertEquals(userLogoutRoutingKey, event.getRoutingKey());
