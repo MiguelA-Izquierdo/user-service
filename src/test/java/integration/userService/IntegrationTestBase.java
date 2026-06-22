@@ -1,6 +1,8 @@
 package integration.userService;
 
 import com.app.userService.UserService;
+import com.app.userService._shared.infrastructure.ratelimit.InMemoryRateLimitBackend;
+import com.app.userService._shared.infrastructure.ratelimit.RateLimitBackend;
 import com.app.userService.user.infrastructure.messaging.outbound.OutboxEventPublisher;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -77,8 +79,11 @@ public abstract class IntegrationTestBase {
     @Autowired
     private RabbitAdmin rabbitAdmin;
 
+    @Autowired(required = false)
+    private RateLimitBackend rateLimitBackend;
+
     private static final List<String> ALL_QUEUES = List.of(
-            "userCreatedQueue", "userLoggedQueue", "userLockedQueue"
+            "userCreatedQueue", "userLoggedQueue", "userLockedQueue", "userUnlockedQueue"
     );
 
     @DynamicPropertySource
@@ -139,6 +144,9 @@ public abstract class IntegrationTestBase {
         jdbcTemplate.execute("TRUNCATE TABLE users");
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
         ALL_QUEUES.forEach(q -> rabbitAdmin.purgeQueue(q, true));
+        if (rateLimitBackend instanceof InMemoryRateLimitBackend inMemory) {
+            inMemory.clearAll();
+        }
     }
 
     /**

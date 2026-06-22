@@ -12,21 +12,21 @@ public class UserUnlockedDomainEvent implements Event<UserUnlockedDomainEvent.Us
 
   private final UUID eventId;
   private final String userExchange;
-  private final String userCreatedQueue;
-  private final String userCreatedRoutingKey;
+  private final String userUnlockedQueue;
+  private final String userUnlockedRoutingKey;
   private final UserPayload payload;
 
   public UserUnlockedDomainEvent(String userExchange,
-                                 String userCreatedQueue,
-                                 String userCreatedRoutingKey,
+                                 String userUnlockedQueue,
+                                 String userUnlockedRoutingKey,
                                  UUID userId,
                                  String name,
                                  String lastName,
                                  String email) {
     this.eventId = UUID.randomUUID();
     this.userExchange = userExchange;
-    this.userCreatedQueue = userCreatedQueue;
-    this.userCreatedRoutingKey = userCreatedRoutingKey;
+    this.userUnlockedQueue = userUnlockedQueue;
+    this.userUnlockedRoutingKey = userUnlockedRoutingKey;
     this.payload = new UserPayload(userId, name, lastName, email);
   }
 
@@ -37,7 +37,7 @@ public class UserUnlockedDomainEvent implements Event<UserUnlockedDomainEvent.Us
 
   @Override
   public String getQueue() {
-    return userCreatedQueue;
+    return userUnlockedQueue;
   }
 
   @Override
@@ -47,7 +47,7 @@ public class UserUnlockedDomainEvent implements Event<UserUnlockedDomainEvent.Us
 
   @Override
   public String getRoutingKey() {
-    return userCreatedRoutingKey;
+    return userUnlockedRoutingKey;
   }
 
   @Override

@@ -36,20 +36,20 @@ class AccountLockIntegrationTest extends IntegrationTestBase {
 
     @BeforeEach
     void setUp() {
-        User user = User.of(
-                UserId.of(UUID.randomUUID().toString()),
-                UserName.of("Lock"),
-                UserLastName.of("Test"),
-                UserEmail.of(USER_EMAIL),
-                IdentityDocument.of("Passport", "LK1234567"),
-                Phone.of("+34", "633000001"),
-                Address.of("Lock Street", "1", "Lock City", "Lock State", "33333", "ES"),
-                userPasswordService.encryptPassword(USER_PASSWORD),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                List.of()
-        );
+        User user = User.builder()
+                .id(UserId.of(UUID.randomUUID().toString()))
+                .name(UserName.of("Lock"))
+                .lastName(UserLastName.of("Test"))
+                .email(UserEmail.of(USER_EMAIL))
+                .identityDocument(IdentityDocument.of("Passport", "LK1234567"))
+                .phone(Phone.of("+34", "633000001"))
+                .address(Address.of("Lock Street", "1", "Lock City", "Lock State", "33333", "ES"))
+                .password(userPasswordService.encryptPassword(USER_PASSWORD))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(List.of())
+                .build();
         userServiceCore.registerUser(user);
         flushOutboxFromSetup();
     }
@@ -70,13 +70,13 @@ class AccountLockIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    void login_onFifthWrongAttempt_locksAccountAndReturnsForbidden() throws Exception {
+    void login_onFifthWrongAttempt_locksAccountAndReturns401() throws Exception {
         attemptLoginWithWrongPassword(MAX_FAILED_ATTEMPTS - 1);
 
         mockMvc.perform(post("/auth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginBody(USER_EMAIL, WRONG_PASSWORD)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         assertActionLogged(USER_EMAIL, "LOCKED");
         assertOutboxEventPersisted("user.locked");
@@ -95,13 +95,13 @@ class AccountLockIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    void login_withCorrectPassword_onLockedAccount_returnsForbidden() throws Exception {
+    void login_withCorrectPassword_onLockedAccount_returns401() throws Exception {
         attemptLoginWithWrongPassword(MAX_FAILED_ATTEMPTS);
 
         mockMvc.perform(post("/auth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginBody(USER_EMAIL, USER_PASSWORD)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     private void attemptLoginWithWrongPassword(int times) throws Exception {

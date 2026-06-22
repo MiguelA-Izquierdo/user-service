@@ -43,20 +43,20 @@ class UnlockResetPasswordIntegrationTest extends IntegrationTestBase {
 
     @BeforeEach
     void setUp() throws Exception {
-        User user = User.of(
-                UserId.of(UUID.randomUUID().toString()),
-                UserName.of("Reset"),
-                UserLastName.of("Test"),
-                UserEmail.of(USER_EMAIL),
-                IdentityDocument.of("Passport", "RT1234567"),
-                Phone.of("+34", "644000001"),
-                Address.of("Reset Street", "1", "Reset City", "Reset State", "44444", "ES"),
-                userPasswordService.encryptPassword(USER_PASSWORD),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                List.of()
-        );
+        User user = User.builder()
+                .id(UserId.of(UUID.randomUUID().toString()))
+                .name(UserName.of("Reset"))
+                .lastName(UserLastName.of("Test"))
+                .email(UserEmail.of(USER_EMAIL))
+                .identityDocument(IdentityDocument.of("Passport", "RT1234567"))
+                .phone(Phone.of("+34", "644000001"))
+                .address(Address.of("Reset Street", "1", "Reset City", "Reset State", "44444", "ES"))
+                .password(userPasswordService.encryptPassword(USER_PASSWORD))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(List.of())
+                .build();
         userServiceCore.registerUser(user);
         lockAccount();
         flushOutboxFromSetup();
@@ -77,6 +77,19 @@ class UnlockResetPasswordIntegrationTest extends IntegrationTestBase {
                 .andExpect(status().isNoContent());
 
         assertActionLogged(USER_EMAIL, "UNLOCKED");
+    }
+
+    @Test
+    void unlockResetPassword_withValidToken_publishesUnlockedEvent() throws Exception {
+        String rawToken = createValidToken();
+
+        mockMvc.perform(post("/auth/unlock-reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(resetBody(rawToken, NEW_PASSWORD)))
+                .andExpect(status().isNoContent());
+
+        assertOutboxEventPersisted("user.unlocked");
+        assertMessagePublishedToQueue("userUnlockedQueue");
     }
 
     @Test

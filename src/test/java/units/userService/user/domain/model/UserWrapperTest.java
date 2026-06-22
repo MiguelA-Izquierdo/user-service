@@ -34,7 +34,21 @@ class UserWrapperTest {
     Role role = Role.ROLE_USER;
     List<Role> roles = List.of(role);
 
-    user = User.of(userId, userName, userLastName, userEmail, identityDocument, phone, address, password, failedLoginAttempts, secretKey,createdAt, status, roles);
+    user = User.builder()
+      .id(userId)
+      .name(userName)
+      .lastName(userLastName)
+      .email(userEmail)
+      .identityDocument(identityDocument)
+      .phone(phone)
+      .address(address)
+      .password(password)
+      .failedLoginAttempts(failedLoginAttempts)
+      .secretKey(secretKey)
+      .createdAt(createdAt)
+      .status(status)
+      .roles(roles)
+      .build();
   }
   @Test
   void testUserWrapperActive() {

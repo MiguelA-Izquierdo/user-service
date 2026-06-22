@@ -33,6 +33,9 @@ public class UserRabbitMqConfig {
   @Value("${messaging.queue.userLocked}")
   private String userLockedQueue;
 
+  @Value("${messaging.queue.userUnlocked}")
+  private String userUnlockedQueue;
+
   @Value("${messaging.queue.userLogged}")
   private String userLoggedQueue;
 
@@ -48,6 +51,9 @@ public class UserRabbitMqConfig {
   @Value("${messaging.queue.userLocked.dlq}")
   private String userLockedDlq;
 
+  @Value("${messaging.queue.userUnlocked.dlq}")
+  private String userUnlockedDlq;
+
   @Value("${messaging.queue.userLogged.dlq}")
   private String userLoggedDlq;
 
@@ -62,6 +68,9 @@ public class UserRabbitMqConfig {
 
   @Value("${messaging.routing.key.userLocked}")
   private String userLockedRoutingKey;
+
+  @Value("${messaging.routing.key.userUnlocked}")
+  private String userUnlockedRoutingKey;
 
   @Value("${messaging.routing.key.userLogged}")
   private String userLoggedRoutingKey;
@@ -124,6 +133,14 @@ public class UserRabbitMqConfig {
   }
 
   @Bean
+  public Queue userUnlockedQueue() {
+    return QueueBuilder.durable(userUnlockedQueue)
+      .withArgument("x-dead-letter-exchange", dlxExchange)
+      .withArgument("x-dead-letter-routing-key", userUnlockedDlq)
+      .build();
+  }
+
+  @Bean
   public Queue userLoggedQueue() {
     return QueueBuilder.durable(userLoggedQueue)
       .withArgument("x-dead-letter-exchange", dlxExchange)
@@ -154,6 +171,11 @@ public class UserRabbitMqConfig {
   }
 
   @Bean
+  public Queue userUnlockedDlqQueue() {
+    return new Queue(userUnlockedDlq, true);
+  }
+
+  @Bean
   public Queue userLoggedDlqQueue() {
     return new Queue(userLoggedDlq, true);
   }
@@ -178,6 +200,11 @@ public class UserRabbitMqConfig {
   @Bean
   public Binding userLockedBinding() {
     return BindingBuilder.bind(userLockedQueue()).to(userExchange()).with(userLockedRoutingKey);
+  }
+
+  @Bean
+  public Binding userUnlockedBinding() {
+    return BindingBuilder.bind(userUnlockedQueue()).to(userExchange()).with(userUnlockedRoutingKey);
   }
 
   @Bean
@@ -215,6 +242,11 @@ public class UserRabbitMqConfig {
   @Bean
   public Binding userLockedDlqBinding() {
     return BindingBuilder.bind(userLockedDlqQueue()).to(deadLetterExchange()).with(userLockedDlq);
+  }
+
+  @Bean
+  public Binding userUnlockedDlqBinding() {
+    return BindingBuilder.bind(userUnlockedDlqQueue()).to(deadLetterExchange()).with(userUnlockedDlq);
   }
 
   @Bean

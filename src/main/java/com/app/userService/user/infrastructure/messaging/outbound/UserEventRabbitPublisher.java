@@ -40,8 +40,8 @@ public class UserEventRabbitPublisher implements EventPublisher {
       rabbitTemplate.convertAndSend(userExchange, event.getRoutingKey(), jsonEvent, correlationData);
 
     } catch (JsonProcessingException e) {
-      logger.error("Error al serializar el evento: {}", e.getMessage());
-      throw new RuntimeException("No se pudo serializar el evento", e);
+      logger.error("Failed to serialize event: {}", e.getMessage());
+      throw new RuntimeException("Failed to serialize event", e);
     }
   }
 

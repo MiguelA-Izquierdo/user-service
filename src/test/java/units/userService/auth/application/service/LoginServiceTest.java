@@ -2,7 +2,6 @@ package units.userService.auth.application.service;
 
 import com.app.userService._shared.application.service.UserEventService;
 import com.app.userService._shared.infrastructure.exceptions.InvalidPasswordException;
-import com.app.userService._shared.infrastructure.exceptions.UserLockedException;
 import com.app.userService.auth.application.service.LoginService;
 import com.app.userService.user.application.service.UserActionLogService;
 import com.app.userService.user.application.service.UserPasswordService;
@@ -44,13 +43,13 @@ class LoginServiceTest {
   }
 
   @Test
-  void login_lockedUser_throwsUserLockedExceptionWithoutCheckingPassword() {
+  void login_lockedUser_throwsInvalidPasswordExceptionWithoutCheckingPassword() {
     for (int i = 0; i < 5; i++) {
       mockUser.registerFailedLoginAttempt();
     }
     assertTrue(mockUser.isLocked());
 
-    assertThrows(UserLockedException.class, () -> loginService.login(mockUser, "anyPassword"));
+    assertThrows(InvalidPasswordException.class, () -> loginService.login(mockUser, "anyPassword"));
     verify(userPasswordService, never()).isPasswordValid(any(), any());
   }
 
@@ -72,7 +71,7 @@ class LoginServiceTest {
   }
 
   @Test
-  void login_fiveConsecutiveFailures_locksAccountAndThrowsUserLockedException() {
+  void login_fiveConsecutiveFailures_locksAccountAndThrowsInvalidPasswordException() {
     when(userPasswordService.isPasswordValid(anyString(), any())).thenReturn(false);
 
     for (int i = 0; i < 4; i++) {
@@ -80,7 +79,7 @@ class LoginServiceTest {
     }
     assertFalse(mockUser.isLocked());
 
-    assertThrows(UserLockedException.class, () -> loginService.login(mockUser, "wrongPass"));
+    assertThrows(InvalidPasswordException.class, () -> loginService.login(mockUser, "wrongPass"));
     assertTrue(mockUser.isLocked());
   }
 
@@ -92,7 +91,7 @@ class LoginServiceTest {
       try { loginService.login(mockUser, "wrongPass"); } catch (Exception ignored) {}
     }
 
-    assertThrows(UserLockedException.class, () -> loginService.login(mockUser, "wrongPass"));
+    assertThrows(InvalidPasswordException.class, () -> loginService.login(mockUser, "wrongPass"));
 
     verify(userActionLogService, times(1)).registerUserAction(mockUser, com.app.userService.user.domain.model.UserAction.LOCKED);
   }

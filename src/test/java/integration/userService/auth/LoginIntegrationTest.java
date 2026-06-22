@@ -34,20 +34,20 @@ class LoginIntegrationTest extends IntegrationTestBase {
 
     @BeforeEach
     void setUp() {
-        User user = User.of(
-                UserId.of(UUID.randomUUID().toString()),
-                UserName.of("Test"),
-                UserLastName.of("User"),
-                UserEmail.of(TEST_EMAIL),
-                IdentityDocument.of("Passport", "AB1234567"),
-                Phone.of("+34", "600000000"),
-                Address.of("Test Street", "1", "Test City", "Test State", "12345", "ES"),
-                userPasswordService.encryptPassword(TEST_PASSWORD),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                List.of(Role.ROLE_USER)
-        );
+        User user = User.builder()
+                .id(UserId.of(UUID.randomUUID().toString()))
+                .name(UserName.of("Test"))
+                .lastName(UserLastName.of("User"))
+                .email(UserEmail.of(TEST_EMAIL))
+                .identityDocument(IdentityDocument.of("Passport", "AB1234567"))
+                .phone(Phone.of("+34", "600000000"))
+                .address(Address.of("Test Street", "1", "Test City", "Test State", "12345", "ES"))
+                .password(userPasswordService.encryptPassword(TEST_PASSWORD))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(List.of(Role.ROLE_USER))
+                .build();
         userServiceCore.registerUser(user);
         flushOutboxFromSetup();
     }

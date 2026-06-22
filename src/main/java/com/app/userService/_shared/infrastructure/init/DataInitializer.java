@@ -63,20 +63,20 @@ public class DataInitializer implements ApplicationRunner {
 
         Password.of(adminPassword);
 
-        User admin = User.of(
-                UserId.of(UUID.randomUUID().toString()),
-                UserName.of(adminName),
-                UserLastName.of(adminLastName),
-                UserEmail.of(adminEmail),
-                IdentityDocument.of("Passport", "ADM000000"),
-                Phone.of("+1", "0000000"),
-                Address.of("Admin Street", "1", "Admin City", "Admin State", "00000", "US"),
-                userPasswordService.encryptPassword(adminPassword),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                new ArrayList<>()
-        );
+        User admin = User.builder()
+                .id(UserId.of(UUID.randomUUID().toString()))
+                .name(UserName.of(adminName))
+                .lastName(UserLastName.of(adminLastName))
+                .email(UserEmail.of(adminEmail))
+                .identityDocument(IdentityDocument.of("Passport", "ADM000000"))
+                .phone(Phone.of("+1", "0000000"))
+                .address(Address.of("Admin Street", "1", "Admin City", "Admin State", "00000", "US"))
+                .password(userPasswordService.encryptPassword(adminPassword))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(new ArrayList<>())
+                .build();
 
         userServiceCore.registerUser(admin);
         userServiceCore.grantSuperAdmin(admin);

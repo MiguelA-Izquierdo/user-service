@@ -53,44 +53,73 @@ public class UserEntity {
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<UserRoleEntity> roles;
   public UserEntity(){}
-  public UserEntity(UUID id,
-                      String name,
-                      String lastName,
-                      String email,
-                      String password,
-                      Integer failedLoginAttempts,
-                      String secretKey,
-                      UserStatus status,
-                      String countryCode,
-                      String phoneNumber,
-                      String documentType,
-                      String documentNumber,
-                      String street,
-                      String streetNumber,
-                      String city,
-                      String state,
-                      String postalCode,
-                      String country,
-                    LocalDateTime createdAt) {
-    this.id = id;
-    this.name = name;
-    this.lastName = lastName;
-    this.email = email;
-    this.password = password;
-    this.failedLoginAttempts = failedLoginAttempts;
-    this.secretKey = secretKey;
-    this.status = status;
-    this.countryCode = countryCode;
-    this.phoneNumber = phoneNumber;
-    this.documentType = documentType;
-    this.documentNumber = documentNumber;
-    this.street = street;
-    this.streetNumber = streetNumber;
-    this.city = city;
-    this.state = state;
-    this.postalCode = postalCode;
-    this.country = country;
-    this.createdAt = createdAt;
+
+  private UserEntity(Builder builder) {
+    this.id = builder.id;
+    this.name = builder.name;
+    this.lastName = builder.lastName;
+    this.email = builder.email;
+    this.password = builder.password;
+    this.failedLoginAttempts = builder.failedLoginAttempts;
+    this.secretKey = builder.secretKey;
+    this.status = builder.status;
+    this.countryCode = builder.countryCode;
+    this.phoneNumber = builder.phoneNumber;
+    this.documentType = builder.documentType;
+    this.documentNumber = builder.documentNumber;
+    this.street = builder.street;
+    this.streetNumber = builder.streetNumber;
+    this.city = builder.city;
+    this.state = builder.state;
+    this.postalCode = builder.postalCode;
+    this.country = builder.country;
+    this.createdAt = builder.createdAt;
+  }
+
+  public static Builder builder() { return new Builder(); }
+
+  public static final class Builder {
+    private UUID id;
+    private String name;
+    private String lastName;
+    private String email;
+    private String password;
+    private Integer failedLoginAttempts;
+    private String secretKey;
+    private UserStatus status;
+    private String countryCode;
+    private String phoneNumber;
+    private String documentType;
+    private String documentNumber;
+    private String street;
+    private String streetNumber;
+    private String city;
+    private String state;
+    private String postalCode;
+    private String country;
+    private LocalDateTime createdAt;
+
+    public Builder id(UUID id)                           { this.id = id; return this; }
+    public Builder name(String name)                     { this.name = name; return this; }
+    public Builder lastName(String lastName)             { this.lastName = lastName; return this; }
+    public Builder email(String email)                   { this.email = email; return this; }
+    public Builder password(String password)             { this.password = password; return this; }
+    public Builder failedLoginAttempts(Integer v)        { this.failedLoginAttempts = v; return this; }
+    public Builder secretKey(String secretKey)           { this.secretKey = secretKey; return this; }
+    public Builder status(UserStatus status)             { this.status = status; return this; }
+    public Builder countryCode(String countryCode)       { this.countryCode = countryCode; return this; }
+    public Builder phoneNumber(String phoneNumber)       { this.phoneNumber = phoneNumber; return this; }
+    public Builder documentType(String documentType)     { this.documentType = documentType; return this; }
+    public Builder documentNumber(String documentNumber) { this.documentNumber = documentNumber; return this; }
+    public Builder street(String street)                 { this.street = street; return this; }
+    public Builder streetNumber(String streetNumber)     { this.streetNumber = streetNumber; return this; }
+    public Builder city(String city)                     { this.city = city; return this; }
+    public Builder state(String state)                   { this.state = state; return this; }
+    public Builder postalCode(String postalCode)         { this.postalCode = postalCode; return this; }
+    public Builder country(String country)               { this.country = country; return this; }
+    public Builder createdAt(LocalDateTime createdAt)    { this.createdAt = createdAt; return this; }
+
+    public UserEntity build() { return new UserEntity(this); }
   }
 
 

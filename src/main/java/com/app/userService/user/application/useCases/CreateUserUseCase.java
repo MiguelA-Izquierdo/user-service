@@ -60,8 +60,20 @@ public class CreateUserUseCase {
 
     String passwordHashed = userPasswordService.encryptPassword(command.password());
 
-    List<Role> emptyRolesList = new ArrayList<>();
-    return User.of(userId, userName, userLastName, userEmail, identityDocument, phone, address, passwordHashed, failedLoginAttempts, LocalDateTime.now(), UserStatus.ACTIVE,emptyRolesList);
+    return User.builder()
+      .id(userId)
+      .name(userName)
+      .lastName(userLastName)
+      .email(userEmail)
+      .identityDocument(identityDocument)
+      .phone(phone)
+      .address(address)
+      .password(passwordHashed)
+      .failedLoginAttempts(failedLoginAttempts)
+      .createdAt(LocalDateTime.now())
+      .status(UserStatus.ACTIVE)
+      .roles(new ArrayList<>())
+      .build();
   }
 
 }

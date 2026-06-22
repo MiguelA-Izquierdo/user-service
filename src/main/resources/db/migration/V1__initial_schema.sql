@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens
     expiration_date DATETIME(6)  NOT NULL,
     is_used         TINYINT(1)   NOT NULL,
     PRIMARY KEY (id),
+    CONSTRAINT uk_password_reset_tokens_token UNIQUE (token),
     CONSTRAINT fk_prt_user FOREIGN KEY (user_id) REFERENCES users (id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -57,21 +58,24 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens
 
 CREATE TABLE IF NOT EXISTS outbox_events
 (
-    id          BINARY(16)   NOT NULL,
-    event_type  VARCHAR(255) NOT NULL,
-    payload     VARCHAR(255) NOT NULL,
-    status      VARCHAR(255) NOT NULL,
-    created_at  DATETIME(6)  NOT NULL,
-    queue       VARCHAR(255) NOT NULL,
-    routing_key VARCHAR(255) NOT NULL,
-    exchange    VARCHAR(255) NOT NULL,
+    id            BINARY(16)   NOT NULL,
+    event_type    VARCHAR(255) NOT NULL,
+    payload       TEXT         NOT NULL,
+    status        VARCHAR(255) NOT NULL,
+    created_at    DATETIME(6)  NOT NULL,
+    queue         VARCHAR(255) NOT NULL,
+    routing_key   VARCHAR(255) NOT NULL,
+    exchange      VARCHAR(255) NOT NULL,
+    attempts      INT          NOT NULL DEFAULT 0,
+    next_retry_at DATETIME(6)  NULL,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
--- Index used by the outbox processor to poll PENDING events efficiently
-CREATE INDEX idx_outbox_events_status ON outbox_events (status);
+-- Index covering the poll predicate: the processor claims publishable rows
+-- by (status, next_retry_at) with SELECT ... FOR UPDATE SKIP LOCKED.
+CREATE INDEX idx_outbox_events_poll ON outbox_events (status, next_retry_at);
 
 CREATE TABLE IF NOT EXISTS user_action_log
 (

@@ -48,36 +48,36 @@ class UpdatePasswordIntegrationTest extends IntegrationTestBase {
     @BeforeEach
     void setUp() throws Exception {
         userAId = UUID.randomUUID().toString();
-        userServiceCore.registerUser(User.of(
-                UserId.of(userAId),
-                UserName.of("UserA"),
-                UserLastName.of("Password"),
-                UserEmail.of(USER_A_EMAIL),
-                IdentityDocument.of("Passport", "UA1234567"),
-                Phone.of("+34", "666000001"),
-                Address.of("A Street", "1", "A City", "A State", "55555", "ES"),
-                userPasswordService.encryptPassword(USER_A_PASSWORD),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                List.of()
-        ));
+        userServiceCore.registerUser(User.builder()
+                .id(UserId.of(userAId))
+                .name(UserName.of("UserA"))
+                .lastName(UserLastName.of("Password"))
+                .email(UserEmail.of(USER_A_EMAIL))
+                .identityDocument(IdentityDocument.of("Passport", "UA1234567"))
+                .phone(Phone.of("+34", "666000001"))
+                .address(Address.of("A Street", "1", "A City", "A State", "55555", "ES"))
+                .password(userPasswordService.encryptPassword(USER_A_PASSWORD))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(List.of())
+                .build());
 
         userBId = UUID.randomUUID().toString();
-        userServiceCore.registerUser(User.of(
-                UserId.of(userBId),
-                UserName.of("UserB"),
-                UserLastName.of("Password"),
-                UserEmail.of(USER_B_EMAIL),
-                IdentityDocument.of("Passport", "UB1234567"),
-                Phone.of("+34", "666000002"),
-                Address.of("B Street", "2", "B City", "B State", "66666", "ES"),
-                userPasswordService.encryptPassword(USER_B_PASSWORD),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                List.of()
-        ));
+        userServiceCore.registerUser(User.builder()
+                .id(UserId.of(userBId))
+                .name(UserName.of("UserB"))
+                .lastName(UserLastName.of("Password"))
+                .email(UserEmail.of(USER_B_EMAIL))
+                .identityDocument(IdentityDocument.of("Passport", "UB1234567"))
+                .phone(Phone.of("+34", "666000002"))
+                .address(Address.of("B Street", "2", "B City", "B State", "66666", "ES"))
+                .password(userPasswordService.encryptPassword(USER_B_PASSWORD))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(List.of())
+                .build());
 
         userAToken = loginAndExtractToken(USER_A_EMAIL, USER_A_PASSWORD);
         userBToken = loginAndExtractToken(USER_B_EMAIL, USER_B_PASSWORD);

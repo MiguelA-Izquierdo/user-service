@@ -10,6 +10,7 @@ import com.app.userService.auth.domain.service.TokenService;
 import com.app.userService.user.domain.event.UserCreatedDomainEvent;
 import com.app.userService.user.domain.event.UserDeletedDomainEvent;
 import com.app.userService.auth.domain.event.UserLockedDomainEvent;
+import com.app.userService.auth.domain.event.UserUnlockedDomainEvent;
 import com.app.userService.user.domain.model.OutboxEvent;
 import com.app.userService.user.domain.model.OutboxEventStatus;
 import com.app.userService.user.domain.model.User;
@@ -64,6 +65,11 @@ public class UserEventService {
     );
     passwordResetTokenService.createPasswordResetToken(passwordResetToken);
     UserLockedDomainEvent event = userEventFactory.createUserLockedEvent(user, token);
+    storeOutboxEvent(event);
+  }
+
+  public void handleUserUnlockedEvent(User user) {
+    UserUnlockedDomainEvent event = userEventFactory.createUserUnlockedEvent(user);
     storeOutboxEvent(event);
   }
 

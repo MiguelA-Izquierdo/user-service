@@ -1,7 +1,6 @@
 package com.app.userService.auth.application.service;
 
 import com.app.userService._shared.infrastructure.exceptions.InvalidPasswordException;
-import com.app.userService._shared.infrastructure.exceptions.UserLockedException;
 import com.app.userService.user.application.service.UserActionLogService;
 import com.app.userService._shared.application.service.UserEventService;
 import com.app.userService.user.application.service.UserPasswordService;
@@ -26,10 +25,10 @@ public class LoginService {
     this.userEventService = userEventService;
     this.userActionLogService = userActionLogService;
   }
-  @Transactional(noRollbackFor = {InvalidPasswordException.class, UserLockedException.class})
+  @Transactional(noRollbackFor = InvalidPasswordException.class)
   public void login(User user, String passwordInput){
     if (user.isLocked()) {
-      throw new UserLockedException("Your account has been locked.");
+      throw new InvalidPasswordException("Invalid credentials");
     }
 
     boolean isCredentialsValid = this.userPasswordService.isPasswordValid(passwordInput, user.getPassword());
@@ -55,11 +54,11 @@ public class LoginService {
       logoutUser(user);
       this.userActionLogService.registerUserAction(user, UserAction.LOCKED);
       this.userEventService.handleUserLockedEvent(user);
-      throw new UserLockedException("Your account has been locked due to too many failed login attempts.");
+      throw new InvalidPasswordException("Invalid credentials");
     }
 
     this.userActionLogService.addMetadata("LoginAttempts", user.getFailedLoginAttempts().toString());
     this.userActionLogService.registerUserAction(user, UserAction.ERROR_LOGIN);
-    throw new InvalidPasswordException("The current password provided is incorrect.");
+    throw new InvalidPasswordException("Invalid credentials");
   }
 }

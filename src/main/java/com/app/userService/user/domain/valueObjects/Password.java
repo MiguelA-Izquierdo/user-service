@@ -34,7 +34,7 @@ public class Password extends ValueObjectAbstract{
 
   @Override
   public String toString() {
-    return password;
+    return "[PROTECTED]";
   }
 
   @Override

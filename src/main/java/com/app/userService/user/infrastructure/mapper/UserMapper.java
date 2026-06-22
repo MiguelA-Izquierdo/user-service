@@ -12,55 +12,51 @@ import java.util.stream.Collectors;
 public class UserMapper {
 
   public static UserEntity toEntity(User userDomain){
-
-    UserEntity userEntity = new UserEntity(
-      userDomain.getId().getValue(),
-      userDomain.getName().getValue(),
-      userDomain.getLastName().getValue(),
-      userDomain.getEmail().getEmail(),
-      userDomain.getPassword(),
-      userDomain.getFailedLoginAttempts(),
-      userDomain.getSecretKey(),
-      userDomain.getStatus(),
-      userDomain.getPhone().getCountryCode(),
-      userDomain.getPhone().getNumber(),
-      userDomain.getIdentityDocument().getDocumentType(),
-      userDomain.getIdentityDocument().getDocumentNumber(),
-      userDomain.getAddress().getStreet(),
-      userDomain.getAddress().getNumber(),
-      userDomain.getAddress().getCity(),
-      userDomain.getAddress().getState(),
-      userDomain.getAddress().getPostalCode(),
-      userDomain.getAddress().getCountry(),
-      userDomain.getCreatedAt()
-    );
-    return userEntity;
+    return UserEntity.builder()
+      .id(userDomain.getId().getValue())
+      .name(userDomain.getName().getValue())
+      .lastName(userDomain.getLastName().getValue())
+      .email(userDomain.getEmail().getEmail())
+      .password(userDomain.getPassword())
+      .failedLoginAttempts(userDomain.getFailedLoginAttempts())
+      .secretKey(userDomain.getSecretKey())
+      .status(userDomain.getStatus())
+      .countryCode(userDomain.getPhone().getCountryCode())
+      .phoneNumber(userDomain.getPhone().getNumber())
+      .documentType(userDomain.getIdentityDocument().getDocumentType())
+      .documentNumber(userDomain.getIdentityDocument().getDocumentNumber())
+      .street(userDomain.getAddress().getStreet())
+      .streetNumber(userDomain.getAddress().getNumber())
+      .city(userDomain.getAddress().getCity())
+      .state(userDomain.getAddress().getState())
+      .postalCode(userDomain.getAddress().getPostalCode())
+      .country(userDomain.getAddress().getCountry())
+      .createdAt(userDomain.getCreatedAt())
+      .build();
   }
 
   public static UserEntity toEntity(AnonymousUser anonymousUser){
-
-    UserEntity userEntity = new UserEntity(
-      anonymousUser.getId().getValue(),
-      anonymousUser.getName(),
-      anonymousUser.getLastName(),
-      anonymousUser.getEmail(),
-      anonymousUser.getPassword(),
-      anonymousUser.getFailedLoginAttempts(),
-      anonymousUser.getSecretKey(),
-      anonymousUser.getStatus(),
-      anonymousUser.getCountryCode(),
-      anonymousUser.getNumber(),
-      anonymousUser.getDocumentType(),
-      anonymousUser.getDocumentNumber(),
-      anonymousUser.getStreet(),
-      anonymousUser.getStreetNumber(),
-      anonymousUser.getCity(),
-      anonymousUser.getState(),
-      anonymousUser.getPostalCode(),
-      anonymousUser.getCountry(),
-      anonymousUser.getCreatedAt()
-    );
-    return userEntity;
+    return UserEntity.builder()
+      .id(anonymousUser.getId().getValue())
+      .name(anonymousUser.getName())
+      .lastName(anonymousUser.getLastName())
+      .email(anonymousUser.getEmail())
+      .password(anonymousUser.getPassword())
+      .failedLoginAttempts(anonymousUser.getFailedLoginAttempts())
+      .secretKey(anonymousUser.getSecretKey())
+      .status(anonymousUser.getStatus())
+      .countryCode(anonymousUser.getCountryCode())
+      .phoneNumber(anonymousUser.getNumber())
+      .documentType(anonymousUser.getDocumentType())
+      .documentNumber(anonymousUser.getDocumentNumber())
+      .street(anonymousUser.getStreet())
+      .streetNumber(anonymousUser.getStreetNumber())
+      .city(anonymousUser.getCity())
+      .state(anonymousUser.getState())
+      .postalCode(anonymousUser.getPostalCode())
+      .country(anonymousUser.getCountry())
+      .createdAt(anonymousUser.getCreatedAt())
+      .build();
   }
 
   public static User toDomain(UserEntity userEntity){
@@ -77,22 +73,20 @@ public class UserMapper {
       .map(userRoleEntity -> Role.valueOf(userRoleEntity.getRole().name()))
       .collect(Collectors.toList());
 
-    User userDomain = User.of(
-      UserId.of(userEntity.getId()),
-      UserName.of(userEntity.getName()),
-      UserLastName.of(userEntity.getLastName()),
-      UserEmail.of(userEntity.getEmail()),
-      IdentityDocument.of(userEntity.getDocumentType(), userEntity.getDocumentNumber()),
-      Phone.of(userEntity.getCountryCode(), userEntity.getPhoneNumber()),
-      userAddress,
-      userEntity.getPassword(),
-      userEntity.getFailedLoginAttempts(),
-      userEntity.getSecretKey(),
-      userEntity.getCreatedAt(),
-      userEntity.getStatus(),
-      roles
-    );
-
-    return userDomain;
+    return User.builder()
+      .id(UserId.of(userEntity.getId()))
+      .name(UserName.of(userEntity.getName()))
+      .lastName(UserLastName.of(userEntity.getLastName()))
+      .email(UserEmail.of(userEntity.getEmail()))
+      .identityDocument(IdentityDocument.of(userEntity.getDocumentType(), userEntity.getDocumentNumber()))
+      .phone(Phone.of(userEntity.getCountryCode(), userEntity.getPhoneNumber()))
+      .address(userAddress)
+      .password(userEntity.getPassword())
+      .failedLoginAttempts(userEntity.getFailedLoginAttempts())
+      .secretKey(userEntity.getSecretKey())
+      .createdAt(userEntity.getCreatedAt())
+      .status(userEntity.getStatus())
+      .roles(roles)
+      .build();
   }
 }

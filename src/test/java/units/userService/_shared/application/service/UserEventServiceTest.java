@@ -6,6 +6,7 @@ import com.app.userService.auth.application.service.PasswordResetTokenService;
 import com.app.userService.auth.domain.event.UserLockedDomainEvent;
 import com.app.userService.auth.domain.event.UserLoggedDomainEvent;
 import com.app.userService.auth.domain.event.UserLogoutDomainEvent;
+import com.app.userService.auth.domain.event.UserUnlockedDomainEvent;
 import com.app.userService.auth.domain.service.TokenService;
 import com.app.userService.user.domain.event.UserCreatedDomainEvent;
 import com.app.userService.user.domain.event.UserDeletedDomainEvent;
@@ -183,6 +184,42 @@ class UserEventServiceTest {
     assertEquals(event.getEventId(), captureOutboxEvent().getEventId());
   }
 
+  // ── handleUserUnlockedEvent ───────────────────────────────────────────────
+
+  @Test
+  void handleUserUnlockedEvent_savesOutboxEventWithPendingStatus() {
+    UserUnlockedDomainEvent event = userUnlockedEvent();
+    when(userEventFactory.createUserUnlockedEvent(mockUser)).thenReturn(event);
+
+    userEventService.handleUserUnlockedEvent(mockUser);
+
+    assertEquals(OutboxEventStatus.PENDING, captureOutboxEvent().getStatus());
+  }
+
+  @Test
+  void handleUserUnlockedEvent_savesOutboxEventWithCorrectRoutingMetadata() {
+    UserUnlockedDomainEvent event = userUnlockedEvent();
+    when(userEventFactory.createUserUnlockedEvent(mockUser)).thenReturn(event);
+
+    userEventService.handleUserUnlockedEvent(mockUser);
+
+    OutboxEvent saved = captureOutboxEvent();
+    assertEquals("user.unlocked", saved.getType());
+    assertEquals(QUEUE,           saved.getQueue());
+    assertEquals(EXCHANGE,        saved.getExchange());
+    assertEquals(ROUTING,         saved.getRoutingKey());
+  }
+
+  @Test
+  void handleUserUnlockedEvent_outboxEventIdMatchesDomainEventId() {
+    UserUnlockedDomainEvent event = userUnlockedEvent();
+    when(userEventFactory.createUserUnlockedEvent(mockUser)).thenReturn(event);
+
+    userEventService.handleUserUnlockedEvent(mockUser);
+
+    assertEquals(event.getEventId(), captureOutboxEvent().getEventId());
+  }
+
   // ── helpers ───────────────────────────────────────────────────────────────
 
   private OutboxEvent captureOutboxEvent() {
@@ -220,5 +257,11 @@ class UserEventServiceTest {
       mockUser.getId().getValue(), mockUser.getName().getValue(),
       mockUser.getLastName().getValue(), mockUser.getEmail().getEmail(),
       token, LocalDateTime.now().plusMinutes(15));
+  }
+
+  private UserUnlockedDomainEvent userUnlockedEvent() {
+    return new UserUnlockedDomainEvent(EXCHANGE, QUEUE, ROUTING,
+      mockUser.getId().getValue(), mockUser.getName().getValue(),
+      mockUser.getLastName().getValue(), mockUser.getEmail().getEmail());
   }
 }

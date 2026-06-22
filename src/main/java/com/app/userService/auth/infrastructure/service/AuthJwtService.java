@@ -2,9 +2,11 @@ package com.app.userService.auth.infrastructure.service;
 
 import com.app.userService.auth.domain.service.AuthService;
 import com.app.userService.auth.domain.valueObjects.AuthToken;
+import com.app.userService.user.domain.model.Role;
 import com.app.userService.user.domain.model.User;
 import com.app.userService.user.domain.model.UserWrapper;
 import com.app.userService.user.domain.valueObjects.UserId;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.app.userService.user.application.service.UserServiceCore;
 
@@ -23,25 +25,31 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class AuthJwtService implements AuthService {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthJwtService.class);
-  private static final long EXPIRATION_TIME = 86400000L;
   private final UserServiceCore userService;
   private final ObjectMapper objectMapper;
+  private final String generalSecret;
+  private final long expirationTime;
 
-  @Value("${jwt.secret}")
-  private String generalSecret;
-
-  public AuthJwtService(UserServiceCore userService, ObjectMapper objectMapper) {
+  public AuthJwtService(
+      UserServiceCore userService,
+      ObjectMapper objectMapper,
+      @Value("${jwt.secret}") String generalSecret,
+      @Value("${jwt.expiration}") long expirationTime) {
     this.userService = userService;
     this.objectMapper = objectMapper;
+    this.generalSecret = generalSecret;
+    this.expirationTime = expirationTime;
   }
 
   @Override
@@ -49,7 +57,7 @@ public class AuthJwtService implements AuthService {
     String userId = user.getId().toString();
     String secretKey = generateMixedSecret(userId);
 
-    Date expirationDate = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
+    Date expirationDate = new Date(System.currentTimeMillis() + expirationTime);
 
     String token = Jwts.builder()
       .setSubject(userId)
@@ -110,13 +118,25 @@ public class AuthJwtService implements AuthService {
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
+  private static final Set<String> ADMIN_ROLES = Set.of(
+    Role.ROLE_ADMIN.name(),
+    Role.ROLE_SUPER_ADMIN.name()
+  );
+
+  @Override
+  public boolean isAdmin(Collection<? extends GrantedAuthority> authorities) {
+    return authorities.stream()
+      .map(GrantedAuthority::getAuthority)
+      .anyMatch(ADMIN_ROLES::contains);
+  }
+
   private String hashSecret(String input) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
       return Base64.getEncoder().encodeToString(hash);
     } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException("Error generando hash de clave secreta", e);
+      throw new RuntimeException("Failed to generate secret key hash", e);
     }
   }
 

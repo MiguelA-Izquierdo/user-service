@@ -13,7 +13,7 @@ public class UserAuthorizationFilter {
   private static final Logger logger = LoggerFactory.getLogger(UserAuthorizationFilter.class);
 
   public AuthorizationDecision hasAccessToUser(Authentication authentication, String userId) {
-    logger.info("hasAccessToUser {} {}", authentication.getAuthorities(), authentication.getName());
+    logger.debug("hasAccessToUser {} {}", authentication.getAuthorities(), authentication.getName());
     boolean granted = authentication.getName().equals(userId)
         || hasRole(authentication, Role.ROLE_ADMIN)
         || hasRole(authentication, Role.ROLE_SUPER_ADMIN);

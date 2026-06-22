@@ -14,7 +14,7 @@ class PasswordTest {
   void testValidPassword() {
     Password password = Password.of("SecurePass@12");
     Assertions.assertNotNull(password);
-    Assertions.assertEquals("SecurePass@12", password.toString());
+    Assertions.assertEquals("SecurePass@12", password.getPassword());
   }
 
   @Test
@@ -95,6 +95,6 @@ class PasswordTest {
   @Test
   void testToString() {
     Password password = Password.of("SecurePass@12");
-    Assertions.assertEquals("SecurePass@12", password.toString());
+    Assertions.assertEquals("[PROTECTED]", password.toString());
   }
 }

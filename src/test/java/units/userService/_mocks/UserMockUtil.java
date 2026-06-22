@@ -18,20 +18,21 @@ public class UserMockUtil {
     Phone phone = Phone.of("+34", "633633633");
     Address address = Address.of("Main St", "123", "Springfield", "Illinois", "62704", "USA");
 
-    return User.of(userId,
-      UserName.of("John"),
-      UserLastName.of("Doe"),
-      UserEmail.of("johndoe@example.com"),
-      identityDocument,
-      phone,
-      address,
-      "password123",
-      0,
-      "SecrectTest",
-      LocalDateTime.now(),
-      UserStatus.ACTIVE,
-      List.of(Role.ROLE_USER)
-      );
+    return User.builder()
+      .id(userId)
+      .name(UserName.of("John"))
+      .lastName(UserLastName.of("Doe"))
+      .email(UserEmail.of("johndoe@example.com"))
+      .identityDocument(identityDocument)
+      .phone(phone)
+      .address(address)
+      .password("password123")
+      .failedLoginAttempts(0)
+      .secretKey("SecrectTest")
+      .createdAt(LocalDateTime.now())
+      .status(UserStatus.ACTIVE)
+      .roles(List.of(Role.ROLE_USER))
+      .build();
   }
 
   public static CreateUserCommand createCreateUserCommand() {

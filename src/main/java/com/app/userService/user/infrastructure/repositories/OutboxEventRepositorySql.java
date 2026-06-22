@@ -8,8 +8,10 @@ import com.app.userService.user.infrastructure.mapper.OutboxEventMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -44,5 +46,14 @@ public class OutboxEventRepositorySql implements OutboxEventRepository {
   public List<OutboxEvent> findByRoutingKey(String routingKey) {
     List<OutboxEventEntity> outboxEventEntityList = jpaRepository.findByRoutingKey(routingKey);
     return outboxEventEntityList.stream().map(OutboxEventMapper::toDomain).toList();
+  }
+
+  @Override
+  public List<OutboxEvent> fetchPublishableBatch(int batchSize, LocalDateTime now) {
+    return jpaRepository.fetchPublishableBatch(
+        List.of(OutboxEventStatus.PENDING, OutboxEventStatus.FAILED),
+        now,
+        PageRequest.of(0, batchSize)
+    ).stream().map(OutboxEventMapper::toDomain).toList();
   }
 }

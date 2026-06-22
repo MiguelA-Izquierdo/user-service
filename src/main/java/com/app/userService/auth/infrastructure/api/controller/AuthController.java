@@ -10,6 +10,8 @@ import com.app.userService.auth.application.bus.query.AuthQueryBus;
 import com.app.userService.auth.application.bus.query.LoginQuery;
 import com.app.userService.auth.application.bus.query.LoginWithTokenQuery;
 import com.app.userService.auth.application.dto.UserLoggedDTO;
+import com.app.userService.auth.domain.service.AuthService;
+import com.app.userService.auth.infrastructure.api.dto.TokenIntrospectionDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,19 +26,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
   private final AuthCommandBus commandBus;
-
   private final AuthQueryBus queryBus;
-  public AuthController(AuthQueryBus queryBus, AuthCommandBus commandBus) {
+  private final AuthService authService;
+
+  public AuthController(AuthQueryBus queryBus, AuthCommandBus commandBus, AuthService authService) {
     this.queryBus = queryBus;
     this.commandBus = commandBus;
+    this.authService = authService;
   }
   @Operation(
     summary = "Login a user",
@@ -297,5 +304,34 @@ public class AuthController {
   public ResponseEntity<Object> resetPassword(@RequestBody UnlockResetPasswordCommand command) {
     commandBus.dispatch(command);
     return ResponseEntity.noContent().build();
+  }
+
+  @Operation(
+    summary = "Introspect token",
+    description = "Validates a Bearer token and returns the subject, roles, and whether the user has admin privileges. Intended for internal API gateway use — not for end-user clients.",
+    security = {@SecurityRequirement(name = "bearerAuth")},
+    responses = {
+      @ApiResponse(
+        responseCode = "200",
+        description = "Token is valid",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenIntrospectionDTO.class))
+      ),
+      @ApiResponse(responseCode = "401", description = "Token missing or invalid",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class)))
+    }
+  )
+  @GetMapping("/introspect")
+  public ResponseEntity<TokenIntrospectionDTO> introspect() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    List<String> roles = authentication.getAuthorities().stream()
+      .map(GrantedAuthority::getAuthority)
+      .toList();
+
+    TokenIntrospectionDTO dto = new TokenIntrospectionDTO(
+      authentication.getName(),
+      roles,
+      authService.isAdmin(authentication.getAuthorities())
+    );
+    return ResponseEntity.ok(dto);
   }
 }

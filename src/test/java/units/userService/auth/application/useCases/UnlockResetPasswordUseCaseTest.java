@@ -2,6 +2,7 @@ package units.userService.auth.application.useCases;
 
 import com.app.userService.auth.application.bus.command.UnlockResetPasswordCommand;
 import com.app.userService.auth.application.service.PasswordResetTokenService;
+import com.app.userService._shared.application.service.UserEventService;
 import com.app.userService.auth.application.useCases.UnlockResetPasswordUseCase;
 import com.app.userService.auth.domain.exceptions.TokenExpiredException;
 import com.app.userService.auth.domain.model.PasswordResetToken;
@@ -29,6 +30,7 @@ class UnlockResetPasswordUseCaseTest {
   @Mock private UserPasswordService userPasswordService;
   @Mock private PasswordResetTokenService passwordRestTokenService;
   @Mock private UserActionLogService userActionLogService;
+  @Mock private UserEventService userEventService;
 
   @InjectMocks private UnlockResetPasswordUseCase unlockResetPasswordUseCase;
 
@@ -117,5 +119,17 @@ class UnlockResetPasswordUseCaseTest {
     unlockResetPasswordUseCase.execute(command);
 
     verify(userActionLogService, times(1)).registerUserAction(mockUser, UserAction.UNLOCKED);
+  }
+
+  @Test
+  void execute_validToken_publishesUnlockedEvent() {
+    String tokenValue = "valid-token";
+    UnlockResetPasswordCommand command = new UnlockResetPasswordCommand(tokenValue, "ValidPass1!@");
+    PasswordResetToken token = PasswordResetToken.of(UUID.randomUUID(), mockUser, tokenValue, LocalDateTime.now().plusHours(1), false);
+    when(passwordRestTokenService.findByToken(tokenValue)).thenReturn(Optional.of(token));
+
+    unlockResetPasswordUseCase.execute(command);
+
+    verify(userEventService, times(1)).handleUserUnlockedEvent(mockUser);
   }
 }

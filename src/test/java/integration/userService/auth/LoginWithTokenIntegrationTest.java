@@ -41,20 +41,20 @@ class LoginWithTokenIntegrationTest extends IntegrationTestBase {
 
     @BeforeEach
     void setUp() throws Exception {
-        User user = User.of(
-                UserId.of(UUID.randomUUID().toString()),
-                UserName.of("Token"),
-                UserLastName.of("Login"),
-                UserEmail.of(USER_EMAIL),
-                IdentityDocument.of("Passport", "TL1234567"),
-                Phone.of("+34", "655000001"),
-                Address.of("Token Street", "1", "Token City", "Token State", "55555", "ES"),
-                userPasswordService.encryptPassword(USER_PASSWORD),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                List.of()
-        );
+        User user = User.builder()
+                .id(UserId.of(UUID.randomUUID().toString()))
+                .name(UserName.of("Token"))
+                .lastName(UserLastName.of("Login"))
+                .email(UserEmail.of(USER_EMAIL))
+                .identityDocument(IdentityDocument.of("Passport", "TL1234567"))
+                .phone(Phone.of("+34", "655000001"))
+                .address(Address.of("Token Street", "1", "Token City", "Token State", "55555", "ES"))
+                .password(userPasswordService.encryptPassword(USER_PASSWORD))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(List.of())
+                .build();
         userServiceCore.registerUser(user);
         userToken = loginAndExtractToken(USER_EMAIL, USER_PASSWORD);
         flushOutboxFromSetup();

@@ -52,37 +52,48 @@ public class User {
     this.roles = roles != null ? List.copyOf(roles) : Collections.emptyList();
   }
 
-  public static User of(UserId userId,
-                        UserName userName,
-                        UserLastName userLastName,
-                        UserEmail userEmail,
-                        IdentityDocument identityDocument,
-                        Phone phone,
-                        Address address,
-                        String password,
-                        Integer failedLoginAttempts,
-                        String secretKey,
-                        LocalDateTime createdAt,
-                        UserStatus status,
-                        List<Role> roles) {
-    return new User(userId, userName, userLastName, userEmail, identityDocument, phone, address, password, failedLoginAttempts, secretKey, createdAt, status, roles);
+  public static Builder builder() {
+    return new Builder();
   }
 
-  public static User of(UserId userId,
-                        UserName userName,
-                        UserLastName userLastName,
-                        UserEmail userEmail,
-                        IdentityDocument identityDocument,
-                        Phone phone,
-                        Address address,
-                        String password,
-                        Integer failedLoginAttempts,
-                        LocalDateTime createdAt,
-                        UserStatus status,
-                        List<Role> roles) {
-    String secretKey = generateRandomSecretKey();
-    return new User(userId, userName, userLastName, userEmail, identityDocument, phone, address, password, failedLoginAttempts, secretKey, createdAt, status, roles);
+  public static final class Builder {
+    private UserId id;
+    private UserName name;
+    private UserLastName lastName;
+    private UserEmail email;
+    private IdentityDocument identityDocument;
+    private Phone phone;
+    private Address address;
+    private String password;
+    private String secretKey;
+    private Integer failedLoginAttempts;
+    private LocalDateTime createdAt;
+    private UserStatus status;
+    private List<Role> roles;
+
+    private Builder() {}
+
+    public Builder id(UserId id)                                       { this.id = id; return this; }
+    public Builder name(UserName name)                                 { this.name = name; return this; }
+    public Builder lastName(UserLastName lastName)                     { this.lastName = lastName; return this; }
+    public Builder email(UserEmail email)                              { this.email = email; return this; }
+    public Builder identityDocument(IdentityDocument identityDocument) { this.identityDocument = identityDocument; return this; }
+    public Builder phone(Phone phone)                                  { this.phone = phone; return this; }
+    public Builder address(Address address)                            { this.address = address; return this; }
+    public Builder password(String password)                           { this.password = password; return this; }
+    public Builder secretKey(String secretKey)                         { this.secretKey = secretKey; return this; }
+    public Builder failedLoginAttempts(Integer failedLoginAttempts)    { this.failedLoginAttempts = failedLoginAttempts; return this; }
+    public Builder createdAt(LocalDateTime createdAt)                  { this.createdAt = createdAt; return this; }
+    public Builder status(UserStatus status)                           { this.status = status; return this; }
+    public Builder roles(List<Role> roles)                             { this.roles = roles; return this; }
+
+    public User build() {
+      String key = secretKey != null ? secretKey : generateRandomSecretKey();
+      return new User(id, name, lastName, email, identityDocument, phone, address,
+        password, failedLoginAttempts, key, createdAt, status, roles);
+    }
   }
+
   public UserId getId() {
     return id;
   }
@@ -122,54 +133,64 @@ public class User {
   public LocalDateTime getCreatedAt() {
     return createdAt;
   }
+
   public List<Role> getRoles() {
     return Collections.unmodifiableList(roles);
   }
+
   public Integer getFailedLoginAttempts() {
     return failedLoginAttempts;
   }
-  public String getSecretKey(){
+
+  public String getSecretKey() {
     return secretKey;
   }
-  public void logout(){
-      this.secretKey = generateRandomSecretKey();
+
+  public void logout() {
+    this.secretKey = generateRandomSecretKey();
   }
+
   public void updatePassword(String newPassword) {
     this.secretKey = generateRandomSecretKey();
     this.password = newPassword;
   }
+
   public boolean isLocked() {
     return this.status == UserStatus.LOCKED;
   }
+
   private void lockAccount() {
     this.status = UserStatus.LOCKED;
   }
-  private static String generateRandomSecretKey(){
+
+  private static String generateRandomSecretKey() {
     return new SecureRandom()
       .ints(18, 48, 122)
       .filter(Character::isLetterOrDigit)
       .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
       .toString();
   }
+
   public void clearFailedLoginAttempts() {
     this.failedLoginAttempts = 0;
   }
+
   public void unlockAccount() {
     this.failedLoginAttempts = 0;
     this.status = UserStatus.ACTIVE;
   }
+
   public void registerFailedLoginAttempt() {
     if (this.failedLoginAttempts == null) {
       this.failedLoginAttempts = 1;
     } else {
-      this.failedLoginAttempts +=1;
+      this.failedLoginAttempts += 1;
     }
 
     if (this.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
       this.lockAccount();
     }
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -196,5 +217,4 @@ public class User {
     return Objects.hash(id, name, lastName, email, identityDocument, phone, address,
       password, secretKey, failedLoginAttempts, status, createdAt, roles);
   }
-
 }

@@ -52,38 +52,38 @@ class LogoutIntegrationTest extends IntegrationTestBase {
     @BeforeEach
     void setUp() throws Exception {
         superAdminId = UUID.randomUUID().toString();
-        User superAdmin = User.of(
-                UserId.of(superAdminId),
-                UserName.of("SuperAdmin"),
-                UserLastName.of("Logout"),
-                UserEmail.of(SUPER_ADMIN_EMAIL),
-                IdentityDocument.of("Passport", "SA9876543"),
-                Phone.of("+34", "611000010"),
-                Address.of("Admin Street", "1", "Admin City", "Admin State", "11111", "ES"),
-                userPasswordService.encryptPassword(SUPER_ADMIN_PASSWORD),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                List.of()
-        );
+        User superAdmin = User.builder()
+                .id(UserId.of(superAdminId))
+                .name(UserName.of("SuperAdmin"))
+                .lastName(UserLastName.of("Logout"))
+                .email(UserEmail.of(SUPER_ADMIN_EMAIL))
+                .identityDocument(IdentityDocument.of("Passport", "SA9876543"))
+                .phone(Phone.of("+34", "611000010"))
+                .address(Address.of("Admin Street", "1", "Admin City", "Admin State", "11111", "ES"))
+                .password(userPasswordService.encryptPassword(SUPER_ADMIN_PASSWORD))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(List.of())
+                .build();
         userServiceCore.registerUser(superAdmin);
         grantSuperAdminUseCase.execute(new GrantSuperAdminCommand(superAdminId));
 
         regularUserId = UUID.randomUUID().toString();
-        User regularUser = User.of(
-                UserId.of(regularUserId),
-                UserName.of("Regular"),
-                UserLastName.of("Logout"),
-                UserEmail.of(REGULAR_USER_EMAIL),
-                IdentityDocument.of("Passport", "US9876543"),
-                Phone.of("+34", "622000010"),
-                Address.of("User Street", "2", "User City", "User State", "22222", "ES"),
-                userPasswordService.encryptPassword(REGULAR_USER_PASSWORD),
-                0,
-                LocalDateTime.now(),
-                UserStatus.ACTIVE,
-                List.of()
-        );
+        User regularUser = User.builder()
+                .id(UserId.of(regularUserId))
+                .name(UserName.of("Regular"))
+                .lastName(UserLastName.of("Logout"))
+                .email(UserEmail.of(REGULAR_USER_EMAIL))
+                .identityDocument(IdentityDocument.of("Passport", "US9876543"))
+                .phone(Phone.of("+34", "622000010"))
+                .address(Address.of("User Street", "2", "User City", "User State", "22222", "ES"))
+                .password(userPasswordService.encryptPassword(REGULAR_USER_PASSWORD))
+                .failedLoginAttempts(0)
+                .createdAt(LocalDateTime.now())
+                .status(UserStatus.ACTIVE)
+                .roles(List.of())
+                .build();
         userServiceCore.registerUser(regularUser);
 
         superAdminToken = loginAndExtractToken(SUPER_ADMIN_EMAIL, SUPER_ADMIN_PASSWORD);

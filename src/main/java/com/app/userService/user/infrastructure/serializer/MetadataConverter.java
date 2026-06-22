@@ -34,7 +34,7 @@ public class MetadataConverter implements AttributeConverter<Map<String, String>
     try {
       return objectMapper.readValue(dbData, Map.class);
     } catch (IOException e) {
-      throw new RuntimeException("Error deserializando metadata de JSON", e);
+      throw new RuntimeException("Failed to deserialize metadata from JSON", e);
     }
   }
 }

@@ -6,18 +6,20 @@ A user management microservice with JWT authentication, built with **Spring Boot
 
 ## Tech Stack
 
-| Technology | Version |
-|---|---|
-| Java | 17 |
-| Spring Boot | 3.4.0 |
+| Technology | Version            |
+|---|--------------------|
+| Java | 17                 |
+| Spring Boot | 3.4.13             |
 | Spring Security | (included in Boot) |
 | Spring Data JPA | (included in Boot) |
-| MySQL | - |
-| RabbitMQ (AMQP) | - |
-| JWT (jjwt) | 0.11.5 |
-| Swagger / OpenAPI | springdoc 2.8.1 |
-| JaCoCo (coverage) | 0.8.8 |
-| Mockito | 5.5.0 |
+| MySQL | -                  |
+| RabbitMQ (AMQP) | -                  |
+| JWT (jjwt) | 0.11.5             |
+| Swagger / OpenAPI | springdoc 2.8.1    |
+| Bucket4j | 8.10.1             |
+| Caffeine | 3.1.8              |
+| JaCoCo (coverage) | 0.8.12             |
+| Mockito | 5.5.0              |
 
 ---
 
@@ -120,5 +122,12 @@ All events are published to the **`userExchange`** exchange (topic type).
 | `user.logged.without.token` | `user.logged.without.token` | `userLoggedQueue` | Login via credentials | `userId`, `name`, `lastName`, `email` |
 | `user.logout` | `user.logged.logout` | `userLoggedQueue` | User logout | `userId`, `name`, `lastName`, `email` |
 | `user.locked` | `user.locked` | `userLockedQueue` | Account locked | `userId`, `name`, `lastName`, `email`, `token`, `expirationDate` |
+| `user.unlocked` | `user.unlocked` | `userUnlockedQueue` | Account unlocked | `userId`, `name`, `lastName`, `email` |
 
 > To subscribe to all login/logout activity use the binding pattern `user.logged.#`.
+
+---
+
+## License
+
+Released under the [MIT License](LICENSE) © 2026 Miguel A. Izquierdo.

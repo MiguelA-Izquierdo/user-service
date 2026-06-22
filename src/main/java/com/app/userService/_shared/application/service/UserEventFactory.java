@@ -5,6 +5,7 @@ import com.app.userService.auth.domain.event.UserLogoutDomainEvent;
 import com.app.userService.user.domain.event.UserCreatedDomainEvent;
 import com.app.userService.user.domain.event.UserDeletedDomainEvent;
 import com.app.userService.auth.domain.event.UserLockedDomainEvent;
+import com.app.userService.auth.domain.event.UserUnlockedDomainEvent;
 import com.app.userService.user.domain.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class UserEventFactory {
   private String userDeletedQueue;
   @Value("${messaging.queue.userLocked}")
   private String userLockedQueue;
+  @Value("${messaging.queue.userUnlocked}")
+  private String userUnlockedQueue;
   @Value("${messaging.queue.userLogged}")
   private String userLoggedQueue;
   @Value("${messaging.routing.key.userCreated}")
@@ -31,6 +34,8 @@ public class UserEventFactory {
   private String userDeletedRoutingKey;
   @Value("${messaging.routing.key.userLocked}")
   private String userLockedRoutingKey;
+  @Value("${messaging.routing.key.userUnlocked}")
+  private String userUnlockedRoutingKey;
   @Value("${messaging.routing.key.userLogged.with.token}")
   private String userLoggedWithTokenRoutingKey;
   @Value("${messaging.routing.key.userLogged.without.token}")
@@ -84,6 +89,17 @@ public class UserEventFactory {
       user.getEmail().getEmail(),
       token,
       LocalDateTime.now()
+    );
+  }
+  public UserUnlockedDomainEvent createUserUnlockedEvent(User user) {
+    return new UserUnlockedDomainEvent(
+      userExchange,
+      userUnlockedQueue,
+      userUnlockedRoutingKey,
+      user.getId().getValue(),
+      user.getName().getValue(),
+      user.getLastName().getValue(),
+      user.getEmail().getEmail()
     );
   }
   public UserLogoutDomainEvent createUserLogoutEvent(User user) {

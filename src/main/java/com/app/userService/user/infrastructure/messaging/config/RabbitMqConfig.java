@@ -43,9 +43,9 @@ public class RabbitMqConfig {
 
     rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
       if (ack) {
-        logger.info("Mensaje confirmado con éxito: {}", correlationData);
+        logger.info("Message confirmed: {}", correlationData);
       } else {
-        logger.warn("Fallo en la confirmación del mensaje: {} causa: {}", correlationData, cause);
+        logger.warn("Message confirmation failed: {} cause: {}", correlationData, cause);
       }
     });
 

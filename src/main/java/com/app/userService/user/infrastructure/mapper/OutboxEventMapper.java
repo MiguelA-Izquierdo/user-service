@@ -15,6 +15,8 @@ public class OutboxEventMapper {
       .queue(event.getQueue())
       .routingKey(event.getRoutingKey())
       .exchange(event.getExchange())
+      .attempts(event.getAttempts())
+      .nextRetryAt(event.getNextRetryAt())
       .build();
   }
 
@@ -28,6 +30,8 @@ public class OutboxEventMapper {
       .queue(entity.getQueue())
       .routingKey(entity.getRoutingKey())
       .exchange(entity.getExchange())
+      .attempts(entity.getAttempts())
+      .nextRetryAt(entity.getNextRetryAt())
       .build();
   }
 }

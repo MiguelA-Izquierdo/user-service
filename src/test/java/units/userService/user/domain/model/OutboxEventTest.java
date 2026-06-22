@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -55,25 +56,62 @@ class OutboxEventTest {
 
   @Test
   void testMarkAsProcessed() {
-    OutboxEvent event = OutboxEvent.builder()
-      .id(id).type(eventType).payload(payload).status(status)
-      .createdAt(createdAt).queue(queue).exchange(exchange).routingKey(routingKey)
-      .build();
+    OutboxEvent event = newEvent();
 
     event.markAsProcessed();
 
     Assertions.assertEquals(OutboxEventStatus.PROCESSED, event.getStatus());
+    Assertions.assertNull(event.getNextRetryAt());
   }
 
   @Test
-  void testMarkAsFailed() {
-    OutboxEvent event = OutboxEvent.builder()
+  void registerFailure_belowMaxAttempts_schedulesRetryWithFutureBackoff() {
+    OutboxEvent event = newEvent();
+
+    event.registerFailure(3, Duration.ofSeconds(10));
+
+    Assertions.assertEquals(OutboxEventStatus.FAILED, event.getStatus());
+    Assertions.assertEquals(1, event.getAttempts());
+    Assertions.assertNotNull(event.getNextRetryAt());
+    Assertions.assertTrue(event.getNextRetryAt().isAfter(LocalDateTime.now()),
+      "nextRetryAt must be scheduled in the future");
+    Assertions.assertFalse(event.isDead());
+  }
+
+  @Test
+  void registerFailure_backoffIsExponential() {
+    OutboxEvent first = newEvent();
+    OutboxEvent second = newEvent();
+
+    LocalDateTime before = LocalDateTime.now();
+    first.registerFailure(5, Duration.ofSeconds(10));   // attempt 1 -> ~10s
+    second.registerFailure(5, Duration.ofSeconds(10));
+    second.registerFailure(5, Duration.ofSeconds(10));  // attempt 2 -> ~20s
+
+    Assertions.assertTrue(second.getNextRetryAt().isAfter(first.getNextRetryAt()),
+      "later attempts must back off further than earlier ones");
+    Assertions.assertTrue(first.getNextRetryAt().isAfter(before.plusSeconds(5)));
+  }
+
+  @Test
+  void registerFailure_reachingMaxAttempts_marksDeadAndStopsRetrying() {
+    OutboxEvent event = newEvent();
+    int maxAttempts = 3;
+
+    event.registerFailure(maxAttempts, Duration.ofSeconds(10)); // 1 -> FAILED
+    event.registerFailure(maxAttempts, Duration.ofSeconds(10)); // 2 -> FAILED
+    event.registerFailure(maxAttempts, Duration.ofSeconds(10)); // 3 -> DEAD
+
+    Assertions.assertEquals(OutboxEventStatus.DEAD, event.getStatus());
+    Assertions.assertEquals(3, event.getAttempts());
+    Assertions.assertNull(event.getNextRetryAt(), "a DEAD event must not be scheduled for retry");
+    Assertions.assertTrue(event.isDead());
+  }
+
+  private OutboxEvent newEvent() {
+    return OutboxEvent.builder()
       .id(id).type(eventType).payload(payload).status(status)
       .createdAt(createdAt).queue(queue).exchange(exchange).routingKey(routingKey)
       .build();
-
-    event.markAsFailed();
-
-    Assertions.assertEquals(OutboxEventStatus.FAILED, event.getStatus());
   }
 }

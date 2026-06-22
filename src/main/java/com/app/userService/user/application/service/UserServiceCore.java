@@ -76,27 +76,27 @@ public class UserServiceCore {
     }
   }
   private User updateUserFields(UpdateUserCommand command, User current, Map<String, String> changes) {
-    return User.of(
-      current.getId(),
-      resolveField(command.userName(), UserName::of, current.getName(), "Name", changes),
-      resolveField(command.lastName(), UserLastName::of, current.getLastName(), "LastName", changes),
-      current.getEmail(),
-      resolveField(command.identityDocument(),
+    return User.builder()
+      .id(current.getId())
+      .name(resolveField(command.userName(), UserName::of, current.getName(), "Name", changes))
+      .lastName(resolveField(command.lastName(), UserLastName::of, current.getLastName(), "LastName", changes))
+      .email(current.getEmail())
+      .identityDocument(resolveField(command.identityDocument(),
         d -> IdentityDocument.of(d.documentType(), d.documentNumber()),
-        current.getIdentityDocument(), "Document", changes),
-      resolveField(command.phone(),
+        current.getIdentityDocument(), "Document", changes))
+      .phone(resolveField(command.phone(),
         p -> Phone.of(p.countryCode(), p.phoneNumber()),
-        current.getPhone(), "Phone number", changes),
-      resolveField(command.address(),
+        current.getPhone(), "Phone number", changes))
+      .address(resolveField(command.address(),
         a -> Address.of(a.street(), a.streetNumber(), a.city(), a.state(), a.postalCode(), a.country()),
-        current.getAddress(), "Address", changes),
-      current.getPassword(),
-      current.getFailedLoginAttempts(),
-      current.getSecretKey(),
-      current.getCreatedAt(),
-      current.getStatus(),
-      current.getRoles()
-    );
+        current.getAddress(), "Address", changes))
+      .password(current.getPassword())
+      .failedLoginAttempts(current.getFailedLoginAttempts())
+      .secretKey(current.getSecretKey())
+      .createdAt(current.getCreatedAt())
+      .status(current.getStatus())
+      .roles(current.getRoles())
+      .build();
   }
   private <T, R> R resolveField(T commandValue, Function<T, R> factory, R current,
                                  String fieldName, Map<String, String> changes) {

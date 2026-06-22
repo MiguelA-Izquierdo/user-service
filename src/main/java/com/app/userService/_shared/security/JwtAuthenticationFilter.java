@@ -46,13 +46,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     this.objectMapper = objectMapper;
   }
 
+  // The health endpoint (incl. liveness/readiness probes) is served on the separate, internal
+  // management port and must be reachable without a token. This filter is part of the security
+  // chain that also applies there, so skip it for health paths — otherwise probes get a 401
+  // before the permitAll authorization rule is ever evaluated.
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    return request.getRequestURI().startsWith("/actuator/health");
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest request,
                                   @NotNull HttpServletResponse response,
                                   @NotNull FilterChain filterChain)
     throws ServletException, IOException {
 
-    logger.info("Processing request: {} {}", request.getRequestURI(), request.getMethod());
+    logger.debug("Processing request: {} {}", request.getRequestURI(), request.getMethod());
 
     if (securityPropertiesService.isPublicRoute(request)) {
       filterChain.doFilter(request, response);

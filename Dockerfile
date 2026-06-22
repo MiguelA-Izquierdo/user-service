@@ -8,5 +8,6 @@ RUN mvn clean package -DskipTests -q
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/user-service.jar app.jar
-EXPOSE 8080
+# 8080 = public API · 8081 = Actuator/management (internal only — do not route from the public Ingress)
+EXPOSE 8080 8081
 ENTRYPOINT ["java", "-jar", "app.jar"]

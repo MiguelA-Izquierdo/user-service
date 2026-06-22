@@ -1,6 +1,7 @@
 package com.app.userService.auth.application.useCases;
 
 
+import com.app.userService._shared.application.service.UserEventService;
 import com.app.userService.auth.application.bus.command.UnlockResetPasswordCommand;
 import com.app.userService.auth.application.service.PasswordResetTokenService;
 import com.app.userService.user.application.service.UserPasswordService;
@@ -23,14 +24,17 @@ public class UnlockResetPasswordUseCase {
   private final UserPasswordService userPasswordService;
   private final PasswordResetTokenService passwordRestTokenService;
   private final UserActionLogService userActionLogService;
+  private final UserEventService userEventService;
   public UnlockResetPasswordUseCase(UserServiceCore userServiceCore,
                                     PasswordResetTokenService passwordRestTokenService,
                                     UserPasswordService userPasswordService,
-                                    UserActionLogService userActionLogService){
+                                    UserActionLogService userActionLogService,
+                                    UserEventService userEventService){
     this.userServiceCore = userServiceCore;
     this.userPasswordService = userPasswordService;
     this.passwordRestTokenService = passwordRestTokenService;
     this.userActionLogService = userActionLogService;
+    this.userEventService = userEventService;
   }
   @Transactional
   public void execute(UnlockResetPasswordCommand command) {
@@ -49,5 +53,6 @@ public class UnlockResetPasswordUseCase {
     userServiceCore.unlockAccount(user);
 
     userActionLogService.registerUserAction(user, UserAction.UNLOCKED);
+    userEventService.handleUserUnlockedEvent(user);
   }
 }

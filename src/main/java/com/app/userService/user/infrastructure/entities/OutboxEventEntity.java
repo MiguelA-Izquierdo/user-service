@@ -28,6 +28,10 @@ public class OutboxEventEntity {
   private String routingKey;
   @Column(nullable = false)
   private String exchange;
+  @Column(nullable = false)
+  private int attempts;
+  @Column
+  private LocalDateTime nextRetryAt;
 
   public OutboxEventEntity() {}
 
@@ -40,6 +44,8 @@ public class OutboxEventEntity {
     this.queue = builder.queue;
     this.routingKey = builder.routingKey;
     this.exchange = builder.exchange;
+    this.attempts = builder.attempts;
+    this.nextRetryAt = builder.nextRetryAt;
   }
 
   public static Builder builder() {
@@ -55,6 +61,8 @@ public class OutboxEventEntity {
     private String queue;
     private String routingKey;
     private String exchange;
+    private int attempts;
+    private LocalDateTime nextRetryAt;
 
     public Builder id(UUID id) { this.id = id; return this; }
     public Builder eventType(String eventType) { this.eventType = eventType; return this; }
@@ -64,6 +72,8 @@ public class OutboxEventEntity {
     public Builder queue(String queue) { this.queue = queue; return this; }
     public Builder routingKey(String routingKey) { this.routingKey = routingKey; return this; }
     public Builder exchange(String exchange) { this.exchange = exchange; return this; }
+    public Builder attempts(int attempts) { this.attempts = attempts; return this; }
+    public Builder nextRetryAt(LocalDateTime nextRetryAt) { this.nextRetryAt = nextRetryAt; return this; }
 
     public OutboxEventEntity build() { return new OutboxEventEntity(this); }
   }
@@ -99,5 +109,13 @@ public class OutboxEventEntity {
 
   public String getExchange() {
     return exchange;
+  }
+
+  public int getAttempts() {
+    return attempts;
+  }
+
+  public LocalDateTime getNextRetryAt() {
+    return nextRetryAt;
   }
 }

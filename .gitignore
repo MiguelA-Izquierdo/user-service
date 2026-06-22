@@ -1,6 +1,13 @@
 # Compiled class file
 *.class
+
+# IDE files
 .idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
 *.env
 *.env.local
 *.env.docker

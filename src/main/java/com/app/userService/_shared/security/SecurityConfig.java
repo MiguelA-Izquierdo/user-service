@@ -1,6 +1,9 @@
 package com.app.userService._shared.security;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -53,6 +56,10 @@ public class SecurityConfig {
         }
       })
       .authorizeHttpRequests(auth -> auth
+        // Health endpoint (incl. liveness/readiness probes) must be reachable without auth.
+        // The security filter chain is also active on the separate management port, so k8s
+        // probes would otherwise get 401. Detailed health output stays gated by show-details.
+        .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
         .requestMatchers(securityPropertiesService::isPublicRoute).permitAll()
         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
           .hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
@@ -70,6 +77,18 @@ public class SecurityConfig {
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
     return config.getAuthenticationManager();
+  }
+
+  // The JWT filter is a @Component, so Spring Boot would auto-register it as a plain servlet
+  // filter on EVERY servlet context — including the separate Actuator management port, where it
+  // would 401 the unauthenticated k8s probes. Disabling the auto-registration keeps the filter
+  // active only via the SecurityFilterChain below (application port), and also stops it running
+  // twice on the application port.
+  @Bean
+  public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(JwtAuthenticationFilter filter) {
+    FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
+    registration.setEnabled(false);
+    return registration;
   }
 
   private Customizer<ExceptionHandlingConfigurer<HttpSecurity>> exceptionHandlingCustomizer() {
